@@ -64,7 +64,36 @@ void dumpXml (juce::XmlElement* xmlElement, int indentDepth)
     };
 }
 
+//////////////////////////////////////////////////
+// TEST CODE
 juce::ValueTree parse (juce::XmlElement* bitBoxPresetSessionElement);
+constexpr auto kPresetFileName { "preset.xml" };
+void scanFolder (juce::File folderToScan)
+{
+    for (auto& entry : juce::RangedDirectoryIterator (folderToScan, false, "*", juce::File::findFilesAndDirectories))
+    {
+        if (! entry.isDirectory ())
+        {
+            juce::File presetFile { entry.getFile () };
+            if (presetFile.existsAsFile () && presetFile.getFileName() == kPresetFileName)
+            {
+                juce::Logger::outputDebugString ("Preset: " + presetFile.getParentDirectory ().getFullPathName ());
+                juce::XmlElement presetXml { "preset" };
+                auto presetXmlDocument { juce::XmlDocument (presetFile).getDocumentElement () };
+                //dumpXml (presetXmlDocument.get (), 0);
+                parse (presetXmlDocument.get ());
+            }
+        }
+        else if (entry.isDirectory ())
+        {
+            scanFolder (entry.getFile ());
+        }
+    }
+};
+
+//////////////////////////////////////////////////
+
+
 class BBoxManagerApplication : public juce::JUCEApplication, public juce::Timer
 {
 public:
@@ -79,14 +108,11 @@ public:
         initLogger ();
         initCrashHandler ();
         initPropertyRoots ();
-        constexpr auto kPresetFileName { "preset.xml" };
-        constexpr auto kPresetFolder { "YT1" };
 
-        juce::File presetFile { appDirectory.getChildFile (kPresetFolder).getChildFile (kPresetFileName) };
-        //juce::XmlElement presetXml { "preset" };
-        auto presetXmlDocument { juce::XmlDocument (presetFile).getDocumentElement () };
-//        dumpXml (presetXmlDocument.get (), 0);
-        parse (presetXmlDocument.get ());
+        constexpr auto kPresetFolder { "YT1" };
+        auto kFolderName { juce::File { "C:\\code\\BboxManager\\hide_from_git\\Presets" } };
+        scanFolder (kFolderName);
+
         initBitBox ();
         initAudio ();
         initSystemServices ();

@@ -24,6 +24,46 @@
           <FILE id="KPlVV8" name="BitBoxPresetReader.h" compile="0" resource="0"
                 file="Source/BitBox/Preset/BitBoxPresetReader.h"/>
         </GROUP>
+        <FILE id="kC0OUe" name="AssetProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/AssetProperties.cpp"/>
+        <FILE id="G6M4FE" name="AssetProperties.h" compile="0" resource="0"
+              file="Source/BitBox/AssetProperties.h"/>
+        <FILE id="WgTe6F" name="BitBoxPadProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/BitBoxPadProperties.cpp"/>
+        <FILE id="nceyNG" name="BitBoxPadProperties.h" compile="0" resource="0"
+              file="Source/BitBox/BitBoxPadProperties.h"/>
+        <FILE id="hcis6H" name="BitBoxPresetProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/BitBoxPresetProperties.cpp"/>
+        <FILE id="sbCvQ2" name="BitBoxPresetProperties.h" compile="0" resource="0"
+              file="Source/BitBox/BitBoxPresetProperties.h"/>
+        <FILE id="gQfvo7" name="BitBoxSampleProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/BitBoxSampleProperties.cpp"/>
+        <FILE id="zLY9SU" name="BitBoxSampleProperties.h" compile="0" resource="0"
+              file="Source/BitBox/BitBoxSampleProperties.h"/>
+        <FILE id="hu2qSk" name="CellProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/CellProperties.cpp"/>
+        <FILE id="CuP4wY" name="CellProperties.h" compile="0" resource="0"
+              file="Source/BitBox/CellProperties.h"/>
+        <FILE id="i5EXfx" name="DelayProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/DelayProperties.cpp"/>
+        <FILE id="rkvTak" name="DelayProperties.h" compile="0" resource="0"
+              file="Source/BitBox/DelayProperties.h"/>
+        <FILE id="O0Oa9z" name="IoConnectInProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/IoConnectInProperties.cpp"/>
+        <FILE id="AbdKjN" name="IoConnectInProperties.h" compile="0" resource="0"
+              file="Source/BitBox/IoConnectInProperties.h"/>
+        <FILE id="BjMSit" name="IoConnectOutProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/IoConnectOutProperties.cpp"/>
+        <FILE id="CZ7m9Z" name="IoConnectOutProperties.h" compile="0" resource="0"
+              file="Source/BitBox/IoConnectOutProperties.h"/>
+        <FILE id="L7PZQi" name="ReverbProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/ReverbProperties.cpp"/>
+        <FILE id="ndglOh" name="ReverbProperties.h" compile="0" resource="0"
+              file="Source/BitBox/ReverbProperties.h"/>
+        <FILE id="F5nU6f" name="SongProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/SongProperties.cpp"/>
+        <FILE id="MtRIEn" name="SongProperties.h" compile="0" resource="0"
+              file="Source/BitBox/SongProperties.h"/>
       </GROUP>
       <GROUP id="{4C6BEA74-4A21-C3CF-EEAA-3812A606D331}" name="GUI">
         <GROUP id="{9FFEC5CE-9420-812F-0AF1-F55F22629324}" name="BitBox"/>

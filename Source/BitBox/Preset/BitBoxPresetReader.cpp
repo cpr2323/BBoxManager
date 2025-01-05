@@ -1,209 +1,313 @@
 #include "BitBoxPresetReader.h"
-
-//auto presetXmlDocument { juce::XmlDocument (presetFile).getDocumentElement () };
-//dumpXml (presetXmlDocument.get (), 0);
+#include "../AssetProperties.h"
+#include "../BitBoxSampleProperties.h"
+#include "../CellProperties.h"
+#include "../DelayProperties.h"
+#include "../IoConnectInProperties.h"
+#include "../IoConnectOutProperties.h"
+#include "../ReverbProperties.h"
+#include "../SongProperties.h"
 
 juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
 {
     jassert (bitBoxPresetDocumentElement != nullptr && bitBoxPresetDocumentElement->getTagName () == "document");
     const auto bitBoxPresetSessionElement { bitBoxPresetDocumentElement->getChildByName ("session") };
     jassert (bitBoxPresetSessionElement != nullptr && bitBoxPresetSessionElement->getTagName () == "session");
-    jassert (bitBoxPresetSessionElement->getStringAttribute ("version") == "2");
+    // found document that did not have a version attribute
+    jassert (bitBoxPresetSessionElement->getStringAttribute ("version") == "" || bitBoxPresetSessionElement->getStringAttribute ("version") == "2");
     juce::ValueTree presetPropertiesVT { "PresetProperties" };
 
-    for (auto* bitBoxPresetCellElement : bitBoxPresetSessionElement->getChildIterator())
+    for (auto* bitBoxPresetCellElement : bitBoxPresetSessionElement->getChildIterator ())
     {
-        jassert (bitBoxPresetCellElement->getTagName () == "cell");
-        const auto row { bitBoxPresetCellElement->getIntAttribute ("row") };
-        const auto col { bitBoxPresetCellElement->getIntAttribute ("column") };
-        const auto layer { bitBoxPresetCellElement->getIntAttribute ("layer") };
-        const auto type { bitBoxPresetCellElement->getStringAttribute ("type") };
-
-        if (type == "samtempl")
+        if (bitBoxPresetCellElement->getTagName () == "cell")
         {
-        }
-        else if (type == "sample")
-        {
-            const auto fileName = bitBoxPresetCellElement->getStringAttribute ("filename");
-            auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
-            jassert (paramsElement != nullptr);
-            const auto gainDb = paramsElement->getIntAttribute ("gaindb");
-            const auto pitch = paramsElement->getIntAttribute ("pitch");
-            const auto panPos = paramsElement->getIntAttribute ("panpos");
-            const auto samTrigType = paramsElement->getIntAttribute ("samtrigtype");
-            const auto loopMode = paramsElement->getIntAttribute ("loopmode");
-            const auto loopModes = paramsElement->getIntAttribute ("loopmodes");
-            const auto midiMode = paramsElement->getIntAttribute ("midimode");
-            const auto reverse = paramsElement->getIntAttribute ("reverse");
-            const auto cellMode = paramsElement->getIntAttribute ("cellmode");
-            const auto envAttack = paramsElement->getIntAttribute ("envattack");
-            const auto envDecay = paramsElement->getIntAttribute ("envdecay");
-            const auto envSus = paramsElement->getIntAttribute ("envsus");
-            const auto envRel = paramsElement->getIntAttribute ("envrel");
-            const auto samStart = paramsElement->getIntAttribute ("samstart");
-            const auto samLen = paramsElement->getIntAttribute ("samlen");
-            const auto loopStart = paramsElement->getIntAttribute ("loopstart");
-            const auto loopEnd = paramsElement->getIntAttribute ("loopend");
-            const auto quantSize = paramsElement->getIntAttribute ("quantsize");
-            const auto syncType = paramsElement->getIntAttribute ("synctype");
-            const auto actSlice = paramsElement->getIntAttribute ("actslice");
-            const auto outputBus = paramsElement->getIntAttribute ("outputbus");
-            const auto polyMode = paramsElement->getIntAttribute ("polymode");
-            const auto polyModeSlice = paramsElement->getIntAttribute ("polymodeslice");
-            const auto sliceStepMode = paramsElement->getIntAttribute ("slicestepmode");
-            const auto chokeGrp = paramsElement->getIntAttribute ("chokegrp");
-            const auto dualFilCutoff = paramsElement->getIntAttribute ("dualfilcutoff");
-            const auto res = paramsElement->getIntAttribute ("res");
-            const auto rootNote = paramsElement->getIntAttribute ("rootnote");
-            const auto beatCount = paramsElement->getIntAttribute ("beatcount");
-            const auto fx1Send = paramsElement->getIntAttribute ("fx1send");
-            const auto fx2Send = paramsElement->getIntAttribute ("fx2send");
-            const auto multiSamMode = paramsElement->getIntAttribute ("multisammode");
-            const auto interpQual = paramsElement->getIntAttribute ("interpqual");
-            const auto playThru = paramsElement->getIntAttribute ("playthru");
-            const auto slicerQuantSize = paramsElement->getIntAttribute ("slicerquantsize");
-            const auto slicerSync = paramsElement->getIntAttribute ("slicersync");
-            const auto padNote = paramsElement->getIntAttribute ("padnote");
-            const auto loopFadeAmt = paramsElement->getIntAttribute ("loopfadeamt");
-            const auto lfoWave = paramsElement->getIntAttribute ("lfowave");
-            const auto lfoRate = paramsElement->getIntAttribute ("lforate");
-            const auto lfoAmount = paramsElement->getIntAttribute ("lfoamount");
-            const auto lfoKeyTrig = paramsElement->getIntAttribute ("lfokeytrig");
-            const auto lfoBeatSync = paramsElement->getIntAttribute ("lfobeatsync");
-            const auto lfoRateBeatSync = paramsElement->getIntAttribute ("lforatebeatsync");
-            const auto grainSizePerc = paramsElement->getIntAttribute ("grainsizeperc");
-            const auto grainScat = paramsElement->getIntAttribute ("grainscat");
-            const auto grainPanRnd = paramsElement->getIntAttribute ("grainpanrnd");
-            const auto grainDensity = paramsElement->getIntAttribute ("graindensity");
-            const auto sliceMode = paramsElement->getIntAttribute ("slicemode");
-            const auto legatoMode = paramsElement->getIntAttribute ("legatomode");
-            const auto gainSsrcWin = paramsElement->getIntAttribute ("gainssrcwin");
-            const auto grainReadSpeed = paramsElement->getIntAttribute ("grainreadspeed");
-            const auto recPresetLen = paramsElement->getIntAttribute ("recpresetlen");
-            const auto recQuant = paramsElement->getIntAttribute ("recquant");
-            const auto recInput = paramsElement->getIntAttribute ("recinput");
-            const auto recUseThres = paramsElement->getIntAttribute ("recusethres");
-            const auto recThres = paramsElement->getIntAttribute ("recthresh");
-            const auto recMonOutBus = paramsElement->getIntAttribute ("recmonoutbus");
+            CellProperties cellProperties { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no};
+            const auto type = bitBoxPresetCellElement->getStringAttribute ("type");
+            cellProperties.setType (type, false);
+            cellProperties.setRow (bitBoxPresetCellElement->getIntAttribute ("row"), false);
+            cellProperties.setColumn (bitBoxPresetCellElement->getIntAttribute ("column"), false);
+            cellProperties.setLayer (bitBoxPresetCellElement->getIntAttribute ("layer"), false);
 
-            for (auto* childElement : bitBoxPresetCellElement->getChildIterator ())
+            if (type == "samtempl")
             {
-                if (childElement->getTagName () == "modsource")
-                {
-                    const auto modDest = childElement->getStringAttribute ("dest");
-                    const auto modSrc = childElement->getStringAttribute ("src");
-                    const auto modSlot = childElement->getIntAttribute ("slot");
-                    const auto modAmount = childElement->getIntAttribute ("amount");
-                }
-                else if (childElement->getTagName () == "slices")
-                {
-                    for (auto* sliceElement : childElement->getChildIterator ())
-                    {
-                        const auto slicePos = sliceElement->getIntAttribute ("pos");
-                    }
-                }
             }
-        }
-        else if (type == "multi-sample") // ? I don't know what the type is for multi-sample
-        {
-            jassertfalse;
-        }
-        else if (type == "clip") // ? I don't know what the type is for clip
-        {
-            jassertfalse;
-        }
-        else if (type == "slice") // ? I don't know what the type is for slice
-        {
-            jassertfalse;
-        }
-        else if (type == "gran") // ? I don't know what the type is for granular
-        {
-            jassertfalse;
-        }
-        else if (type == "rec") // ? I don't know what the type is for recording
-        {
-            jassertfalse;
-        }
-        else if (type == "rec-multi") // ? I don't know what the type is for recording
-        {
-            jassertfalse;
-        }
-        else if (type == "delay")
-        {
-            auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
-            jassert (paramsElement != nullptr);
-            const auto delay = paramsElement->getIntAttribute ("delay");
-            const auto delaymusTime = paramsElement->getIntAttribute ("delaymustime");
-            const auto feedback = paramsElement->getIntAttribute ("feedback");
-            const auto cutoff = paramsElement->getIntAttribute ("cutoff");
-            const auto filtQuality = paramsElement->getIntAttribute ("filtquality");
-            const auto delayBeatSync = paramsElement->getIntAttribute ("dealybeatsync");
-            const auto filtEnable = paramsElement->getIntAttribute ("filtenable");
-            const auto delayPingPong = paramsElement->getIntAttribute ("delaypingpong");
-        }
-        else if (type == "reverb")
-        {
-            auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
-            jassert (paramsElement != nullptr);
-            const auto decay = paramsElement->getIntAttribute ("decay");
-            const auto preDelay = paramsElement->getIntAttribute ("predelay");
-            const auto damping = paramsElement->getIntAttribute ("damping");
-        }
-        else if (type == "eq")
-        {
-            auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
-            jassert (paramsElement != nullptr);
-            const auto eqActBand = paramsElement->getIntAttribute ("eqactband");
-            const auto eqGain = paramsElement->getIntAttribute ("eqgain");
-            const auto eqCutoff = paramsElement->getIntAttribute ("eqcutoff");
-            const auto eqRes = paramsElement->getIntAttribute ("eqres");
-            const auto eqEnable = paramsElement->getIntAttribute ("eqenable");
-            const auto eqType = paramsElement->getIntAttribute ("eqtype");
-            const auto eqGain2 = paramsElement->getIntAttribute ("eqgain2");
-            const auto eqCutoff2 = paramsElement->getIntAttribute ("eqcutoff2");
-            const auto eqRes2 = paramsElement->getIntAttribute ("eqres2");
-            const auto eqEnable2 = paramsElement->getIntAttribute ("eqenable2");
-            const auto eqType2 = paramsElement->getIntAttribute ("eqtype2");
-            const auto eqGain3 = paramsElement->getIntAttribute ("eqgain3");
-            const auto eqCutoff3 = paramsElement->getIntAttribute ("eqcutoff3");
-            const auto eqRes3 = paramsElement->getIntAttribute ("eqres3");
-            const auto eqEnable3 = paramsElement->getIntAttribute ("eqenable3");
-            const auto eqType3 = paramsElement->getIntAttribute ("eqtype3");
-            const auto eqGain4 = paramsElement->getIntAttribute ("eqgain4");
-            const auto eqCutoff4 = paramsElement->getIntAttribute ("eqcutoff4");
-            const auto eqRes4 = paramsElement->getIntAttribute ("eqres4");
-            const auto eqEnable4 = paramsElement->getIntAttribute ("eqenable4");
-            const auto eqType4 = paramsElement->getIntAttribute ("eqtype4");
-        }
-        else if (type == "null")
-        {
-        }
-        else if (type == "ioconnectin")
-        {
-            auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
-            jassert (paramsElement != nullptr);
-            const auto inputIoCon = paramsElement->getStringAttribute ("inputiocon");
-        }
-        else if (type == "ioconnectout")
-        {
-            auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
-            jassert (paramsElement != nullptr);
-            const auto outputIoCon= paramsElement->getStringAttribute ("outputiocon");
-        }
-        else if (type == "song")
-        {
-            auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
-            jassert (paramsElement != nullptr);
-            const auto globTempo = paramsElement->getIntAttribute ("globtempo");
-            const auto songMode = paramsElement->getIntAttribute ("songmode");
-            const auto sectCount = paramsElement->getIntAttribute ("sectcount");
-            const auto sectLoop = paramsElement->getIntAttribute ("sectloop");
-            const auto swing = paramsElement->getIntAttribute ("swing");
-            const auto keyMode = paramsElement->getIntAttribute ("keymode");
-            const auto keyRoot = paramsElement->getIntAttribute ("keyroot");
+            else if (type == "sample")
+            {
+                SampleProperties sampleProperties { {}, SampleProperties::WrapperType::owner, SampleProperties::EnableCallbacks::no };
+                sampleProperties.setFileName (bitBoxPresetCellElement->getStringAttribute ("filename"), false);
+
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                if (paramsElement == nullptr)
+                {
+                    jassertfalse;
+                    continue;
+                }
+
+                sampleProperties.setGainDb (paramsElement->getIntAttribute ("gaindb"), false);
+                sampleProperties.setPitch (paramsElement->getIntAttribute ("pitch"), false);
+                sampleProperties.setPanPos (paramsElement->getIntAttribute ("panpos"), false);
+                sampleProperties.setSamTrigType (paramsElement->getIntAttribute ("samtrigtype"), false);
+                sampleProperties.setLoopMode (paramsElement->getIntAttribute ("loopmode"), false);
+                sampleProperties.setLoopModes (paramsElement->getIntAttribute ("loopmodes"), false);
+                sampleProperties.setMidiMode (paramsElement->getIntAttribute ("midimode"), false);
+                sampleProperties.setReverse (paramsElement->getIntAttribute ("reverse"), false);
+                sampleProperties.setCellMode (paramsElement->getIntAttribute ("cellmode"), false);
+                sampleProperties.setEnvAttack (paramsElement->getIntAttribute ("envattack"), false);
+                sampleProperties.setEnvDecay (paramsElement->getIntAttribute ("envdecay"), false);
+                sampleProperties.setEnvSus (paramsElement->getIntAttribute ("envsus"), false);
+                sampleProperties.setEnvRel (paramsElement->getIntAttribute ("envrel"), false);
+                sampleProperties.setSamStart (paramsElement->getIntAttribute ("samstart"), false);
+                sampleProperties.setSamLen (paramsElement->getIntAttribute ("samlen"), false);
+                sampleProperties.setLoopStart (paramsElement->getIntAttribute ("loopstart"), false);
+                sampleProperties.setLoopEnd (paramsElement->getIntAttribute ("loopend"), false);
+                sampleProperties.setQuantSize (paramsElement->getIntAttribute ("quantsize"), false);
+                sampleProperties.setSyncType (paramsElement->getIntAttribute ("synctype"), false);
+                sampleProperties.setActSlice (paramsElement->getIntAttribute ("actslice"), false);
+                sampleProperties.setOutputBus (paramsElement->getIntAttribute ("outputbus"), false);
+                sampleProperties.setPolyMode (paramsElement->getIntAttribute ("polymode"), false);
+                sampleProperties.setPolyModeSlice (paramsElement->getIntAttribute ("polymodeslice"), false);
+                sampleProperties.setSliceStepMode (paramsElement->getIntAttribute ("slicestepmode"), false);
+                sampleProperties.setChokeGrp (paramsElement->getIntAttribute ("chokegrp"), false);
+                sampleProperties.setDualFilCutoff (paramsElement->getIntAttribute ("dualfilcutoff"), false);
+                sampleProperties.setRes (paramsElement->getIntAttribute ("res"), false);
+                sampleProperties.setRootNote (paramsElement->getIntAttribute ("rootnote"), false);
+                sampleProperties.setBeatCount (paramsElement->getIntAttribute ("beatcount"), false);
+                sampleProperties.setFx1Send (paramsElement->getIntAttribute ("fx1send"), false);
+                sampleProperties.setFx2Send (paramsElement->getIntAttribute ("fx2send"), false);
+                sampleProperties.setMultiSamMode (paramsElement->getIntAttribute ("multisammode"), false);
+                sampleProperties.setInterpQual (paramsElement->getIntAttribute ("interpqual"), false);
+                sampleProperties.setPlayThru (paramsElement->getIntAttribute ("playthru"), false);
+                sampleProperties.setSlicerQuantSize (paramsElement->getIntAttribute ("slicerquantsize"), false);
+                sampleProperties.setSlicerSync (paramsElement->getIntAttribute ("slicersync"), false);
+                sampleProperties.setPadNote (paramsElement->getIntAttribute ("padnote"), false);
+                sampleProperties.setLoopFadeAmt (paramsElement->getIntAttribute ("loopfadeamt"), false);
+                sampleProperties.setLfoWave (paramsElement->getIntAttribute ("lfowave"), false);
+                sampleProperties.setLfoRate (paramsElement->getIntAttribute ("lforate"), false);
+                sampleProperties.setLfoAmount (paramsElement->getIntAttribute ("lfoamount"), false);
+                sampleProperties.setLfoKeyTrig (paramsElement->getIntAttribute ("lfokeytrig"), false);
+                sampleProperties.setLfoBeatSync (paramsElement->getIntAttribute ("lfobeatsync"), false);
+                sampleProperties.setLfoRateBeatSync (paramsElement->getIntAttribute ("lforatebeatsync"), false);
+                sampleProperties.setGrainSizePerc (paramsElement->getIntAttribute ("grainsizeperc"), false);
+                sampleProperties.setGrainScat (paramsElement->getIntAttribute ("grainscat"), false);
+                sampleProperties.setGrainPanRnd (paramsElement->getIntAttribute ("grainpanrnd"), false);
+                sampleProperties.setGrainDensity (paramsElement->getIntAttribute ("graindensity"), false);
+                sampleProperties.setSliceMode (paramsElement->getIntAttribute ("slicemode"), false);
+                sampleProperties.setLegatoMode (paramsElement->getIntAttribute ("legatomode"), false);
+                sampleProperties.setGainSsrcWin (paramsElement->getIntAttribute ("gainssrcwin"), false);
+                sampleProperties.setGrainReadSpeed (paramsElement->getIntAttribute ("grainreadspeed"), false);
+                sampleProperties.setRecPresetLen (paramsElement->getIntAttribute ("recpresetlen"), false);
+                sampleProperties.setRecQuant (paramsElement->getIntAttribute ("recquant"), false);
+                sampleProperties.setRecInput (paramsElement->getIntAttribute ("recinput"), false);
+                sampleProperties.setRecUseThres (paramsElement->getIntAttribute ("recusethres"), false);
+                sampleProperties.setRecThres (paramsElement->getIntAttribute ("recthresh"), false);
+                sampleProperties.setRecMonOutBus (paramsElement->getIntAttribute ("recmonoutbus"), false);
+
+                cellProperties.getValueTree ().addChild (sampleProperties.getValueTree (), -1, nullptr);
+            }
+            else if (type == "multi-sample") // ? I don't know what the type is for multi-sample
+            {
+                jassertfalse;
+            }
+            else if (type == "clip") // ? I don't know what the type is for clip
+            {
+                jassertfalse;
+            }
+            else if (type == "slice") // ? I don't know what the type is for slice
+            {
+                jassertfalse;
+            }
+            else if (type == "gran") // ? I don't know what the type is for granular
+            {
+                jassertfalse;
+            }
+            else if (type == "rec") // ? I don't know what the type is for recording
+            {
+                jassertfalse;
+            }
+            else if (type == "rec-multi") // ? I don't know what the type is for recording
+            {
+                jassertfalse;
+            }
+            else if (type == "delay")
+            {
+                DelayProperties delayProperties { {}, DelayProperties::WrapperType::owner, DelayProperties::EnableCallbacks::no };
+
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+
+                delayProperties.setDelay (paramsElement->getIntAttribute ("delay"), false);
+                delayProperties.setDelayMusTime (paramsElement->getIntAttribute ("delaymustime"), false);
+                delayProperties.setFeedback (paramsElement->getIntAttribute ("feedback"), false);
+                delayProperties.setCutoff (paramsElement->getIntAttribute ("cutoff"), false);
+                delayProperties.setFiltQuality (paramsElement->getIntAttribute ("filtquality"), false);
+                delayProperties.setDelayBeatSync (paramsElement->getIntAttribute ("dealybeatsync"), false);
+                delayProperties.setFiltEnable (paramsElement->getIntAttribute ("filtenable"), false);
+                delayProperties.setDelayPingPong (paramsElement->getIntAttribute ("delaypingpong"), false);
+
+                cellProperties.getValueTree ().addChild (delayProperties.getValueTree (), -1, nullptr);
+                }
+            else if (type == "reverb")
+            {
+                ReverbProperties reverbProperties { {}, ReverbProperties::WrapperType::owner, ReverbProperties::EnableCallbacks::no };
+
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+
+                reverbProperties.setDecay (paramsElement->getIntAttribute ("decay"), false);
+                reverbProperties.setPreDelay (paramsElement->getIntAttribute ("predelay"), false);
+                reverbProperties.setDamping (paramsElement->getIntAttribute ("damping"), false);
+
+                cellProperties.getValueTree ().addChild (reverbProperties.getValueTree (), -1, nullptr);
+            }
+            else if (type == "eq")
+            {
+                //NOTE - NOT PART OF THE MICRO
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+                const auto eqActBand = paramsElement->getIntAttribute ("eqactband");
+                const auto eqGain = paramsElement->getIntAttribute ("eqgain");
+                const auto eqCutoff = paramsElement->getIntAttribute ("eqcutoff");
+                const auto eqRes = paramsElement->getIntAttribute ("eqres");
+                const auto eqEnable = paramsElement->getIntAttribute ("eqenable");
+                const auto eqType = paramsElement->getIntAttribute ("eqtype");
+                const auto eqGain2 = paramsElement->getIntAttribute ("eqgain2");
+                const auto eqCutoff2 = paramsElement->getIntAttribute ("eqcutoff2");
+                const auto eqRes2 = paramsElement->getIntAttribute ("eqres2");
+                const auto eqEnable2 = paramsElement->getIntAttribute ("eqenable2");
+                const auto eqType2 = paramsElement->getIntAttribute ("eqtype2");
+                const auto eqGain3 = paramsElement->getIntAttribute ("eqgain3");
+                const auto eqCutoff3 = paramsElement->getIntAttribute ("eqcutoff3");
+                const auto eqRes3 = paramsElement->getIntAttribute ("eqres3");
+                const auto eqEnable3 = paramsElement->getIntAttribute ("eqenable3");
+                const auto eqType3 = paramsElement->getIntAttribute ("eqtype3");
+                const auto eqGain4 = paramsElement->getIntAttribute ("eqgain4");
+                const auto eqCutoff4 = paramsElement->getIntAttribute ("eqcutoff4");
+                const auto eqRes4 = paramsElement->getIntAttribute ("eqres4");
+                const auto eqEnable4 = paramsElement->getIntAttribute ("eqenable4");
+                const auto eqType4 = paramsElement->getIntAttribute ("eqtype4");
+            }
+            else if (type == "filter")
+            {
+                //NOTE - NOT PART OF THE bitbox MICRO
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+                const auto cutoff = paramsElement->getIntAttribute ("cutoff");
+                const auto res = paramsElement->getIntAttribute ("res");
+                const auto filterType = paramsElement->getIntAttribute ("filtertype");
+                const auto fxTrigMode = paramsElement->getIntAttribute ("fxtrigmode");
+
+            }
+            else if (type == "bitcrusher")
+            {
+                //NOTE - NOT PART OF THE bitbox MICRO
+                // no params
+                //jassertfalse;
+            }
+            else if (type == "noteseq")
+            {
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+                const auto noteStepLen = paramsElement->getIntAttribute ("notesteplen");
+                const auto noteStepCount = paramsElement->getIntAttribute ("notestepcount");
+                const auto dutyCyc = paramsElement->getIntAttribute ("dutycyc");
+                const auto midiOutChan = paramsElement->getIntAttribute ("midioutchan");
+                const auto quantSize = paramsElement->getIntAttribute ("quantsize");
+                const auto padNote = paramsElement->getIntAttribute ("padnote");
+                const auto dispMode = paramsElement->getIntAttribute ("dispmode");
+                const auto seqPlayEnable = paramsElement->getIntAttribute ("seqplayenable");
+
+                auto* sequenceElement = bitBoxPresetCellElement->getChildByName ("sequence");
+                jassert (sequenceElement != nullptr);
+                // Process sequence data if needed
+
+            }
+            else if (type == "section")
+            {
+                const auto sectionName { bitBoxPresetCellElement->getStringAttribute ("name") };
+
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+                const auto sectionLenBars { paramsElement->getIntAttribute ("sectionlenbars") };
+
+                auto* sequenceElement = bitBoxPresetCellElement->getChildByName ("sequence");
+                jassert (sequenceElement != nullptr);
+                // Process sequence data if needed
+            }
+            else if (type == "null")
+            {
+                //jassertfalse;
+            }
+            else if (type == "ioconnectin")
+            {
+                // TODO - there are a series of "ioconnectin" cells, which contain a field indicating the order, and child
+                //        elements of "params" which contain the inputIoCon string
+                IoConnectInProperties ioConnectInProperties { {}, IoConnectInProperties::WrapperType::owner, IoConnectInProperties::EnableCallbacks::no };
+
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+
+                ioConnectInProperties.setInputIoCon (paramsElement->getStringAttribute ("inputiocon"), false);
+
+                cellProperties.getValueTree ().addChild (ioConnectInProperties.getValueTree (), -1, nullptr);
+                }
+            else if (type == "ioconnectout")
+            {
+                // TODO - there are a series of "ioconnectout" cells, which contain a field indicating the order, and child
+                //        elements of "params" which contain the inputIoCon string
+                IoConnectOutProperties ioConnectOutProperties { {}, IoConnectOutProperties::WrapperType::owner, IoConnectOutProperties::EnableCallbacks::no };
+
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+
+                ioConnectOutProperties.setOutputIoCon (paramsElement->getStringAttribute ("outputiocon"), false);
+
+                cellProperties.getValueTree ().addChild (ioConnectOutProperties.getValueTree (), -1, nullptr);
+                }
+            else if (type == "song")
+            {
+                SongProperties songProperties { {}, SongProperties::WrapperType::owner, SongProperties::EnableCallbacks::no };
+
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+
+                songProperties.setGlobTempo (paramsElement->getIntAttribute ("globtempo"), false);
+                songProperties.setSongMode (paramsElement->getIntAttribute ("songmode"), false);
+                songProperties.setSectCount (paramsElement->getIntAttribute ("sectcount"), false);
+                songProperties.setSectLoop (paramsElement->getIntAttribute ("sectloop"), false);
+                songProperties.setSwing (paramsElement->getIntAttribute ("swing"), false);
+                songProperties.setKeyMode (paramsElement->getIntAttribute ("keymode"), false);
+                songProperties.setKeyRoot (paramsElement->getIntAttribute ("keyroot"), false);
+
+                cellProperties.getValueTree ().addChild (songProperties.getValueTree (), -1, nullptr);
+            }
+            else if (type == "asset")
+            {
+                AssetProperties assetProperties { {}, AssetProperties::WrapperType::owner, AssetProperties::EnableCallbacks::no };
+
+                assetProperties.setFileName (bitBoxPresetCellElement->getStringAttribute ("filename"), false);
+
+                auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
+                jassert (paramsElement != nullptr);
+
+                assetProperties.setRootNote (paramsElement->getIntAttribute ("rootnote"), false);
+                assetProperties.setKeyRangeBottom (paramsElement->getIntAttribute ("keyrangebottom"), false);
+                assetProperties.setKeyRangeTop (paramsElement->getIntAttribute ("keyrangetop"), false);
+                assetProperties.setAssSrcRow (paramsElement->getIntAttribute ("asssrcrow"), false);
+                assetProperties.setAssSrcCol (paramsElement->getIntAttribute ("asssrccol"), false);
+
+                cellProperties.getValueTree ().addChild (assetProperties.getValueTree (), -1, nullptr);
+            }
+            else
+            {
+                jassertfalse;
+                continue;
+            }
+
+            presetPropertiesVT.addChild (cellProperties.getValueTree (), -1, nullptr);
         }
         else
         {
+            // unknown element type
             jassertfalse;
         }
     }
