@@ -5,7 +5,10 @@
 #include "../DelayProperties.h"
 #include "../IoConnectInProperties.h"
 #include "../IoConnectOutProperties.h"
+#include "../ModSource.h"
 #include "../ReverbProperties.h"
+#include "../SliceListProperties.h"
+#include "../SliceProperties.h"
 #include "../SongProperties.h"
 
 juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
@@ -102,6 +105,31 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                 sampleProperties.setRecThres (paramsElement->getIntAttribute ("recthresh"), false);
                 sampleProperties.setRecMonOutBus (paramsElement->getIntAttribute ("recmonoutbus"), false);
 
+                for (auto* childElement : bitBoxPresetCellElement->getChildIterator ())
+                {
+                    if (childElement->getTagName () == "modsource")
+                    {
+                        ModSourceProperties modSourceProperties { {}, ModSourceProperties::WrapperType::owner, ModSourceProperties::EnableCallbacks::no };
+                        modSourceProperties.setModDest (childElement->getStringAttribute ("dest"), false);
+                        modSourceProperties.setModSrc (childElement->getStringAttribute ("src"), false);
+                        modSourceProperties.setModSlot (childElement->getIntAttribute ("slot"), false);
+                        modSourceProperties.setModAmount (childElement->getIntAttribute ("amount"), false);
+                        cellProperties.getValueTree ().addChild (modSourceProperties.getValueTree (), -1, nullptr);
+                    }
+                    else if (childElement->getTagName () == "slices")
+                    {
+                        SliceListProperties sliceListProperties { {}, SliceListProperties::WrapperType::owner, SliceListProperties::EnableCallbacks::no };
+
+                        for (auto* sliceElement : childElement->getChildIterator ())
+                        {
+                            SliceProperties sliceProperties { {}, SliceProperties::WrapperType::owner, SliceProperties::EnableCallbacks::no };
+                            sliceProperties.setSlicePos (sliceElement->getIntAttribute ("pos"), false);
+                            sliceListProperties.getValueTree ().addChild (sliceProperties.getValueTree (), -1, nullptr);
+                        }
+
+                        cellProperties.getValueTree ().addChild(sliceListProperties.getValueTree (), -1, nullptr);
+                    }
+                }
                 cellProperties.getValueTree ().addChild (sampleProperties.getValueTree (), -1, nullptr);
             }
             else if (type == "multi-sample") // ? I don't know what the type is for multi-sample

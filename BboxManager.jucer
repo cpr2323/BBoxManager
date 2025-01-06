@@ -56,10 +56,20 @@
               file="Source/BitBox/IoConnectOutProperties.cpp"/>
         <FILE id="CZ7m9Z" name="IoConnectOutProperties.h" compile="0" resource="0"
               file="Source/BitBox/IoConnectOutProperties.h"/>
+        <FILE id="v1fKd5" name="ModSource.cpp" compile="1" resource="0" file="Source/BitBox/ModSource.cpp"/>
+        <FILE id="Wkzda7" name="ModSource.h" compile="0" resource="0" file="Source/BitBox/ModSource.h"/>
         <FILE id="L7PZQi" name="ReverbProperties.cpp" compile="1" resource="0"
               file="Source/BitBox/ReverbProperties.cpp"/>
         <FILE id="ndglOh" name="ReverbProperties.h" compile="0" resource="0"
               file="Source/BitBox/ReverbProperties.h"/>
+        <FILE id="Pkj3uY" name="SliceListProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/SliceListProperties.cpp"/>
+        <FILE id="CJWRJl" name="SliceListProperties.h" compile="0" resource="0"
+              file="Source/BitBox/SliceListProperties.h"/>
+        <FILE id="RjjRZG" name="SliceProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/SliceProperties.cpp"/>
+        <FILE id="FVJLGj" name="SliceProperties.h" compile="0" resource="0"
+              file="Source/BitBox/SliceProperties.h"/>
         <FILE id="F5nU6f" name="SongProperties.cpp" compile="1" resource="0"
               file="Source/BitBox/SongProperties.cpp"/>
         <FILE id="MtRIEn" name="SongProperties.h" compile="0" resource="0"
