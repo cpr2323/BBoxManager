@@ -1,11 +1,12 @@
 #include "BitBoxPresetReader.h"
 #include "../AssetProperties.h"
-#include "../BitBoxSampleProperties.h"
+#include "../SampleProperties.h"
 #include "../CellProperties.h"
 #include "../DelayProperties.h"
 #include "../IoConnectInProperties.h"
 #include "../IoConnectOutProperties.h"
-#include "../ModSource.h"
+#include "../ModSourceProperties.h"
+#include "../PresetProperties.h"
 #include "../ReverbProperties.h"
 #include "../SliceListProperties.h"
 #include "../SliceProperties.h"
@@ -18,7 +19,7 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
     jassert (bitBoxPresetSessionElement != nullptr && bitBoxPresetSessionElement->getTagName () == "session");
     // found document that did not have a version attribute
     jassert (bitBoxPresetSessionElement->getStringAttribute ("version") == "" || bitBoxPresetSessionElement->getStringAttribute ("version") == "2");
-    juce::ValueTree presetPropertiesVT { "PresetProperties" };
+    PresetProperties presetProperties { {}, PresetProperties::WrapperType::owner, PresetProperties::EnableCallbacks::no };
 
     for (auto* bitBoxPresetCellElement : bitBoxPresetSessionElement->getChildIterator ())
     {
@@ -190,6 +191,7 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
             else if (type == "eq")
             {
                 //NOTE - NOT PART OF THE MICRO
+                //jassertfalse;
                 auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
                 jassert (paramsElement != nullptr);
                 const auto eqActBand = paramsElement->getIntAttribute ("eqactband");
@@ -217,6 +219,7 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
             else if (type == "filter")
             {
                 //NOTE - NOT PART OF THE bitbox MICRO
+                //jassertfalse;
                 auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
                 jassert (paramsElement != nullptr);
                 const auto cutoff = paramsElement->getIntAttribute ("cutoff");
@@ -228,11 +231,13 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
             else if (type == "bitcrusher")
             {
                 //NOTE - NOT PART OF THE bitbox MICRO
-                // no params
                 //jassertfalse;
+                // no params
             }
             else if (type == "noteseq")
             {
+                //NOTE - NOT PART OF THE bitbox MICRO
+                //jassertfalse;
                 auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
                 jassert (paramsElement != nullptr);
                 const auto noteStepLen = paramsElement->getIntAttribute ("notesteplen");
@@ -251,6 +256,8 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
             }
             else if (type == "section")
             {
+                //NOTE - NOT PART OF THE bitbox MICRO
+                //jassertfalse;
                 const auto sectionName { bitBoxPresetCellElement->getStringAttribute ("name") };
 
                 auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
@@ -277,7 +284,7 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                 ioConnectInProperties.setInputIoCon (paramsElement->getStringAttribute ("inputiocon"), false);
 
                 cellProperties.getValueTree ().addChild (ioConnectInProperties.getValueTree (), -1, nullptr);
-                }
+            }
             else if (type == "ioconnectout")
             {
                 // TODO - there are a series of "ioconnectout" cells, which contain a field indicating the order, and child
@@ -290,7 +297,7 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                 ioConnectOutProperties.setOutputIoCon (paramsElement->getStringAttribute ("outputiocon"), false);
 
                 cellProperties.getValueTree ().addChild (ioConnectOutProperties.getValueTree (), -1, nullptr);
-                }
+            }
             else if (type == "song")
             {
                 SongProperties songProperties { {}, SongProperties::WrapperType::owner, SongProperties::EnableCallbacks::no };
@@ -331,7 +338,7 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                 continue;
             }
 
-            presetPropertiesVT.addChild (cellProperties.getValueTree (), -1, nullptr);
+            presetProperties.getValueTree ().addChild (cellProperties.getValueTree (), -1, nullptr);
         }
         else
         {
@@ -339,5 +346,5 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
             jassertfalse;
         }
     }
-    return presetPropertiesVT;
+    return presetProperties.getValueTree ();
 }

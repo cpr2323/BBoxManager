@@ -5,6 +5,8 @@
 #include "GUI/GuiProperties.h"
 #include "GUI/MainComponent.h"
 #include "BitBox/Audio/AudioPlayer.h"
+#include "BitBox/PresetManagerProperties.h"
+#include "BitBox/PresetProperties.h"
 #include "Utility/DebugLog.h"
 #include "Utility/DirectoryValueTree.h"
 #include "Utility/PersistentRootProperties.h"
@@ -81,7 +83,7 @@ void scanFolder (juce::File folderToScan)
                 juce::XmlElement presetXml { "preset" };
                 auto presetXmlDocument { juce::XmlDocument (presetFile).getDocumentElement () };
                 //dumpXml (presetXmlDocument.get (), 0);
-                parse (presetXmlDocument.get ());
+                auto presetProperties { PresetProperties { parse (presetXmlDocument.get ()), PresetProperties::WrapperType::owner, PresetProperties::EnableCallbacks::no } };
             }
         }
         else if (entry.isDirectory ())
@@ -108,6 +110,7 @@ public:
         initLogger ();
         initCrashHandler ();
         initPropertyRoots ();
+        initPresetManager ();
 
         constexpr auto kPresetFolder { "YT1" };
         auto kFolderName { juce::File { "C:\\code\\BboxManager\\hide_from_git\\Presets" } };
@@ -163,6 +166,19 @@ public:
     {
         if (localQuitState.load () == RuntimeRootProperties::QuitState::now)
             quit ();
+    }
+
+    void initPresetManager ()
+    {
+        PresetManagerProperties presetManagerProperties (runtimeRootProperties.getValueTree (), PresetManagerProperties::WrapperType::owner, PresetManagerProperties::EnableCallbacks::no);
+        // initialize the Preset with defaults
+        presetProperties.wrap ({}, PresetProperties::WrapperType::owner, PresetProperties::EnableCallbacks::no);
+
+        presetManagerProperties.addPreset ("edit", presetProperties.getValueTree ());
+        presetManagerProperties.addPreset ("unedited", presetProperties.getValueTree ().createCopy ());
+
+        // add the Preset Manager to the Runtime Root
+        runtimeRootProperties.getValueTree ().addChild (presetManagerProperties.getValueTree (), -1, nullptr);
     }
 
     void initBitBox ()
@@ -371,6 +387,7 @@ private:
     AppProperties appProperties;
     GuiProperties guiProperties;
     RuntimeRootProperties runtimeRootProperties;
+    PresetProperties presetProperties;
     DirectoryValueTree directoryValueTree;
     DirectoryDataProperties directoryDataProperties;
     std::unique_ptr<juce::FileLogger> fileLogger;

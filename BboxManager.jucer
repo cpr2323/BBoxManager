@@ -28,18 +28,6 @@
               file="Source/BitBox/AssetProperties.cpp"/>
         <FILE id="G6M4FE" name="AssetProperties.h" compile="0" resource="0"
               file="Source/BitBox/AssetProperties.h"/>
-        <FILE id="WgTe6F" name="BitBoxPadProperties.cpp" compile="1" resource="0"
-              file="Source/BitBox/BitBoxPadProperties.cpp"/>
-        <FILE id="nceyNG" name="BitBoxPadProperties.h" compile="0" resource="0"
-              file="Source/BitBox/BitBoxPadProperties.h"/>
-        <FILE id="hcis6H" name="BitBoxPresetProperties.cpp" compile="1" resource="0"
-              file="Source/BitBox/BitBoxPresetProperties.cpp"/>
-        <FILE id="sbCvQ2" name="BitBoxPresetProperties.h" compile="0" resource="0"
-              file="Source/BitBox/BitBoxPresetProperties.h"/>
-        <FILE id="gQfvo7" name="BitBoxSampleProperties.cpp" compile="1" resource="0"
-              file="Source/BitBox/BitBoxSampleProperties.cpp"/>
-        <FILE id="zLY9SU" name="BitBoxSampleProperties.h" compile="0" resource="0"
-              file="Source/BitBox/BitBoxSampleProperties.h"/>
         <FILE id="hu2qSk" name="CellProperties.cpp" compile="1" resource="0"
               file="Source/BitBox/CellProperties.cpp"/>
         <FILE id="CuP4wY" name="CellProperties.h" compile="0" resource="0"
@@ -56,8 +44,25 @@
               file="Source/BitBox/IoConnectOutProperties.cpp"/>
         <FILE id="CZ7m9Z" name="IoConnectOutProperties.h" compile="0" resource="0"
               file="Source/BitBox/IoConnectOutProperties.h"/>
-        <FILE id="v1fKd5" name="ModSource.cpp" compile="1" resource="0" file="Source/BitBox/ModSource.cpp"/>
-        <FILE id="Wkzda7" name="ModSource.h" compile="0" resource="0" file="Source/BitBox/ModSource.h"/>
+        <FILE id="v1fKd5" name="ModSourceProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/ModSourceProperties.cpp"/>
+        <FILE id="Wkzda7" name="ModSourceProperties.h" compile="0" resource="0"
+              file="Source/BitBox/ModSourceProperties.h"/>
+        <FILE id="WgTe6F" name="PadProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/PadProperties.cpp"/>
+        <FILE id="nceyNG" name="PadProperties.h" compile="0" resource="0" file="Source/BitBox/PadProperties.h"/>
+        <FILE id="iDjz2N" name="PresetManagerProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/PresetManagerProperties.cpp"/>
+        <FILE id="claddw" name="PresetManagerProperties.h" compile="0" resource="0"
+              file="Source/BitBox/PresetManagerProperties.h"/>
+        <FILE id="hcis6H" name="PresetProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/PresetProperties.cpp"/>
+        <FILE id="sbCvQ2" name="PresetProperties.h" compile="0" resource="0"
+              file="Source/BitBox/PresetProperties.h"/>
+        <FILE id="gQfvo7" name="SampleProperties.cpp" compile="1" resource="0"
+              file="Source/BitBox/SampleProperties.cpp"/>
+        <FILE id="zLY9SU" name="SampleProperties.h" compile="0" resource="0"
+              file="Source/BitBox/SampleProperties.h"/>
         <FILE id="L7PZQi" name="ReverbProperties.cpp" compile="1" resource="0"
               file="Source/BitBox/ReverbProperties.cpp"/>
         <FILE id="ndglOh" name="ReverbProperties.h" compile="0" resource="0"

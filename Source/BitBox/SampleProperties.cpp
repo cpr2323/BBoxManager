@@ -1,4 +1,4 @@
-#include "BitBoxSampleProperties.h"
+#include "SampleProperties.h"
 
 void SampleProperties::setFileName (juce::String fileName, bool includeSelfCallback) { setValue (fileName, FileNamePropertyId, includeSelfCallback); }
 juce::String SampleProperties::getFileName () { return getValue<juce::String> (FileNamePropertyId); }
