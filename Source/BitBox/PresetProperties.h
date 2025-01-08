@@ -11,10 +11,40 @@ public:
     PresetProperties (juce::ValueTree vt, WrapperType wrapperType, EnableCallbacks shouldEnableCallbacks)
         : ValueTreeWrapper<PresetProperties> (PresetTypeId, vt, wrapperType, shouldEnableCallbacks) {}
 
-    static inline const juce::Identifier PresetTypeId { "Preset" };
+    void setName (juce::String name, bool doSelfCallback)
+    {
+        setValue (name, NamePropertyId, doSelfCallback);
+    }
 
-    void initValueTree () {}
+    juce::String getName ()
+    {
+        return getValue<juce::String> (NamePropertyId);
+    }
+
+    std::function<void (juce::String)> onNameChanged;
+
+    static inline const juce::Identifier PresetTypeId { "Preset" };
+    static inline const juce::Identifier NamePropertyId { "name" };
+
+    static void copyPropertiesFrom (juce::ValueTree source);
+
+    void initValueTree ()
+    {
+        setName ("", false);
+    }
+
     void processValueTree () {}
 
 private:
+    void valueTreePropertyChanged (juce::ValueTree& vt, const juce::Identifier& property)
+    {
+        if (vt == data)
+        {
+            if (property == NamePropertyId)
+            {
+                if (onNameChanged != nullptr)
+                    onNameChanged (getName ());
+            }
+        }
+    }
 };

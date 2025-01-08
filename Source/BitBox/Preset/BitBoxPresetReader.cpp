@@ -12,6 +12,11 @@
 #include "../SliceProperties.h"
 #include "../SongProperties.h"
 
+// pad cells = 0-3, 0-4, 0
+// effect cells = row 0-4
+// input connections = row 0, layer 8
+// output connections = row 0, layer 9
+// song =  no row, col, or layer
 juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
 {
     jassert (bitBoxPresetDocumentElement != nullptr && bitBoxPresetDocumentElement->getTagName () == "document");

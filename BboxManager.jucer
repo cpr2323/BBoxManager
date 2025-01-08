@@ -183,6 +183,7 @@
       <FILE id="thL3A6" name="AppProperties.cpp" compile="1" resource="0"
             file="Source/AppProperties.cpp"/>
       <FILE id="nvqZSZ" name="AppProperties.h" compile="0" resource="0" file="Source/AppProperties.h"/>
+      <FILE id="ZvabWx" name="bboxicon.png" compile="0" resource="1" file="Source/bboxicon.png"/>
       <FILE id="PyE3oi" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="dDWQqh" name="SystemServices.cpp" compile="1" resource="0"
             file="Source/SystemServices.cpp"/>
@@ -206,7 +207,7 @@
   </MODULES>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
   <EXPORTFORMATS>
-    <VS2022 targetFolder="Builds/VisualStudio2022">
+    <VS2022 targetFolder="Builds/VisualStudio2022" smallIcon="ZvabWx" bigIcon="ZvabWx">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="BboxManager"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="BboxManager"/>
@@ -226,7 +227,7 @@
         <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
-    <XCODE_MAC targetFolder="Builds/MacOSX">
+    <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="ZvabWx" bigIcon="ZvabWx">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="BboxManager"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="BboxManager"/>
