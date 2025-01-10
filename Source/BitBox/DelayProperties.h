@@ -53,6 +53,19 @@ public:
     std::function<void (int filtEnable)> onFiltEnableChange;
     std::function<void (int delayPingPong)> onDelayPingPongChange;
 
+    void copyPropertiesFrom (juce::ValueTree source)
+    {
+        DelayProperties srcDelayProperties { source, DelayProperties::WrapperType::client, DelayProperties::EnableCallbacks::no };
+        setDelay (srcDelayProperties.getDelay (), false);
+        setDelayMusTime (srcDelayProperties.getDelayMusTime (), false);
+        setFeedback (srcDelayProperties.getFeedback (), false);
+        setCutoff (srcDelayProperties.getCutoff (), false);
+        setFiltQuality (srcDelayProperties.getFiltQuality (), false);
+        setDelayBeatSync (srcDelayProperties.getDelayBeatSync (), false);
+        setFiltEnable (srcDelayProperties.getFiltEnable (), false);
+        setDelayPingPong (srcDelayProperties.getDelayPingPong (), false);
+    }
+
     void initValueTree () {}
     void processValueTree () {}
 

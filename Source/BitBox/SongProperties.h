@@ -48,6 +48,18 @@ public:
     std::function<void (int keyMode)> onKeyModeChange;
     std::function<void (int keyRoot)> onKeyRootChange;
 
+    void copyPropertiesFrom (juce::ValueTree source)
+    {
+        SongProperties srcSongProperties { source, SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
+        setGlobTempo (srcSongProperties.getGlobTempo (), false);
+        setSongMode (srcSongProperties.getSongMode (), false);
+        setSectCount (srcSongProperties.getSectCount (), false);
+        setSectLoop (srcSongProperties.getSectLoop (), false);
+        setSwing (srcSongProperties.getSwing (), false);
+        setKeyMode (srcSongProperties.getKeyMode (), false);
+        setKeyRoot (srcSongProperties.getKeyRoot (), false);
+    }
+
     void initValueTree () {}
     void processValueTree () {}
 

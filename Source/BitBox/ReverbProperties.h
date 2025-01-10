@@ -28,6 +28,14 @@ public:
     static inline const juce::Identifier PreDelayPropertyId { "preDelay" };
     static inline const juce::Identifier DampingPropertyId { "damping" };
 
+    void copyPropertiesFrom (juce::ValueTree source)
+    {
+        ReverbProperties srcReverbProperties { source, ReverbProperties::WrapperType::client, ReverbProperties::EnableCallbacks::no };
+        setDecay (srcReverbProperties.getDecay (), false);
+        setPreDelay (srcReverbProperties.getPreDelay (), false);
+        setDamping (srcReverbProperties.getDamping (), false);
+    }
+
     void initValueTree () {}
     void processValueTree () {}
 

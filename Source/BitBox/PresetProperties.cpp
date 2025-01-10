@@ -37,6 +37,7 @@ void PresetProperties::copyPropertiesFrom (juce::ValueTree sourceVT)
     //      create SampleProperties, MultiSampleProperties, ClipProperties, SliceProperties, GranualProperties, IoConnectInProperties, and IoConnectOutProperties
     PresetProperties sourcePresetProperties {sourceVT, PresetProperties::WrapperType::client, PresetProperties::EnableCallbacks::no };
     setName (sourcePresetProperties.getName (), false);
+    // iterate over Cells
     ValueTreeHelpers::forEachChildOfType (sourceVT, CellProperties::CellTypeId, [this] (juce::ValueTree srcCellVT)
     {
         // <Cell row="0" column="0" layer="0" type="samtempl">
@@ -53,7 +54,15 @@ void PresetProperties::copyPropertiesFrom (juce::ValueTree sourceVT)
         //          ...
         // </Cell>
         CellProperties srcCellProperties { srcCellVT, CellProperties::WrapperType::client, CellProperties::EnableCallbacks::no };
-        ValueTreeHelpers::forEachChild (srcCellVT, [this, &srcCellProperties] (juce::ValueTree srcCellChild)
+        auto destCellPropertiesVT { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()) };
+        if (! destCellPropertiesVT.isValid ())
+        {
+            auto newCellProperties { srcCellProperties.getValueTree ().createCopy () };
+            destCellPropertiesVT = newCellProperties;
+            data.addChild (newCellProperties, -1, nullptr);
+        }
+        // iterate over children of Cell
+        ValueTreeHelpers::forEachChild (srcCellVT, [this, &srcCellProperties, &destCellPropertiesVT] (juce::ValueTree srcCellChild)
         {
             const auto srcCellType { srcCellProperties.getType () };
             if (srcCellType == "sample")
@@ -61,75 +70,116 @@ void PresetProperties::copyPropertiesFrom (juce::ValueTree sourceVT)
                 SampleProperties srcSampleProperties { srcCellProperties.getValueTree().getChildWithName (SampleProperties::SampleTypeId), SampleProperties::WrapperType::client, SampleProperties::EnableCallbacks::no};
                 const auto srcCellMode { srcSampleProperties.getCellMode () };
                 jassert (srcCellMode == kSampleType || srcCellMode == kClipType || srcCellMode == kSlicedType || srcCellMode == kGranularType);
-                auto destCellPropertiesVT { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()) };
-                if (destCellPropertiesVT.isValid ())
-                {
-                    SampleProperties destSampleProperties { destCellPropertiesVT.getChildWithName (SampleProperties::SampleTypeId), SampleProperties::WrapperType::client, SampleProperties::EnableCallbacks::no };
+                SampleProperties destSampleProperties { destCellPropertiesVT.getChildWithName (SampleProperties::SampleTypeId), SampleProperties::WrapperType::client, SampleProperties::EnableCallbacks::no };
+                if (destSampleProperties.isValid ())
                     destSampleProperties.copyPropertiesFrom (srcSampleProperties.getValueTree ());
+                else
+                    destCellPropertiesVT.addChild (srcSampleProperties.getValueTree ().createCopy(), -1, nullptr);
 
-                    // remove old modsources
-                    for (auto destChildIndex { destCellPropertiesVT.getNumChildren () }; destChildIndex > -1; --destChildIndex)
+                // remove old modsources
+                for (auto destChildIndex { destCellPropertiesVT.getNumChildren () }; destChildIndex > -1; --destChildIndex)
+                {
+                    auto destChild { destCellPropertiesVT.getChild (destChildIndex) };
+                    if (destChild.getType () == ModSourceProperties::ModSourceTypeId)
+                        destCellPropertiesVT.removeChild (destChild, nullptr);
+                }
+                // copy modsources
+                ValueTreeHelpers::forEachChildOfType (srcCellProperties.getValueTree (), ModSourceProperties::ModSourceTypeId, [this, &destCellPropertiesVT] (juce::ValueTree child)
+                {
+                    if (child.getType () == ModSourceProperties::ModSourceTypeId)
+                        destCellPropertiesVT.addChild (child.createCopy (), -1, nullptr);
+                    return true;
+                });
+                // remove old slices
+                auto destSlices = destCellPropertiesVT.getOrCreateChildWithName (SliceListProperties::SliceListTypeId, nullptr);
+                if (destSlices.isValid ())
+                {
+                    for (auto destSliceIndex { destSlices.getNumChildren () }; destSliceIndex > -1; --destSliceIndex)
                     {
-                        auto destChild { destCellPropertiesVT.getChild (destChildIndex) };
-                        if (destChild.getType () == ModSourceProperties::ModSourceTypeId)
-                            destCellPropertiesVT.removeChild (destChild, nullptr);
-                    }
-                    // copy modsources
-                    ValueTreeHelpers::forEachChildOfType (srcCellProperties.getValueTree (), ModSourceProperties::ModSourceTypeId, [this, &destCellPropertiesVT] (juce::ValueTree child)
-                    {
-                        if (child.getType () == ModSourceProperties::ModSourceTypeId)
-                            destCellPropertiesVT.addChild (child.createCopy (), -1, nullptr);
-                        return true;
-                    });
-                    // remove old slices
-                    auto destSlices = destCellPropertiesVT.getOrCreateChildWithName (SliceListProperties::SliceListTypeId, nullptr);
-                    if (destSlices.isValid ())
-                    {
-                        for (auto destSliceIndex { destSlices.getNumChildren () }; destSliceIndex > -1; --destSliceIndex)
-                        {
-                            auto destChild { destSlices.getChild (destSliceIndex) };
-                            if (destChild.getType () == SliceProperties::SliceTypeId)
-                                destSlices.removeChild (destChild, nullptr);
-                        }
-                    }
-                    // copy slices
-                    auto srcSlices = srcCellProperties.getValueTree ().getChildWithName (SliceListProperties::SliceListTypeId);
-                    if (srcSlices.isValid ())
-                    {
-                        for (auto srcSlice : srcSlices)
-                            destSlices.addChild (srcSlices.createCopy (), -1, nullptr);
+                        auto destChild { destSlices.getChild (destSliceIndex) };
+                        if (destChild.getType () == SliceProperties::SliceTypeId)
+                            destSlices.removeChild (destChild, nullptr);
                     }
                 }
-                else
+                // copy slices
+                auto srcSlices = srcCellProperties.getValueTree ().getChildWithName (SliceListProperties::SliceListTypeId);
+                if (srcSlices.isValid ())
                 {
-                    data.addChild (srcCellProperties.getValueTree ().createCopy(), -1, nullptr);
+                    for (auto srcSlice : srcSlices)
+                        destSlices.addChild (srcSlices.createCopy (), -1, nullptr);
                 }
             }
             else if (srcCellType == "delay")
             {
-                DelayProperties delayProperties { srcCellProperties.getValueTree ().getChildWithName (DelayProperties::DelayTypeId), DelayProperties::WrapperType::client, DelayProperties::EnableCallbacks::no };
+                DelayProperties srcDelayProperties { srcCellProperties.getValueTree ().getChildWithName (DelayProperties::DelayTypeId), DelayProperties::WrapperType::client, DelayProperties::EnableCallbacks::no };
+                DelayProperties destDelayProperties { getCellProperties (data, srcCellProperties.getRow(), srcCellProperties.getColumn(), srcCellProperties.getLayer()), DelayProperties::WrapperType::client, DelayProperties::EnableCallbacks::no};
+                if (destDelayProperties.isValid ())
+                {
+                    destDelayProperties.copyPropertiesFrom (srcDelayProperties.getValueTree ());
+                }
+                else
+                {
+                    data.addChild (srcCellProperties.getValueTree ().createCopy (), -1, nullptr);
+                }
             }
             else if (srcCellType == "reverb")
             {
-                ReverbProperties reverbProperties { srcCellProperties.getValueTree ().getChildWithName (ReverbProperties::ReverbTypeId), ReverbProperties::WrapperType::client, ReverbProperties::EnableCallbacks::no };
+                ReverbProperties srcReverbProperties { srcCellProperties.getValueTree ().getChildWithName (ReverbProperties::ReverbTypeId), ReverbProperties::WrapperType::client, ReverbProperties::EnableCallbacks::no };
+                ReverbProperties destReverbProperties { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()), ReverbProperties::WrapperType::client, ReverbProperties::EnableCallbacks::no };
+                if (destReverbProperties.isValid ())
+                {
+                    destReverbProperties.copyPropertiesFrom (srcReverbProperties.getValueTree ());
+                }
+                else
+                {
+                    data.addChild (srcCellProperties.getValueTree ().createCopy (), -1, nullptr);
+                }
             }
             else if (srcCellType == "ioconnectin")
             {
-                IoConnectInProperties ioConnectInProperties { srcCellProperties.getValueTree ().getChildWithName (IoConnectInProperties::IoConnectInTypeId), IoConnectInProperties::WrapperType::client, IoConnectInProperties::EnableCallbacks::no };
+                IoConnectInProperties srcIoConnectInProperties { srcCellProperties.getValueTree ().getChildWithName (IoConnectInProperties::IoConnectInTypeId), IoConnectInProperties::WrapperType::client, IoConnectInProperties::EnableCallbacks::no };
+                IoConnectInProperties destIoConnectInProperties { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()), IoConnectInProperties::WrapperType::client, IoConnectInProperties::EnableCallbacks::no };
+                if (destIoConnectInProperties.isValid ())
+                {
+                    destIoConnectInProperties.copyPropertiesFrom (srcIoConnectInProperties.getValueTree ());
+                }
+                else
+                {
+                    data.addChild (srcCellProperties.getValueTree ().createCopy (), -1, nullptr);
+                }
             }
             else if (srcCellType == "ioconnectout")
             {
-                IoConnectOutProperties ioConnectOutProperties { srcCellProperties.getValueTree ().getChildWithName (IoConnectOutProperties::IoConnectOutTypeId), IoConnectOutProperties::WrapperType::client, IoConnectOutProperties::EnableCallbacks::no };
+                IoConnectOutProperties srcIoConnectOutProperties { srcCellProperties.getValueTree ().getChildWithName (IoConnectOutProperties::IoConnectOutTypeId), IoConnectOutProperties::WrapperType::client, IoConnectOutProperties::EnableCallbacks::no };
+                IoConnectOutProperties destIoConnectOutProperties { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()), IoConnectOutProperties::WrapperType::client, IoConnectOutProperties::EnableCallbacks::no };
+                if (destIoConnectOutProperties.isValid ())
+                {
+                    destIoConnectOutProperties.copyPropertiesFrom (srcIoConnectOutProperties.getValueTree ());
+                }
+                else
+                {
+                    data.addChild (srcCellProperties.getValueTree ().createCopy (), -1, nullptr);
+                }
             }
             else if (srcCellType == "song")
             {
-                SongProperties songProperties { srcCellProperties.getValueTree ().getChildWithName (SongProperties::SongTypeId), SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
+                auto songPropsVT { srcCellProperties.getValueTree ().getChildWithName (SongProperties::SongTypeId) };
+                SongProperties srcSongProperties { songPropsVT, SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
+                SongProperties destSongProperties { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()), SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
+                if (destSongProperties.isValid ())
+                {
+                    destSongProperties.copyPropertiesFrom (srcSongProperties.getValueTree ());
+                }
+                else
+                {
+                    data.addChild (srcCellProperties.getValueTree ().createCopy (), -1, nullptr);
+                }
             }
             else
             {
                 // unhandled cell types
                 //if (cellType != "null")
-                    jassertfalse;
+                jassertfalse;
             }
 
             return true;

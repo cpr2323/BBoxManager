@@ -18,6 +18,12 @@ public:
 
     std::function<void (juce::String inputIoCon)> onInputIoConChange;
 
+    void copyPropertiesFrom (juce::ValueTree source)
+    {
+        IoConnectInProperties srcIoConnectInProperties { source, IoConnectInProperties::WrapperType::client, IoConnectInProperties::EnableCallbacks::no };
+        setInputIoCon (srcIoConnectInProperties.getInputIoCon (), false);
+    }
+
     void initValueTree () {}
     void processValueTree () {}
 

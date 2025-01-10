@@ -16,7 +16,7 @@ BottomStatusWindow::BottomStatusWindow ()
     loadPresetButton.onClick = [this] ()
     {
         fileChooser.reset (new juce::FileChooser ("Load Preset",
-                                                    appProperties.getMostRecentFolder (), ""));
+                                                   appProperties.getMostRecentFolder (), ""));
         fileChooser->launchAsync (juce::FileBrowserComponent::openMode, [this] (const juce::FileChooser& fc) mutable
         {
             if (fc.getURLResults ().size () == 1 && fc.getURLResults () [0].isLocalFile ())
