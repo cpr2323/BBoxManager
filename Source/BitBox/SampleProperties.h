@@ -311,6 +311,8 @@ public:
     std::function<void (int recThres)> onRecThresChange;
     std::function<void (int recMonOutBus)> onRecMonOutBusChange;
 
+    void copyPropertiesFrom (juce::ValueTree source);
+
     void initValueTree () {}
     void processValueTree () {}
 

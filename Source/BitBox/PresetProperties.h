@@ -26,7 +26,7 @@ public:
     static inline const juce::Identifier PresetTypeId { "Preset" };
     static inline const juce::Identifier NamePropertyId { "name" };
 
-    static void copyPropertiesFrom (juce::ValueTree source);
+    void copyPropertiesFrom (juce::ValueTree source);
 
     void initValueTree ()
     {

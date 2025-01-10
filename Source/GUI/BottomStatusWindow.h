@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "../AppProperties.h"
+#include "../BitBox/PresetManagerProperties.h"
 //#include "SquidSalmple/BankList/BankListProperties.h"
 #include "../BitBox/Audio/AudioPlayerProperties.h"
 
@@ -13,7 +14,10 @@ public:
 
 private:
     AudioPlayerProperties audioPlayerProperties;
-//    BankListProperties bankListProperties;
+    AppProperties appProperties;
+    PresetManagerProperties presetManagerProperties;
+    juce::TextButton loadPresetButton;
+    std::unique_ptr<juce::FileChooser> fileChooser;
 
     juce::Label statusLabel;
     juce::TextButton settingsButton;

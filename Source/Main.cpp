@@ -80,9 +80,8 @@ void scanFolder (juce::File folderToScan)
             if (presetFile.existsAsFile () && presetFile.getFileName() == kPresetFileName)
             {
                 juce::Logger::outputDebugString ("Preset: " + presetFile.getParentDirectory ().getFullPathName ());
-                juce::XmlElement presetXml { "preset" };
                 auto presetXmlDocument { juce::XmlDocument (presetFile).getDocumentElement () };
-                //dumpXml (presetXmlDocument.get (), 0);
+                dumpXml (presetXmlDocument.get (), 0);
                 auto presetProperties { PresetProperties { parse (presetXmlDocument.get ()), PresetProperties::WrapperType::owner, PresetProperties::EnableCallbacks::no } };
             }
         }
@@ -112,9 +111,11 @@ public:
         initPropertyRoots ();
         initPresetManager ();
 
-        constexpr auto kPresetFolder { "YT1" };
-        auto kFolderName { juce::File { "C:\\code\\BboxManager\\hide_from_git\\Presets" } };
-        scanFolder (kFolderName);
+//        constexpr auto kPresetFolder { "YT1" };
+        //auto kFolderName { juce::File { "C:\\code\\BboxManager\\hide_from_git\\Presets" } };
+        //auto kFolderName { juce::File { "C:\\code\\BboxManager\\hide_from_git\\BBEdit" } };
+        auto kFolderName { juce::File { "C:\\code\\BboxManager\\hide_from_git\\Archive" } };
+        //scanFolder (kFolderName);
 
         initBitBox ();
         initAudio ();

@@ -177,6 +177,70 @@ int SampleProperties::getRecThres () { return getValue<int> (RecThresPropertyId)
 void SampleProperties::setRecMonOutBus (int recMonOutBus, bool includeSelfCallback) { setValue (recMonOutBus, RecMonOutBusPropertyId, includeSelfCallback); }
 int SampleProperties::getRecMonOutBus () { return getValue<int> (RecMonOutBusPropertyId); }
 
+void SampleProperties::copyPropertiesFrom (juce::ValueTree source)
+{
+    SampleProperties srcSampleProperties { source, SampleProperties::WrapperType::client, SampleProperties::EnableCallbacks::no };
+    // set properties
+    setGainDb (srcSampleProperties.getGainDb (), false);
+    setPitch (srcSampleProperties.getPitch (), false);
+    setPanPos (srcSampleProperties.getPanPos (), false);
+    setSamTrigType (srcSampleProperties.getSamTrigType (), false);
+    setLoopMode (srcSampleProperties.getLoopMode (), false);
+    setLoopModes (srcSampleProperties.getLoopModes (), false);
+    setMidiMode (srcSampleProperties.getMidiMode (), false);
+    setReverse (srcSampleProperties.getReverse (), false);
+    setCellMode (srcSampleProperties.getCellMode (), false);
+    setEnvAttack (srcSampleProperties.getEnvAttack (), false);
+    setEnvDecay (srcSampleProperties.getEnvDecay (), false);
+    setEnvSus (srcSampleProperties.getEnvSus (), false);
+    setEnvRel (srcSampleProperties.getEnvRel (), false);
+    setSamStart (srcSampleProperties.getSamStart (), false);
+    setSamLen (srcSampleProperties.getSamLen (), false);
+    setLoopStart (srcSampleProperties.getLoopStart (), false);
+    setLoopEnd (srcSampleProperties.getLoopEnd (), false);
+    setQuantSize (srcSampleProperties.getQuantSize (), false);
+    setSyncType (srcSampleProperties.getSyncType (), false);
+    setActSlice (srcSampleProperties.getActSlice (), false);
+    setOutputBus (srcSampleProperties.getOutputBus (), false);
+    setPolyMode (srcSampleProperties.getPolyMode (), false);
+    setPolyModeSlice (srcSampleProperties.getPolyModeSlice (), false);
+    setSliceStepMode (srcSampleProperties.getSliceStepMode (), false);
+    setChokeGrp (srcSampleProperties.getChokeGrp (), false);
+    setDualFilCutoff (srcSampleProperties.getDualFilCutoff (), false);
+    setRes (srcSampleProperties.getRes (), false);
+    setRootNote (srcSampleProperties.getRootNote (), false);
+    setBeatCount (srcSampleProperties.getBeatCount (), false);
+    setFx1Send (srcSampleProperties.getFx1Send (), false);
+    setFx2Send (srcSampleProperties.getFx2Send (), false);
+    setMultiSamMode (srcSampleProperties.getMultiSamMode (), false);
+    setInterpQual (srcSampleProperties.getInterpQual (), false);
+    setPlayThru (srcSampleProperties.getPlayThru (), false);
+    setSlicerQuantSize (srcSampleProperties.getSlicerQuantSize (), false);
+    setSlicerSync (srcSampleProperties.getSlicerSync (), false);
+    setPadNote (srcSampleProperties.getPadNote (), false);
+    setLoopFadeAmt (srcSampleProperties.getLoopFadeAmt (), false);
+    setLfoWave (srcSampleProperties.getLfoWave (), false);
+    setLfoRate (srcSampleProperties.getLfoRate (), false);
+    setLfoAmount (srcSampleProperties.getLfoAmount (), false);
+    setLfoKeyTrig (srcSampleProperties.getLfoKeyTrig (), false);
+    setLfoBeatSync (srcSampleProperties.getLfoBeatSync (), false);
+    setLfoRateBeatSync (srcSampleProperties.getLfoRateBeatSync (), false);
+    setGrainSizePerc (srcSampleProperties.getGrainSizePerc (), false);
+    setGrainScat (srcSampleProperties.getGrainScat (), false);
+    setGrainPanRnd (srcSampleProperties.getGrainPanRnd (), false);
+    setGrainDensity (srcSampleProperties.getGrainDensity (), false);
+    setSliceMode (srcSampleProperties.getSliceMode (), false);
+    setLegatoMode (srcSampleProperties.getLegatoMode (), false);
+    setGainSsrcWin (srcSampleProperties.getGainSsrcWin (), false);
+    setGrainReadSpeed (srcSampleProperties.getGrainReadSpeed (), false);
+    setRecPresetLen (srcSampleProperties.getRecPresetLen (), false);
+    setRecQuant (srcSampleProperties.getRecQuant (), false);
+    setRecInput (srcSampleProperties.getRecInput (), false);
+    setRecUseThres (srcSampleProperties.getRecUseThres (), false);
+    setRecThres (srcSampleProperties.getRecThres (), false);
+    setRecMonOutBus (srcSampleProperties.getRecMonOutBus (), false);
+}
+
 void SampleProperties::valueTreePropertyChanged (juce::ValueTree& treeWhosePropertyHasChanged, const juce::Identifier& property)
 {
     if (treeWhosePropertyHasChanged == data)

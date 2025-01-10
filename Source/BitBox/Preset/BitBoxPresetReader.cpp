@@ -12,17 +12,56 @@
 #include "../SliceProperties.h"
 #include "../SongProperties.h"
 
-// pad cells = 0-3, 0-4, 0
+// pad cells (row, column, layer) = 0-3, 0-4, 0
 // effect cells = row 0-4
 // input connections = row 0, layer 8
 // output connections = row 0, layer 9
 // song =  no row, col, or layer
+
+//cell type ioconnectin
+juce::String InputTypeAudioString { "audioin" };
+juce::String InputTypeGateString  { "gatein" };
+juce::String InputTypeClockString { "clockin" };
+juce::String InputTypeCvString    { "cvin" };
+
+//cell type ioconnectout
+juce::String OutputChan1String   { "chanout1" };
+juce::String OutputChan2String   { "chanout2" };
+juce::String OutputChan3String   { "chanout3" };
+juce::String OutputChan4String   { "chanout4" };
+juce::String OutputChan5String   { "chanout5" };
+juce::String OutputChan6String   { "chanout6" };
+juce::String OutputMaster1String { "masterout1" };
+juce::String OutputMaster2String { "masterout2" };
+
+// modsource dest values
+juce::String ModSourceDestGainDbString { "gaindb" };
+juce::String ModSourceDestPanPosString { "panpos" };
+juce::String ModSourceDestSliceStepModeString { "slicestepmode" };
+
+// modsource src values
+juce::String ModSourceSrcVelocityString { "velocity" };
+juce::String ModSourceSrcMidiVolString { "midivol" };
+juce::String ModSourceSrcMidiPanString { "midipan" };
+juce::String ModSourceSrcKeyTrigString { "keytrig" };
+
+// multisammode="1" to enable multisample mode
+
+//  pad    row, column, layer
+// PAD 1 =  1,   0,      0
+// PAD 2 =  0,   0,      0
+// PAD 3 =  1,   1,      0
+// PAD 4 =  0,   1,      0
+// PAD 5 =  1,   2,      0
+// PAD 6 =  0,   2,      0
+// PAD 7 =  1,   3,      0
+// PAD 8 =  0,   3,      0
+
 juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
 {
     jassert (bitBoxPresetDocumentElement != nullptr && bitBoxPresetDocumentElement->getTagName () == "document");
     const auto bitBoxPresetSessionElement { bitBoxPresetDocumentElement->getChildByName ("session") };
     jassert (bitBoxPresetSessionElement != nullptr && bitBoxPresetSessionElement->getTagName () == "session");
-    // found document that did not have a version attribute
     jassert (bitBoxPresetSessionElement->getStringAttribute ("version") == "" || bitBoxPresetSessionElement->getStringAttribute ("version") == "2");
     PresetProperties presetProperties { {}, PresetProperties::WrapperType::owner, PresetProperties::EnableCallbacks::no };
 
@@ -39,11 +78,11 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
 
             if (type == "samtempl")
             {
+                // TO DO : do I need to copy in these properties
             }
             else if (type == "sample")
             {
                 SampleProperties sampleProperties { {}, SampleProperties::WrapperType::owner, SampleProperties::EnableCallbacks::no };
-                sampleProperties.setFileName (bitBoxPresetCellElement->getStringAttribute ("filename"), false);
 
                 auto* paramsElement = bitBoxPresetCellElement->getChildByName ("params");
                 if (paramsElement == nullptr)
@@ -51,7 +90,8 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                     jassertfalse;
                     continue;
                 }
-
+                sampleProperties.setFileName (bitBoxPresetCellElement->getStringAttribute ("filename"), false);
+                sampleProperties.setCellMode (paramsElement->getIntAttribute ("cellmode"), false);
                 sampleProperties.setGainDb (paramsElement->getIntAttribute ("gaindb"), false);
                 sampleProperties.setPitch (paramsElement->getIntAttribute ("pitch"), false);
                 sampleProperties.setPanPos (paramsElement->getIntAttribute ("panpos"), false);
@@ -60,7 +100,6 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                 sampleProperties.setLoopModes (paramsElement->getIntAttribute ("loopmodes"), false);
                 sampleProperties.setMidiMode (paramsElement->getIntAttribute ("midimode"), false);
                 sampleProperties.setReverse (paramsElement->getIntAttribute ("reverse"), false);
-                sampleProperties.setCellMode (paramsElement->getIntAttribute ("cellmode"), false);
                 sampleProperties.setEnvAttack (paramsElement->getIntAttribute ("envattack"), false);
                 sampleProperties.setEnvDecay (paramsElement->getIntAttribute ("envdecay"), false);
                 sampleProperties.setEnvSus (paramsElement->getIntAttribute ("envsus"), false);
@@ -111,6 +150,8 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                 sampleProperties.setRecThres (paramsElement->getIntAttribute ("recthresh"), false);
                 sampleProperties.setRecMonOutBus (paramsElement->getIntAttribute ("recmonoutbus"), false);
 
+                cellProperties.getValueTree ().addChild (sampleProperties.getValueTree (), -1, nullptr);
+
                 for (auto* childElement : bitBoxPresetCellElement->getChildIterator ())
                 {
                     if (childElement->getTagName () == "modsource")
@@ -126,6 +167,7 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                     {
                         SliceListProperties sliceListProperties { {}, SliceListProperties::WrapperType::owner, SliceListProperties::EnableCallbacks::no };
 
+                        // get all of the <slice> children under <slices>
                         for (auto* sliceElement : childElement->getChildIterator ())
                         {
                             SliceProperties sliceProperties { {}, SliceProperties::WrapperType::owner, SliceProperties::EnableCallbacks::no };
@@ -133,34 +175,10 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                             sliceListProperties.getValueTree ().addChild (sliceProperties.getValueTree (), -1, nullptr);
                         }
 
-                        cellProperties.getValueTree ().addChild(sliceListProperties.getValueTree (), -1, nullptr);
+                        cellProperties.getValueTree ().addChild (sliceListProperties.getValueTree (), -1, nullptr);
                     }
                 }
-                cellProperties.getValueTree ().addChild (sampleProperties.getValueTree (), -1, nullptr);
-            }
-            else if (type == "multi-sample") // ? I don't know what the type is for multi-sample
-            {
-                jassertfalse;
-            }
-            else if (type == "clip") // ? I don't know what the type is for clip
-            {
-                jassertfalse;
-            }
-            else if (type == "slice") // ? I don't know what the type is for slice
-            {
-                jassertfalse;
-            }
-            else if (type == "gran") // ? I don't know what the type is for granular
-            {
-                jassertfalse;
-            }
-            else if (type == "rec") // ? I don't know what the type is for recording
-            {
-                jassertfalse;
-            }
-            else if (type == "rec-multi") // ? I don't know what the type is for recording
-            {
-                jassertfalse;
+
             }
             else if (type == "delay")
             {
