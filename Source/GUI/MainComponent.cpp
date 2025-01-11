@@ -18,6 +18,7 @@ MainComponent::MainComponent (juce::ValueTree rootPropertiesVT)
 //     bankListComponent.init (rootPropertiesVT);
     // NOTE: bottomStatusWindow uses the BankListProperties, so it has to be initialised after BankListComponent.
     //       I dislike these kinds of requirements, so maybe figure out a different way at some point
+    presetEditorComponent.init (rootPropertiesVT);
     bottomStatusWindow.init (rootPropertiesVT);
     currentFolderComponent.init (rootPropertiesVT);
 
@@ -41,6 +42,7 @@ MainComponent::MainComponent (juce::ValueTree rootPropertiesVT)
 
     restoreLayout ();
 
+    addAndMakeVisible (presetEditorComponent);
     addAndMakeVisible (currentFolderComponent);
 //    addAndMakeVisible (folderBrowserEditorSplitter);
     addAndMakeVisible (bottomStatusWindow);
@@ -73,5 +75,6 @@ void MainComponent::resized ()
     currentFolderComponent.setBounds (localBounds.removeFromTop (30));
     bottomStatusWindow.setBounds (localBounds.removeFromBottom (toolWindowHeight));
     localBounds.reduce (3, 3);
+    presetEditorComponent.setBounds (localBounds);
 //    folderBrowserEditorSplitter.setBounds (localBounds);
 }

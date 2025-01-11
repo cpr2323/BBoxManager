@@ -81,7 +81,16 @@
               file="Source/BitBox/SongProperties.h"/>
       </GROUP>
       <GROUP id="{4C6BEA74-4A21-C3CF-EEAA-3812A606D331}" name="GUI">
-        <GROUP id="{9FFEC5CE-9420-812F-0AF1-F55F22629324}" name="BitBox"/>
+        <GROUP id="{9FFEC5CE-9420-812F-0AF1-F55F22629324}" name="BitBox">
+          <FILE id="H0gj0S" name="PresetEditorComponent.cpp" compile="1" resource="0"
+                file="Source/GUI/BitBox/PresetEditorComponent.cpp"/>
+          <FILE id="DUzdBN" name="PresetEditorComponent.h" compile="0" resource="0"
+                file="Source/GUI/BitBox/PresetEditorComponent.h"/>
+          <FILE id="u98U6L" name="SampleEditorComponent.cpp" compile="1" resource="0"
+                file="Source/GUI/BitBox/SampleEditorComponent.cpp"/>
+          <FILE id="rwu9sb" name="SampleEditorComponent.h" compile="0" resource="0"
+                file="Source/GUI/BitBox/SampleEditorComponent.h"/>
+        </GROUP>
         <FILE id="D2pIZB" name="BottomStatusWindow.cpp" compile="1" resource="0"
               file="Source/GUI/BottomStatusWindow.cpp"/>
         <FILE id="jwjaR5" name="BottomStatusWindow.h" compile="0" resource="0"

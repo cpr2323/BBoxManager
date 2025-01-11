@@ -4,7 +4,7 @@
 #include "BottomStatusWindow.h"
 #include "CurrentFolderComponent.h"
 #include "GuiProperties.h"
-//#include "SquidSalmple/SquidEditor.h"
+#include "BitBox/PresetEditorComponent.h"
 //#include "SquidSalmple/FileView/FileViewComponent.h"
 //#include "SquidSalmple/BankList/BankListComponent.h"
 #include "../Utility/SplitWindowComponent.h"
@@ -17,7 +17,7 @@ public:
 
 private:
     GuiProperties guiProperties;
-//    SquidEditorComponent squidEditorComponent;
+    PresetEditorComponent presetEditorComponent;
     BottomStatusWindow bottomStatusWindow;
     CurrentFolderComponent currentFolderComponent;
 //    FileViewComponent fileViewComponent;
