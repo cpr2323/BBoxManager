@@ -24,11 +24,10 @@ BottomStatusWindow::BottomStatusWindow ()
                 auto presetFile { fc.getURLResults () [0].getLocalFile () };
                 if (presetFile.existsAsFile () && presetFile.getFileName () == "preset.xml")
                 {
-                    juce::Logger::outputDebugString ("Preset: " + presetFile.getParentDirectory ().getFullPathName ());
+                    juce::Logger::outputDebugString ("Loading Preset: " + presetFile.getParentDirectory ().getFullPathName ());
+                    // load preset and copy it into the unedited and the edited presets
                     auto presetXmlDocument { juce::XmlDocument (presetFile).getDocumentElement () };
                     auto presetProperties { PresetProperties { parse (presetXmlDocument.get ()), PresetProperties::WrapperType::owner, PresetProperties::EnableCallbacks::no } };
-
-                    // copy this into the unedited and the edited presets
                     PresetProperties uneditedPresetProperties { presetManagerProperties.getPreset ("unedited"), PresetProperties::WrapperType::client, PresetProperties::EnableCallbacks::no };
                     uneditedPresetProperties.copyPropertiesFrom (presetProperties.getValueTree ());
                     PresetProperties editedPresetProperties { presetManagerProperties.getPreset ("edit"), PresetProperties::WrapperType::client, PresetProperties::EnableCallbacks::no };
