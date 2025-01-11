@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="ZUR8QO" name="BboxManager" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="0" jucerFormatVersion="1"
-              companyName="OmOhmProductions">
+              companyName="OmOhmProductions" version="1.0">
   <MAINGROUP id="YBmDnm" name="BboxManager">
     <GROUP id="{70C089C9-EF6A-A4EF-87A1-7E3F5C32C07D}" name="Source">
       <GROUP id="{B7B655AE-2F57-7664-90A5-D810FA11DB3C}" name="BitBox">
