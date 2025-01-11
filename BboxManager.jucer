@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZUR8QO" name="BboxManager" projectType="guiapp" useAppConfig="0"
+<JUCERPROJECT id="ZUR8QO" name="BBoxManager" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="0" jucerFormatVersion="1"
               companyName="OmOhmProductions" version="1.0">
-  <MAINGROUP id="YBmDnm" name="BboxManager">
+  <MAINGROUP id="YBmDnm" name="BBoxManager">
     <GROUP id="{70C089C9-EF6A-A4EF-87A1-7E3F5C32C07D}" name="Source">
       <GROUP id="{B7B655AE-2F57-7664-90A5-D810FA11DB3C}" name="BitBox">
         <GROUP id="{D14415D3-746B-CF0A-C0EF-13B757F505B2}" name="Audio">

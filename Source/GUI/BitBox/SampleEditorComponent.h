@@ -9,7 +9,7 @@
 #include "../../Utility/RoundedSlideSwitch.h"
 
 class SampleEditorComponent : public juce::Component,
-    public juce::FileDragAndDropTarget
+                              public juce::FileDragAndDropTarget
 {
 public:
     SampleEditorComponent ();

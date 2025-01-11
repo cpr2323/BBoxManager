@@ -26,6 +26,7 @@ public:
     static inline const juce::Identifier PresetTypeId { "Preset" };
     static inline const juce::Identifier NamePropertyId { "name" };
 
+    void forEachPad (std::function<bool (juce::ValueTree padVT, int padIndex)> padVTCallback);
     void copyPropertiesFrom (juce::ValueTree source);
 
     void initValueTree ()

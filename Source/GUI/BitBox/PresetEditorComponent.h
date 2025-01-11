@@ -4,11 +4,10 @@
 #include "SampleEditorComponent.h"
 #include "../../AppProperties.h"
 #include "../../BitBox/Audio/AudioPlayerProperties.h"
-#include "../../BitBox/PresetManagerProperties.h"
-#include "../../Utility/RuntimeRootProperties.h"
+#include "../../BitBox/PresetProperties.h"
 
 class PresetEditorComponent : public juce::Component,
-    public juce::Timer
+                              public juce::Timer
 {
 public:
     PresetEditorComponent ();
@@ -16,11 +15,10 @@ public:
     void init (juce::ValueTree rootPropertiesVT);
 
 private:
-    RuntimeRootProperties runtimeRootProperties;
     AppProperties appProperties;
     AudioPlayerProperties audioPlayerProperties;
-    PresetManagerProperties presetManagerProperties;
-    PresetManagerProperties uneditedPresetManagerProperties;
+    PresetProperties presetProperties;
+    PresetProperties uneditedPresetProperties;
 
     class TabbedComponentWithChangeCallback : public juce::TabbedComponent
     {

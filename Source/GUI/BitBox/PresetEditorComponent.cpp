@@ -1,5 +1,7 @@
 #include "PresetEditorComponent.h"
+#include "../../BitBox/PresetManagerProperties.h"
 #include "../../Utility/PersistentRootProperties.h"
+#include "../../Utility/RuntimeRootProperties.h"
 
 PresetEditorComponent::PresetEditorComponent ()
     : padTabs (juce::TabbedButtonBar::TabsAtTop)
@@ -19,7 +21,7 @@ PresetEditorComponent::PresetEditorComponent ()
     addAndMakeVisible (padTabs);
 
     saveButton.setButtonText ("Save");
-    addAndMakeVisible (saveButton);
+    addChildComponent (saveButton);
 
     startTimer (1000); // Check every second
 }
@@ -30,8 +32,16 @@ void PresetEditorComponent::init (juce::ValueTree rootPropertiesVT)
     appProperties.wrap (persistentRootProperties.getValueTree (), AppProperties::WrapperType::client, AppProperties::EnableCallbacks::yes);
 
     RuntimeRootProperties runtimeRootProperties (rootPropertiesVT, RuntimeRootProperties::WrapperType::client, RuntimeRootProperties::EnableCallbacks::no);
-    presetManagerProperties.wrap (runtimeRootProperties.getValueTree (), PresetManagerProperties::WrapperType::client, PresetManagerProperties::EnableCallbacks::yes);
+    PresetManagerProperties presetManagerProperties { runtimeRootProperties.getValueTree (), PresetManagerProperties::WrapperType::client, PresetManagerProperties::EnableCallbacks::no };
+    uneditedPresetProperties.wrap (presetManagerProperties.getPreset ("unedited"), PresetProperties::WrapperType::client, PresetProperties::EnableCallbacks::yes);
+    presetProperties.wrap (presetManagerProperties.getPreset ("edit"), PresetProperties::WrapperType::client, PresetProperties::EnableCallbacks::yes);
     audioPlayerProperties.wrap (runtimeRootProperties.getValueTree (), AudioPlayerProperties::WrapperType::owner, AudioPlayerProperties::EnableCallbacks::yes);
+
+    presetProperties.forEachPad ([this, rootPropertiesVT] (juce::ValueTree padPropertiesVT, int padIndex)
+    {
+        padEditorComponents[padIndex]->init (padPropertiesVT);
+        return true;
+    });
 }
 
 void PresetEditorComponent::paint (juce::Graphics& g)

@@ -27,6 +27,25 @@ juce::ValueTree getCellProperties (juce::ValueTree vt, int row, int column, int 
     return cellPropertiesVT;
 }
 
+void PresetProperties::forEachPad (std::function<bool (juce::ValueTree padVT, int padIndex)> padVTCallback)
+{
+    jassert (padVTCallback != nullptr);
+    auto callCellCallback = [this, &padVTCallback] (int padIndex, int row, int col, int lyr)
+    {
+        auto padVT { getCellProperties (data, row, col, lyr) };
+        if (padVT.isValid ())
+            padVTCallback (padVT, 0);
+    };
+    callCellCallback (0, 1, 0, 0);
+    callCellCallback (1, 0, 0, 0);
+    callCellCallback (2, 1, 1, 0);
+    callCellCallback (3, 0, 1, 0);
+    callCellCallback (4, 1, 2, 0);
+    callCellCallback (5, 0, 2, 0);
+    callCellCallback (6, 1, 3, 0);
+    callCellCallback (7, 0, 3, 0);
+}
+
 void PresetProperties::copyPropertiesFrom (juce::ValueTree sourceVT)
 {
     // copy local data

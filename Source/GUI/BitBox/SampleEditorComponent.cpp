@@ -2,241 +2,73 @@
 
 SampleEditorComponent::SampleEditorComponent ()
 {
-    addAndMakeVisible (fileNameLabel);
-    fileNameLabel.setText ("File Name", juce::dontSendNotification);
-    addAndMakeVisible (fileNameSelectLabel);
+    auto setupLabel = [this] (juce::Label& label, juce::String text, juce::Component& editor)
+    {
+        label.setColour (juce::Label::textColourId, juce::Colours::black);
+        label.setText (text, juce::dontSendNotification);
+        addAndMakeVisible (label);
+        addAndMakeVisible (editor);
+    };
 
-    addAndMakeVisible (gainLabel);
-    gainLabel.setText ("Gain (dB)", juce::dontSendNotification);
-    addAndMakeVisible (gainTextEditor);
-
-    addAndMakeVisible (pitchLabel);
-    pitchLabel.setText ("Pitch", juce::dontSendNotification);
-    addAndMakeVisible (pitchTextEditor);
-
-    addAndMakeVisible (panPosLabel);
-    panPosLabel.setText ("Pan Position", juce::dontSendNotification);
-    addAndMakeVisible (panPosTextEditor);
-
-    addAndMakeVisible (samTrigTypeLabel);
-    samTrigTypeLabel.setText ("Sample Trigger Type", juce::dontSendNotification);
-    addAndMakeVisible (samTrigTypeTextEditor);
-
-    addAndMakeVisible (loopModeLabel);
-    loopModeLabel.setText ("Loop Mode", juce::dontSendNotification);
-    addAndMakeVisible (loopModeComboBox);
-
-    addAndMakeVisible (loopModesLabel);
-    loopModesLabel.setText ("Loop Modes", juce::dontSendNotification);
-    addAndMakeVisible (loopModesTextEditor);
-
-    addAndMakeVisible (midiModeLabel);
-    midiModeLabel.setText ("MIDI Mode", juce::dontSendNotification);
-    addAndMakeVisible (midiModeTextEditor);
-
-    addAndMakeVisible (reverseLabel);
-    reverseLabel.setText ("Reverse", juce::dontSendNotification);
-    addAndMakeVisible (reverseButton);
-
-    addAndMakeVisible (cellModeLabel);
-    cellModeLabel.setText ("Cell Mode", juce::dontSendNotification);
-    addAndMakeVisible (cellModeTextEditor);
-
-    addAndMakeVisible (envAttackLabel);
-    envAttackLabel.setText ("Attack", juce::dontSendNotification);
-    addAndMakeVisible (envAttackTextEditor);
-
-    addAndMakeVisible (envDecayLabel);
-    envDecayLabel.setText ("Decay", juce::dontSendNotification);
-    addAndMakeVisible (envDecayTextEditor);
-
-    addAndMakeVisible (envSusLabel);
-    envSusLabel.setText ("Sustain", juce::dontSendNotification);
-    addAndMakeVisible (envSusTextEditor);
-
-    addAndMakeVisible (envRelLabel);
-    envRelLabel.setText ("Release", juce::dontSendNotification);
-    addAndMakeVisible (envRelTextEditor);
-
-    addAndMakeVisible (samStartLabel);
-    samStartLabel.setText ("Sample Start", juce::dontSendNotification);
-    addAndMakeVisible (samStartTextEditor);
-
-    addAndMakeVisible (samLenLabel);
-    samLenLabel.setText ("Sample Length", juce::dontSendNotification);
-    addAndMakeVisible (samLenTextEditor);
-
-    addAndMakeVisible (loopStartLabel);
-    loopStartLabel.setText ("Loop Start", juce::dontSendNotification);
-    addAndMakeVisible (loopStartTextEditor);
-
-    addAndMakeVisible (loopEndLabel);
-    loopEndLabel.setText ("Loop End", juce::dontSendNotification);
-    addAndMakeVisible (loopEndTextEditor);
-
-    addAndMakeVisible (quantSizeLabel);
-    quantSizeLabel.setText ("Quant Size", juce::dontSendNotification);
-    addAndMakeVisible (quantSizeTextEditor);
-
-    addAndMakeVisible (syncTypeLabel);
-    syncTypeLabel.setText ("Sync Type", juce::dontSendNotification);
-    addAndMakeVisible (syncTypeTextEditor);
-
-    addAndMakeVisible (actSliceLabel);
-    actSliceLabel.setText ("Active Slice", juce::dontSendNotification);
-    addAndMakeVisible (actSliceTextEditor);
-
-    addAndMakeVisible (outputBusLabel);
-    outputBusLabel.setText ("Output Bus", juce::dontSendNotification);
-    addAndMakeVisible (outputBusTextEditor);
-
-    addAndMakeVisible (polyModeLabel);
-    polyModeLabel.setText ("Poly Mode", juce::dontSendNotification);
-    addAndMakeVisible (polyModeTextEditor);
-
-    addAndMakeVisible (polyModeSliceLabel);
-    polyModeSliceLabel.setText ("Poly Mode Slice", juce::dontSendNotification);
-    addAndMakeVisible (polyModeSliceTextEditor);
-
-    addAndMakeVisible (sliceStepModeLabel);
-    sliceStepModeLabel.setText ("Slice Step Mode", juce::dontSendNotification);
-    addAndMakeVisible (sliceStepModeTextEditor);
-
-    addAndMakeVisible (chokeGrpLabel);
-    chokeGrpLabel.setText ("Choke Group", juce::dontSendNotification);
-    addAndMakeVisible (chokeGrpTextEditor);
-
-    addAndMakeVisible (dualFilCutoffLabel);
-    dualFilCutoffLabel.setText ("Dual Filter Cutoff", juce::dontSendNotification);
-    addAndMakeVisible (dualFilCutoffTextEditor);
-
-    addAndMakeVisible (resLabel);
-    resLabel.setText ("Resonance", juce::dontSendNotification);
-    addAndMakeVisible (resTextEditor);
-
-    addAndMakeVisible (rootNoteLabel);
-    rootNoteLabel.setText ("Root Note", juce::dontSendNotification);
-    addAndMakeVisible (rootNoteTextEditor);
-
-    addAndMakeVisible (beatCountLabel);
-    beatCountLabel.setText ("Beat Count", juce::dontSendNotification);
-    addAndMakeVisible (beatCountTextEditor);
-
-    addAndMakeVisible (fx1SendLabel);
-    fx1SendLabel.setText ("FX1 Send", juce::dontSendNotification);
-    addAndMakeVisible (fx1SendTextEditor);
-
-    addAndMakeVisible (fx2SendLabel);
-    fx2SendLabel.setText ("FX2 Send", juce::dontSendNotification);
-    addAndMakeVisible (fx2SendTextEditor);
-
-    addAndMakeVisible (multiSamModeLabel);
-    multiSamModeLabel.setText ("Multi Sample Mode", juce::dontSendNotification);
-    addAndMakeVisible (multiSamModeTextEditor);
-
-    addAndMakeVisible (interpQualLabel);
-    interpQualLabel.setText ("Interpolation Quality", juce::dontSendNotification);
-    addAndMakeVisible (interpQualTextEditor);
-
-    addAndMakeVisible (playThruLabel);
-    playThruLabel.setText ("Play Through", juce::dontSendNotification);
-    addAndMakeVisible (playThruTextEditor);
-
-    addAndMakeVisible (slicerQuantSizeLabel);
-    slicerQuantSizeLabel.setText ("Slicer Quant Size", juce::dontSendNotification);
-    addAndMakeVisible (slicerQuantSizeTextEditor);
-
-    addAndMakeVisible (slicerSyncLabel);
-    slicerSyncLabel.setText ("Slicer Sync", juce::dontSendNotification);
-    addAndMakeVisible (slicerSyncTextEditor);
-
-    addAndMakeVisible (padNoteLabel);
-    padNoteLabel.setText ("Pad Note", juce::dontSendNotification);
-    addAndMakeVisible (padNoteTextEditor);
-
-    addAndMakeVisible (loopFadeAmtLabel);
-    loopFadeAmtLabel.setText ("Loop Fade Amount", juce::dontSendNotification);
-    addAndMakeVisible (loopFadeAmtTextEditor);
-
-    addAndMakeVisible (lfoWaveLabel);
-    lfoWaveLabel.setText ("LFO Wave", juce::dontSendNotification);
-    addAndMakeVisible (lfoWaveTextEditor);
-
-    addAndMakeVisible (lfoRateLabel);
-    lfoRateLabel.setText ("LFO Rate", juce::dontSendNotification);
-    addAndMakeVisible (lfoRateTextEditor);
-
-    addAndMakeVisible (lfoAmountLabel);
-    lfoAmountLabel.setText ("LFO Amount", juce::dontSendNotification);
-    addAndMakeVisible (lfoAmountTextEditor);
-
-    addAndMakeVisible (lfoKeyTrigLabel);
-    lfoKeyTrigLabel.setText ("LFO Key Trigger", juce::dontSendNotification);
-    addAndMakeVisible (lfoKeyTrigTextEditor);
-
-    addAndMakeVisible (lfoBeatSyncLabel);
-    lfoBeatSyncLabel.setText ("LFO Beat Sync", juce::dontSendNotification);
-    addAndMakeVisible (lfoBeatSyncTextEditor);
-
-    addAndMakeVisible (lfoRateBeatSyncLabel);
-    lfoRateBeatSyncLabel.setText ("LFO Rate Beat Sync", juce::dontSendNotification);
-    addAndMakeVisible (lfoRateBeatSyncTextEditor);
-
-    addAndMakeVisible (grainSizePercLabel);
-    grainSizePercLabel.setText ("Grain Size Percentage", juce::dontSendNotification);
-    addAndMakeVisible (grainSizePercTextEditor);
-
-    addAndMakeVisible (grainScatLabel);
-    grainScatLabel.setText ("Grain Scatter", juce::dontSendNotification);
-    addAndMakeVisible (grainScatTextEditor);
-
-    addAndMakeVisible (grainPanRndLabel);
-    grainPanRndLabel.setText ("Grain Pan Random", juce::dontSendNotification);
-    addAndMakeVisible (grainPanRndTextEditor);
-
-    addAndMakeVisible (grainDensityLabel);
-    grainDensityLabel.setText ("Grain Density", juce::dontSendNotification);
-    addAndMakeVisible (grainDensityTextEditor);
-
-    addAndMakeVisible (sliceModeLabel);
-    sliceModeLabel.setText ("Slice Mode", juce::dontSendNotification);
-    addAndMakeVisible (sliceModeTextEditor);
-
-    addAndMakeVisible (legatoModeLabel);
-    legatoModeLabel.setText ("Legato Mode", juce::dontSendNotification);
-    addAndMakeVisible (legatoModeTextEditor);
-
-    addAndMakeVisible (gainSsrcWinLabel);
-    gainSsrcWinLabel.setText ("Gain SSRC Window", juce::dontSendNotification);
-    addAndMakeVisible (gainSsrcWinTextEditor);
-
-    addAndMakeVisible (grainReadSpeedLabel);
-    grainReadSpeedLabel.setText ("Grain Read Speed", juce::dontSendNotification);
-    addAndMakeVisible (grainReadSpeedTextEditor);
-
-    addAndMakeVisible (recPresetLenLabel);
-    recPresetLenLabel.setText ("Record Preset Length", juce::dontSendNotification);
-    addAndMakeVisible (recPresetLenTextEditor);
-
-    addAndMakeVisible (recQuantLabel);
-    recQuantLabel.setText ("Record Quantization", juce::dontSendNotification);
-    addAndMakeVisible (recQuantTextEditor);
-
-    addAndMakeVisible (recInputLabel);
-    recInputLabel.setText ("Record Input", juce::dontSendNotification);
-    addAndMakeVisible (recInputTextEditor);
-
-    addAndMakeVisible (recUseThresLabel);
-    recUseThresLabel.setText ("Record Use Threshold", juce::dontSendNotification);
-    addAndMakeVisible (recUseThresTextEditor);
-
-    addAndMakeVisible (recThresLabel);
-    recThresLabel.setText ("Record Threshold", juce::dontSendNotification);
-    addAndMakeVisible (recThresTextEditor);
-
-    addAndMakeVisible (recMonOutBusLabel);
-    recMonOutBusLabel.setText ("Record Monitor Output Bus", juce::dontSendNotification);
-    addAndMakeVisible (recMonOutBusTextEditor);
+    setupLabel (fileNameLabel, "File Name", fileNameSelectLabel);
+    setupLabel (gainLabel, "Gain (dB)", gainTextEditor);
+    setupLabel (pitchLabel, "Pitch", pitchTextEditor);
+    setupLabel (panPosLabel, "Pan Position", panPosTextEditor);
+    setupLabel (samTrigTypeLabel, "Sample Trigger Type", samTrigTypeTextEditor);
+    setupLabel (loopModeLabel, "Loop Mode", loopModeComboBox);
+    setupLabel (loopModesLabel, "Loop Modes", loopModesTextEditor);
+    setupLabel (midiModeLabel, "MIDI Mode", midiModeTextEditor);
+    setupLabel (reverseLabel, "Reverse", reverseButton);
+    setupLabel (cellModeLabel, "Cell Mode", cellModeTextEditor);
+    setupLabel (envAttackLabel, "Attack", envAttackTextEditor);
+    setupLabel (envDecayLabel, "Decay", envDecayTextEditor);
+    setupLabel (envSusLabel, "Sustain", envSusTextEditor);
+    setupLabel (envRelLabel, "Release", envRelTextEditor);
+    setupLabel (samStartLabel, "Sample Start", samStartTextEditor);
+    setupLabel (samLenLabel, "Sample Length", samLenTextEditor);
+    setupLabel (loopStartLabel, "Loop Start", loopStartTextEditor);
+    setupLabel (loopEndLabel, "Loop End", loopEndTextEditor);
+    setupLabel (quantSizeLabel, "Quant Size", quantSizeTextEditor);
+    setupLabel (syncTypeLabel, "Sync Type", syncTypeTextEditor);
+    setupLabel (actSliceLabel, "Active Slice", actSliceTextEditor);
+    setupLabel (outputBusLabel, "Output Bus", outputBusTextEditor);
+    setupLabel (polyModeLabel, "Poly Mode", polyModeTextEditor);
+    setupLabel (polyModeSliceLabel, "Poly Mode Slice", polyModeSliceTextEditor);
+    setupLabel (sliceStepModeLabel, "Slice Step Mode", sliceStepModeTextEditor);
+    setupLabel (chokeGrpLabel, "Choke Group", chokeGrpTextEditor);
+    setupLabel (dualFilCutoffLabel, "Dual Filter Cutoff", dualFilCutoffTextEditor);
+    setupLabel (resLabel, "Resonance", resTextEditor);
+    setupLabel (rootNoteLabel, "Root Note", rootNoteTextEditor);
+    setupLabel (beatCountLabel, "Beat Count", beatCountTextEditor);
+    setupLabel (fx1SendLabel, "FX1 Send", fx1SendTextEditor);
+    setupLabel (fx2SendLabel, "FX2 Send", fx2SendTextEditor);
+    setupLabel (multiSamModeLabel, "Multi Sample Mode", multiSamModeTextEditor);
+    setupLabel (interpQualLabel, "Interpolation Quality", interpQualTextEditor);
+    setupLabel (playThruLabel, "Play Through", playThruTextEditor);
+    setupLabel (slicerQuantSizeLabel, "Slicer Quant Size", slicerQuantSizeTextEditor);
+    setupLabel (slicerSyncLabel, "Slicer Sync", slicerSyncTextEditor);
+    setupLabel (padNoteLabel, "Pad Note", padNoteTextEditor);
+    setupLabel (loopFadeAmtLabel, "Loop Fade Amount", loopFadeAmtTextEditor);
+    setupLabel (lfoWaveLabel, "LFO Wave", lfoWaveTextEditor);
+    setupLabel (lfoRateLabel, "LFO Rate", lfoRateTextEditor);
+    setupLabel (lfoAmountLabel, "LFO Amount", lfoAmountTextEditor);
+    setupLabel (lfoKeyTrigLabel, "LFO Key Trigger", lfoKeyTrigTextEditor);
+    setupLabel (lfoBeatSyncLabel, "LFO Beat Sync", lfoBeatSyncTextEditor);
+    setupLabel (lfoRateBeatSyncLabel, "LFO Rate Beat Sync", lfoRateBeatSyncTextEditor);
+    setupLabel (grainSizePercLabel, "Grain Size Percentage", grainSizePercTextEditor);
+    setupLabel (grainScatLabel, "Grain Scatter", grainScatTextEditor);
+    setupLabel (grainPanRndLabel, "Grain Pan Random", grainPanRndTextEditor);
+    setupLabel (grainDensityLabel, "Grain Density", grainDensityTextEditor);
+    setupLabel (sliceModeLabel, "Slice Mode", sliceModeTextEditor);
+    setupLabel (legatoModeLabel, "Legato Mode", legatoModeTextEditor);
+    setupLabel (gainSsrcWinLabel, "Gain SSRC Window", gainSsrcWinTextEditor);
+    setupLabel (grainReadSpeedLabel, "Grain Read Speed", grainReadSpeedTextEditor);
+    setupLabel (recPresetLenLabel, "Record Preset Length", recPresetLenTextEditor);
+    setupLabel (recQuantLabel, "Record Quantization", recQuantTextEditor);
+    setupLabel (recInputLabel, "Record Input", recInputTextEditor);
+    setupLabel (recUseThresLabel, "Record Use Threshold", recUseThresTextEditor);
+    setupLabel (recThresLabel, "Record Threshold", recThresTextEditor);
+    setupLabel (recMonOutBusLabel, "Record Monitor Output Bus", recMonOutBusTextEditor);
 }
 
 SampleEditorComponent::~SampleEditorComponent ()
