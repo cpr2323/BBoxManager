@@ -10,6 +10,10 @@ SampleEditorComponent::SampleEditorComponent ()
         addAndMakeVisible (editor);
     };
 
+    fileNameSelectLabel.setColour (juce::Label::ColourIds::textColourId, juce::Colours::white);
+    fileNameSelectLabel.setColour (juce::Label::ColourIds::backgroundColourId, juce::Colours::black);
+    fileNameSelectLabel.setOutline (juce::Colours::white);
+
     setupLabel (fileNameLabel, "File Name", fileNameSelectLabel);
     setupLabel (gainLabel, "Gain (dB)", gainTextEditor);
     setupLabel (pitchLabel, "Pitch", pitchTextEditor);
