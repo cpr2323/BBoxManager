@@ -72,10 +72,13 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
             CellProperties cellProperties { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no};
             const auto type = bitBoxPresetCellElement->getStringAttribute ("type");
             cellProperties.setType (type, false);
-            cellProperties.setRow (bitBoxPresetCellElement->getIntAttribute ("row"), false);
-            cellProperties.setColumn (bitBoxPresetCellElement->getIntAttribute ("column"), false);
-            cellProperties.setLayer (bitBoxPresetCellElement->getIntAttribute ("layer"), false);
-
+            if (bitBoxPresetCellElement->hasAttribute("row"))
+                cellProperties.setRow (bitBoxPresetCellElement->getIntAttribute ("row"), false);
+            if (bitBoxPresetCellElement->hasAttribute ("column"))
+                cellProperties.setColumn (bitBoxPresetCellElement->getIntAttribute ("column"), false);
+            if (bitBoxPresetCellElement->hasAttribute ("layer"))
+                cellProperties.setLayer (bitBoxPresetCellElement->getIntAttribute ("layer"), false);
+            juce::Logger::outputDebugString ("Cell " + juce::String (cellProperties.getRow ()) + ", " + juce::String (cellProperties.getColumn ()) + ", " + juce::String (cellProperties.getLayer ()));
             if (type == "samtempl")
             {
                 // TO DO : do I need to copy in these properties

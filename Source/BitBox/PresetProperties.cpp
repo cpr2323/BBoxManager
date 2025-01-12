@@ -17,7 +17,10 @@ juce::ValueTree getCellProperties (juce::ValueTree vt, int row, int column, int 
     ValueTreeHelpers::forEachChildOfType (vt, CellProperties::CellTypeId, [&cellPropertiesVT, row, column, layer] (juce::ValueTree cellChild)
     {
         CellProperties cellProperties { cellChild, CellProperties::WrapperType::client, CellProperties::EnableCallbacks::no };
-        if (cellProperties.getRow () == row && cellProperties.getColumn () == column && cellProperties.getLayer () == layer)
+        const auto cellRow { cellChild.hasProperty(CellProperties::RowPropertyId) ? cellProperties.getRow () : -1 };
+        const auto cellColumn { cellChild.hasProperty (CellProperties::ColumnPropertyId) ? cellProperties.getColumn () : -1 };
+        const auto cellLayer { cellChild.hasProperty (CellProperties::LayerPropertyId) ? cellProperties.getLayer() : -1 };
+        if (cellRow == row && cellColumn == column && cellLayer == layer)
         {
             cellPropertiesVT = cellChild;
             return false;
@@ -184,7 +187,7 @@ void PresetProperties::copyPropertiesFrom (juce::ValueTree sourceVT)
             {
                 auto songPropsVT { srcCellProperties.getValueTree ().getChildWithName (SongProperties::SongTypeId) };
                 SongProperties srcSongProperties { songPropsVT, SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
-                SongProperties destSongProperties { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()).getChildWithName (SongProperties::SongTypeId), SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
+                SongProperties destSongProperties { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()), SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
                 if (destSongProperties.isValid ())
                 {
                     destSongProperties.copyPropertiesFrom (srcSongProperties.getValueTree ());

@@ -14,13 +14,13 @@ public:
     juce::String getType () { return getValue<juce::String> (TypePropertyId); }
 
     void setRow (int row, bool includeSelfCallback) { setValue (row, RowPropertyId, includeSelfCallback); }
-    int getRow () { return getValue<int> (RowPropertyId); }
+    int getRow () { return data.hasProperty (RowPropertyId) ? getValue<int> (RowPropertyId) : -1; }
 
     void setColumn (int column, bool includeSelfCallback) { setValue (column, ColumnPropertyId, includeSelfCallback); }
-    int getColumn () { return getValue<int> (ColumnPropertyId); }
+    int getColumn () { return data.hasProperty (ColumnPropertyId) ? getValue<int> (ColumnPropertyId) : -1; }
 
     void setLayer (int layer, bool includeSelfCallback) { setValue (layer, LayerPropertyId, includeSelfCallback); }
-    int getLayer () { return getValue<int> (LayerPropertyId); }
+    int getLayer () { return data.hasProperty (LayerPropertyId) ? getValue<int> (LayerPropertyId) : -1; }
 
     std::function<void (juce::String cellType)> onTypeChange;
     std::function<void (int row)> onRowChange;
