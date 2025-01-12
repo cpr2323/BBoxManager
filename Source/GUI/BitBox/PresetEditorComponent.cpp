@@ -67,10 +67,10 @@ void PresetEditorComponent::timerCallback ()
 
 void PresetEditorComponent::nameUiChanged (juce::String name)
 {
-    // Handle UI name change
+    presetProperties.setName (name, true);
 }
 
 void PresetEditorComponent::nameDataChanged (juce::String name)
 {
-    // Handle data name change
+    presetNameEditor.setText (name, juce::NotificationType::dontSendNotification);
 }
