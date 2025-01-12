@@ -184,7 +184,7 @@ void PresetProperties::copyPropertiesFrom (juce::ValueTree sourceVT)
             {
                 auto songPropsVT { srcCellProperties.getValueTree ().getChildWithName (SongProperties::SongTypeId) };
                 SongProperties srcSongProperties { songPropsVT, SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
-                SongProperties destSongProperties { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()), SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
+                SongProperties destSongProperties { getCellProperties (data, srcCellProperties.getRow (), srcCellProperties.getColumn (), srcCellProperties.getLayer ()).getChildWithName (SongProperties::SongTypeId), SongProperties::WrapperType::client, SongProperties::EnableCallbacks::no };
                 if (destSongProperties.isValid ())
                 {
                     destSongProperties.copyPropertiesFrom (srcSongProperties.getValueTree ());

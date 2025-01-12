@@ -196,7 +196,6 @@ void SampleEditorComponent::init (juce::ValueTree samplePropertiesVT)
     recUseThresDataChanged (sampleProperties.getRecUseThres ());
     recThresDataChanged (sampleProperties.getRecThres ());
     recMonOutBusDataChanged (sampleProperties.getRecMonOutBus ());
-
 }
 
 bool SampleEditorComponent::loadFile (juce::String sampleFileName)
@@ -210,7 +209,8 @@ juce::ValueTree SampleEditorComponent::getSamplePropertiesVT ()
     return sampleProperties.getValueTree ();
 }
 
-void SampleEditorComponent::gainDataChanged (int gain) { gainTextEditor.setText (juce::String (gain)); }
+void SampleEditorComponent::gainDataChanged (int gain) {
+    gainTextEditor.setText (juce::String (gain)); }
 void SampleEditorComponent::pitchDataChanged (int pitch) { pitchTextEditor.setText (juce::String (pitch)); }
 void SampleEditorComponent::panPosDataChanged (int panPos) { panPosTextEditor.setText (juce::String (panPos)); }
 void SampleEditorComponent::samTrigTypeDataChanged (int samTrigType) { samTrigTypeTextEditor.setText (juce::String (samTrigType)); }
@@ -354,125 +354,84 @@ void SampleEditorComponent::fileDragExit (const juce::StringArray& files)
 void SampleEditorComponent::resized ()
 {
     auto area = getLocalBounds ().reduced (10);
-    fileNameLabel.setBounds (area.removeFromTop (20));
-    fileNameSelectLabel.setBounds (area.removeFromTop (20));
-    gainLabel.setBounds (area.removeFromTop (20));
-    gainTextEditor.setBounds (area.removeFromTop (20));
-    pitchLabel.setBounds (area.removeFromTop (20));
-    pitchTextEditor.setBounds (area.removeFromTop (20));
-    panPosLabel.setBounds (area.removeFromTop (20));
-    panPosTextEditor.setBounds (area.removeFromTop (20));
-    samTrigTypeLabel.setBounds (area.removeFromTop (20));
-    samTrigTypeTextEditor.setBounds (area.removeFromTop (20));
-    loopModeLabel.setBounds (area.removeFromTop (20));
-    loopModeComboBox.setBounds (area.removeFromTop (20));
-    loopModesLabel.setBounds (area.removeFromTop (20));
-    loopModesTextEditor.setBounds (area.removeFromTop (20));
-    midiModeLabel.setBounds (area.removeFromTop (20));
-    midiModeTextEditor.setBounds (area.removeFromTop (20));
-    reverseLabel.setBounds (area.removeFromTop (20));
-    reverseButton.setBounds (area.removeFromTop (20));
-    cellModeLabel.setBounds (area.removeFromTop (20));
-    cellModeTextEditor.setBounds (area.removeFromTop (20));
-    envAttackLabel.setBounds (area.removeFromTop (20));
-    envAttackTextEditor.setBounds (area.removeFromTop (20));
-    envDecayLabel.setBounds (area.removeFromTop (20));
-    envDecayTextEditor.setBounds (area.removeFromTop (20));
-    envSusLabel.setBounds (area.removeFromTop (20));
-    envSusTextEditor.setBounds (area.removeFromTop (20));
-    envRelLabel.setBounds (area.removeFromTop (20));
-    envRelTextEditor.setBounds (area.removeFromTop (20));
-    samStartLabel.setBounds (area.removeFromTop (20));
-    samStartTextEditor.setBounds (area.removeFromTop (20));
-    samLenLabel.setBounds (area.removeFromTop (20));
-    samLenTextEditor.setBounds (area.removeFromTop (20));
-    loopStartLabel.setBounds (area.removeFromTop (20));
-    loopStartTextEditor.setBounds (area.removeFromTop (20));
-    loopEndLabel.setBounds (area.removeFromTop (20));
-    loopEndTextEditor.setBounds (area.removeFromTop (20));
-    quantSizeLabel.setBounds (area.removeFromTop (20));
-    quantSizeTextEditor.setBounds (area.removeFromTop (20));
-    syncTypeLabel.setBounds (area.removeFromTop (20));
-    syncTypeTextEditor.setBounds (area.removeFromTop (20));
-    actSliceLabel.setBounds (area.removeFromTop (20));
-    actSliceTextEditor.setBounds (area.removeFromTop (20));
-    outputBusLabel.setBounds (area.removeFromTop (20));
-    outputBusTextEditor.setBounds (area.removeFromTop (20));
-    polyModeLabel.setBounds (area.removeFromTop (20));
-    polyModeTextEditor.setBounds (area.removeFromTop (20));
-    polyModeSliceLabel.setBounds (area.removeFromTop (20));
-    polyModeSliceTextEditor.setBounds (area.removeFromTop (20));
-    sliceStepModeLabel.setBounds (area.removeFromTop (20));
-    sliceStepModeTextEditor.setBounds (area.removeFromTop (20));
-    chokeGrpLabel.setBounds (area.removeFromTop (20));
-    chokeGrpTextEditor.setBounds (area.removeFromTop (20));
-    dualFilCutoffLabel.setBounds (area.removeFromTop (20));
-    dualFilCutoffTextEditor.setBounds (area.removeFromTop (20));
-    resLabel.setBounds (area.removeFromTop (20));
-    resTextEditor.setBounds (area.removeFromTop (20));
-    rootNoteLabel.setBounds (area.removeFromTop (20));
-    rootNoteTextEditor.setBounds (area.removeFromTop (20));
-    beatCountLabel.setBounds (area.removeFromTop (20));
-    beatCountTextEditor.setBounds (area.removeFromTop (20));
-    fx1SendLabel.setBounds (area.removeFromTop (20));
-    fx1SendTextEditor.setBounds (area.removeFromTop (20));
-    fx2SendLabel.setBounds (area.removeFromTop (20));
-    fx2SendTextEditor.setBounds (area.removeFromTop (20));
-    multiSamModeLabel.setBounds (area.removeFromTop (20));
-    multiSamModeTextEditor.setBounds (area.removeFromTop (20));
-    interpQualLabel.setBounds (area.removeFromTop (20));
-    interpQualTextEditor.setBounds (area.removeFromTop (20));
-    playThruLabel.setBounds (area.removeFromTop (20));
-    playThruTextEditor.setBounds (area.removeFromTop (20));
-    slicerQuantSizeLabel.setBounds (area.removeFromTop (20));
-    slicerQuantSizeTextEditor.setBounds (area.removeFromTop (20));
-    slicerSyncLabel.setBounds (area.removeFromTop (20));
-    slicerSyncTextEditor.setBounds (area.removeFromTop (20));
-    padNoteLabel.setBounds (area.removeFromTop (20));
-    padNoteTextEditor.setBounds (area.removeFromTop (20));
-    loopFadeAmtLabel.setBounds (area.removeFromTop (20));
-    loopFadeAmtTextEditor.setBounds (area.removeFromTop (20));
-    lfoWaveLabel.setBounds (area.removeFromTop (20));
-    lfoWaveTextEditor.setBounds (area.removeFromTop (20));
-    lfoRateLabel.setBounds (area.removeFromTop (20));
-    lfoRateTextEditor.setBounds (area.removeFromTop (20));
-    lfoAmountLabel.setBounds (area.removeFromTop (20));
-    lfoAmountTextEditor.setBounds (area.removeFromTop (20));
-    lfoKeyTrigLabel.setBounds (area.removeFromTop (20));
-    lfoKeyTrigTextEditor.setBounds (area.removeFromTop (20));
-    lfoBeatSyncLabel.setBounds (area.removeFromTop (20));
-    lfoBeatSyncTextEditor.setBounds (area.removeFromTop (20));
-    lfoRateBeatSyncLabel.setBounds (area.removeFromTop (20));
-    lfoRateBeatSyncTextEditor.setBounds (area.removeFromTop (20));
-    grainSizePercLabel.setBounds (area.removeFromTop (20));
-    grainSizePercTextEditor.setBounds (area.removeFromTop (20));
-    grainScatLabel.setBounds (area.removeFromTop (20));
-    grainScatTextEditor.setBounds (area.removeFromTop (20));
-    grainPanRndLabel.setBounds (area.removeFromTop (20));
-    grainPanRndTextEditor.setBounds (area.removeFromTop (20));
-    grainDensityLabel.setBounds (area.removeFromTop (20));
-    grainDensityTextEditor.setBounds (area.removeFromTop (20));
-    sliceModeLabel.setBounds (area.removeFromTop (20));
-    sliceModeTextEditor.setBounds (area.removeFromTop (20));
-    legatoModeLabel.setBounds (area.removeFromTop (20));
-    legatoModeTextEditor.setBounds (area.removeFromTop (20));
-    gainSsrcWinLabel.setBounds (area.removeFromTop (20));
-    gainSsrcWinTextEditor.setBounds (area.removeFromTop (20));
-    grainReadSpeedLabel.setBounds (area.removeFromTop (20));
-    grainReadSpeedTextEditor.setBounds (area.removeFromTop (20));
-    recPresetLenLabel.setBounds (area.removeFromTop (20));
-    recPresetLenTextEditor.setBounds (area.removeFromTop (20));
-    recQuantLabel.setBounds (area.removeFromTop (20));
-    recQuantTextEditor.setBounds (area.removeFromTop (20));
-    recInputLabel.setBounds (area.removeFromTop (20));
-    recInputTextEditor.setBounds (area.removeFromTop (20));
-    recUseThresLabel.setBounds (area.removeFromTop (20));
-    recUseThresTextEditor.setBounds (area.removeFromTop (20));
-    recThresLabel.setBounds (area.removeFromTop (20));
-    recThresTextEditor.setBounds (area.removeFromTop (20));
-    recMonOutBusLabel.setBounds (area.removeFromTop (20));
-    recMonOutBusTextEditor.setBounds (area.removeFromTop (20));
+    auto columnWidth = area.getWidth () / 3;
+    auto leftColumn = area.removeFromLeft (columnWidth).reduced (5);
+    auto middleColumn = area.removeFromLeft (columnWidth).reduced (5);
+    auto rightColumn = area.reduced (5);
+
+    auto setupBounds = [] (juce::Label& label, juce::Component& editor, juce::Rectangle<int>& columnArea)
+        {
+            auto row = columnArea.removeFromTop (20);
+            label.setBounds (row.removeFromLeft (row.getWidth () * 0.6666));
+            editor.setBounds (row);
+        };
+
+        // Left column items
+    setupBounds (fileNameLabel, fileNameSelectLabel, leftColumn);
+    setupBounds (gainLabel, gainTextEditor, leftColumn);
+    setupBounds (pitchLabel, pitchTextEditor, leftColumn);
+    setupBounds (panPosLabel, panPosTextEditor, leftColumn);
+    setupBounds (samTrigTypeLabel, samTrigTypeTextEditor, leftColumn);
+    setupBounds (loopModeLabel, loopModeComboBox, leftColumn);
+    setupBounds (loopModesLabel, loopModesTextEditor, leftColumn);
+    setupBounds (midiModeLabel, midiModeTextEditor, leftColumn);
+    setupBounds (reverseLabel, reverseButton, leftColumn);
+    setupBounds (cellModeLabel, cellModeTextEditor, leftColumn);
+    setupBounds (envAttackLabel, envAttackTextEditor, leftColumn);
+    setupBounds (envDecayLabel, envDecayTextEditor, leftColumn);
+    setupBounds (envSusLabel, envSusTextEditor, leftColumn);
+    setupBounds (envRelLabel, envRelTextEditor, leftColumn);
+    setupBounds (samStartLabel, samStartTextEditor, leftColumn);
+    setupBounds (samLenLabel, samLenTextEditor, leftColumn);
+    setupBounds (loopStartLabel, loopStartTextEditor, leftColumn);
+    setupBounds (loopEndLabel, loopEndTextEditor, leftColumn);
+    setupBounds (quantSizeLabel, quantSizeTextEditor, leftColumn);
+
+    // Middle column items
+    setupBounds (syncTypeLabel, syncTypeTextEditor, middleColumn);
+    setupBounds (actSliceLabel, actSliceTextEditor, middleColumn);
+    setupBounds (outputBusLabel, outputBusTextEditor, middleColumn);
+    setupBounds (polyModeLabel, polyModeTextEditor, middleColumn);
+    setupBounds (polyModeSliceLabel, polyModeSliceTextEditor, middleColumn);
+    setupBounds (sliceStepModeLabel, sliceStepModeTextEditor, middleColumn);
+    setupBounds (chokeGrpLabel, chokeGrpTextEditor, middleColumn);
+    setupBounds (dualFilCutoffLabel, dualFilCutoffTextEditor, middleColumn);
+    setupBounds (resLabel, resTextEditor, middleColumn);
+    setupBounds (rootNoteLabel, rootNoteTextEditor, middleColumn);
+    setupBounds (beatCountLabel, beatCountTextEditor, middleColumn);
+    setupBounds (fx1SendLabel, fx1SendTextEditor, middleColumn);
+    setupBounds (fx2SendLabel, fx2SendTextEditor, middleColumn);
+    setupBounds (multiSamModeLabel, multiSamModeTextEditor, middleColumn);
+    setupBounds (interpQualLabel, interpQualTextEditor, middleColumn);
+    setupBounds (playThruLabel, playThruTextEditor, middleColumn);
+    setupBounds (slicerQuantSizeLabel, slicerQuantSizeTextEditor, middleColumn);
+    setupBounds (slicerSyncLabel, slicerSyncTextEditor, middleColumn);
+    setupBounds (padNoteLabel, padNoteTextEditor, middleColumn);
+    setupBounds (loopFadeAmtLabel, loopFadeAmtTextEditor, middleColumn);
+
+    // Right column items
+    setupBounds (lfoWaveLabel, lfoWaveTextEditor, rightColumn);
+    setupBounds (lfoRateLabel, lfoRateTextEditor, rightColumn);
+    setupBounds (lfoAmountLabel, lfoAmountTextEditor, rightColumn);
+    setupBounds (lfoKeyTrigLabel, lfoKeyTrigTextEditor, rightColumn);
+    setupBounds (lfoBeatSyncLabel, lfoBeatSyncTextEditor, rightColumn);
+    setupBounds (lfoRateBeatSyncLabel, lfoRateBeatSyncTextEditor, rightColumn);
+    setupBounds (grainSizePercLabel, grainSizePercTextEditor, rightColumn);
+    setupBounds (grainScatLabel, grainScatTextEditor, rightColumn);
+    setupBounds (grainPanRndLabel, grainPanRndTextEditor, rightColumn);
+    setupBounds (grainDensityLabel, grainDensityTextEditor, rightColumn);
+    setupBounds (sliceModeLabel, sliceModeTextEditor, rightColumn);
+    setupBounds (legatoModeLabel, legatoModeTextEditor, rightColumn);
+    setupBounds (gainSsrcWinLabel, gainSsrcWinTextEditor, rightColumn);
+    setupBounds (grainReadSpeedLabel, grainReadSpeedTextEditor, rightColumn);
+    setupBounds (recPresetLenLabel, recPresetLenTextEditor, rightColumn);
+    setupBounds (recQuantLabel, recQuantTextEditor, rightColumn);
+    setupBounds (recInputLabel, recInputTextEditor, rightColumn);
+    setupBounds (recUseThresLabel, recUseThresTextEditor, rightColumn);
+    setupBounds (recThresLabel, recThresTextEditor, rightColumn);
+    setupBounds (recMonOutBusLabel, recMonOutBusTextEditor, rightColumn);
 }
+
 
 void SampleEditorComponent::paint (juce::Graphics& g)
 {

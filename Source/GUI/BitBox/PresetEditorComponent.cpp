@@ -37,7 +37,9 @@ void PresetEditorComponent::init (juce::ValueTree rootPropertiesVT)
     presetProperties.wrap (presetManagerProperties.getPreset ("edit"), PresetProperties::WrapperType::client, PresetProperties::EnableCallbacks::yes);
     audioPlayerProperties.wrap (runtimeRootProperties.getValueTree (), AudioPlayerProperties::WrapperType::owner, AudioPlayerProperties::EnableCallbacks::yes);
 
-    presetProperties.forEachPad ([this, rootPropertiesVT] (juce::ValueTree padPropertiesVT, int padIndex)
+    // TODO - this is failing, because there are no Cells in the preset yet
+    //        so, when a preset is loaded there are no callbacks
+    presetProperties.forEachPad ([this] (juce::ValueTree padPropertiesVT, int padIndex)
     {
         padEditorComponents[padIndex]->init (padPropertiesVT);
         return true;
