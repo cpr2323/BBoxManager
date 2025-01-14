@@ -29,15 +29,14 @@ public:
     void forEachPad (std::function<bool (juce::ValueTree padVT, int padIndex)> padVTCallback);
     void copyPropertiesFrom (juce::ValueTree source);
 
-    void initValueTree ()
-    {
-        setName ("", false);
-    }
+    void initValueTree ();
 
     void processValueTree () {}
 
 private:
-    void valueTreePropertyChanged (juce::ValueTree& vt, const juce::Identifier& property)
+    juce::ValueTree getCellProperties (juce::ValueTree vt, int row, int column, int layer);
+
+    void valueTreePropertyChanged (juce::ValueTree& vt, const juce::Identifier& property) override
     {
         if (vt == data)
         {

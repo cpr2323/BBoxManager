@@ -11,23 +11,102 @@
 #include "SongProperties.h"
 #include "Preset/BitBoxPresetReader.h"
 
-juce::ValueTree getCellProperties (juce::ValueTree vt, int row, int column, int layer)
+void PresetProperties::initValueTree ()
 {
-    juce::ValueTree cellPropertiesVT;
-    ValueTreeHelpers::forEachChildOfType (vt, CellProperties::CellTypeId, [&cellPropertiesVT, row, column, layer] (juce::ValueTree cellChild)
+    setName ("", false);
+    // Cell (samtempl)0, 0, 0
+    // Cell (samtempl)1, 0, 0
+    // Cell (samtempl)2, 0, 0
+    // Cell (samtempl)3, 0, 0
+    // Cell (samtempl)0, 1, 0
+    // Cell (samtempl)1, 1, 0
+    // Cell (samtempl)2, 1, 0
+    // Cell (samtempl)3, 1, 0
+    // Cell (samtempl)0, 2, 0
+    // Cell (samtempl)1, 2, 0
+    // Cell (samtempl)2, 2, 0
+    // Cell (samtempl)3, 2, 0
+    // Cell (samtempl)0, 3, 0
+    // Cell (samtempl)1, 3, 0
+    // Cell (samtempl)2, 3, 0
+    // Cell (samtempl)3, 3, 0
+    // Cell (samtempl)0, 4, 0
+    // Cell (samtempl)1, 4, 0
+    // Cell (samtempl)2, 4, 0
+    // Cell (samtempl)3, 4, 0
+    constexpr auto kPadLayer { 0 };
+    SampleProperties templateSampleProperties { {},SampleProperties::WrapperType::owner, SampleProperties::EnableCallbacks::no };
+    templateSampleProperties.getValueTree ().setProperty ("deftemplate", 1, nullptr);
+    for (auto col { 0 }; col < 5; ++col)
     {
-        CellProperties cellProperties { cellChild, CellProperties::WrapperType::client, CellProperties::EnableCallbacks::no };
-        const auto cellRow { cellChild.hasProperty(CellProperties::RowPropertyId) ? cellProperties.getRow () : -1 };
-        const auto cellColumn { cellChild.hasProperty (CellProperties::ColumnPropertyId) ? cellProperties.getColumn () : -1 };
-        const auto cellLayer { cellChild.hasProperty (CellProperties::LayerPropertyId) ? cellProperties.getLayer() : -1 };
-        if (cellRow == row && cellColumn == column && cellLayer == layer)
+        for (auto row { 0 }; row < 4; ++row)
         {
-            cellPropertiesVT = cellChild;
-            return false;
+            CellProperties cell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
+            cell.setRow (row, false);
+            cell.setColumn (col, false);
+            cell.setLayer (kPadLayer, false);
+            cell.setType ("samtempl", false);
+            cell.getValueTree ().addChild (templateSampleProperties.getValueTree ().createCopy (), -1, nullptr);
+            SliceListProperties sliceListProperties { {}, SliceListProperties::WrapperType::owner, SliceListProperties::EnableCallbacks::no };
+            cell.getValueTree ().addChild (sliceListProperties.getValueTree ().createCopy (), -1, nullptr);
+            data.addChild (cell.getValueTree (), -1, nullptr);
         }
-        return true;
-    });
-    return cellPropertiesVT;
+    }
+
+    constexpr auto kEffectsLayer { 3 };
+    // Cell (delay)0, -1, 3
+    CellProperties delayCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
+    delayCell.setRow (0, false);
+    delayCell.setLayer (kEffectsLayer, false);
+    delayCell.setType ("delay", false);
+    DelayProperties delayProperties { {}, DelayProperties::WrapperType::owner, DelayProperties::EnableCallbacks::no };
+    // <params delay="400" delaymustime="6" feedback="400" cutoff="120" filtquality="1000" dealybeatsync="1" filtenable="1" delaypingpong="1"/>
+    delayCell.getValueTree ().addChild (delayProperties.getValueTree ().createCopy (), -1, nullptr);
+    data.addChild (delayCell.getValueTree (), -1, nullptr);
+
+
+    // Cell (reverb)1, -1, 3
+    CellProperties reverbCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
+    reverbCell.setRow (1, false);
+    reverbCell.setLayer (kEffectsLayer, false);
+    reverbCell.setType ("reverb", false);
+    ReverbProperties reverbProperties { {}, ReverbProperties::WrapperType::owner, ReverbProperties::EnableCallbacks::no };
+    // <params decay = "600" predelay = "40" damping = "500" / >
+    reverbCell.getValueTree ().addChild (reverbProperties.getValueTree ().createCopy (), -1, nullptr);
+    data.addChild (reverbCell.getValueTree (), -1, nullptr);
+
+// Cell (eq)2, -1, 3
+//     	<params eqactband="0" eqgain="0" eqcutoff="200" eqres="400" eqenable="1" eqtype="0" eqgain2="0" eqcutoff2="400" eqres2="400"
+//              eqenable2="1" eqtype2="0" eqgain3="0" eqcutoff3="600" eqres3="400" eqenable3="1" eqtype3="0" eqgain4="0" eqcutoff4="800" eqres4="400" eqenable4="1" eqtype4="0"/>
+
+// Cell (null)3, -1, 3
+// Cell (null)4, -1, 3
+
+// Cell (ioconnectin)0, -1, 8
+//  <params inputiocon="gatein"/>
+// Cell (ioconnectin)1, -1, 8
+// Cell (ioconnectin)2, -1, 8
+// Cell (ioconnectin)3, -1, 8
+// Cell (ioconnectin)4, -1, 8
+// Cell (ioconnectin)5, -1, 8
+// Cell (ioconnectin)6, -1, 8
+// Cell (ioconnectin)7, -1, 8
+
+// Cell (ioconnectout)0, -1, 9
+//  <params outputiocon="chanout1"/>
+// Cell (ioconnectout)1, -1, 9
+// Cell (ioconnectout)2, -1, 9
+// Cell (ioconnectout)3, -1, 9
+// Cell (ioconnectout)4, -1, 9
+// Cell (ioconnectout)5, -1, 9
+// Cell (ioconnectout)6, -1, 9
+//  <params outputiocon="masterout1"/>
+// Cell (ioconnectout)7, -1, 9
+//  <params outputiocon = "masterout1" / >
+
+
+// Cell (song)-1, -1, -1
+
 }
 
 void PresetProperties::forEachPad (std::function<bool (juce::ValueTree padVT, int padIndex)> padVTCallback)
@@ -47,6 +126,25 @@ void PresetProperties::forEachPad (std::function<bool (juce::ValueTree padVT, in
     callCellCallback (5, 0, 2, 0);
     callCellCallback (6, 1, 3, 0);
     callCellCallback (7, 0, 3, 0);
+}
+
+juce::ValueTree PresetProperties::getCellProperties (juce::ValueTree vt, int row, int column, int layer)
+{
+    juce::ValueTree cellPropertiesVT;
+    ValueTreeHelpers::forEachChildOfType (vt, CellProperties::CellTypeId, [&cellPropertiesVT, row, column, layer] (juce::ValueTree cellChild)
+    {
+        CellProperties cellProperties { cellChild, CellProperties::WrapperType::client, CellProperties::EnableCallbacks::no };
+        const auto cellRow { cellChild.hasProperty (CellProperties::RowPropertyId) ? cellProperties.getRow () : -1 };
+        const auto cellColumn { cellChild.hasProperty (CellProperties::ColumnPropertyId) ? cellProperties.getColumn () : -1 };
+        const auto cellLayer { cellChild.hasProperty (CellProperties::LayerPropertyId) ? cellProperties.getLayer () : -1 };
+        if (cellRow == row && cellColumn == column && cellLayer == layer)
+        {
+            cellPropertiesVT = cellChild;
+            return false;
+        }
+        return true;
+    });
+    return cellPropertiesVT;
 }
 
 void PresetProperties::copyPropertiesFrom (juce::ValueTree sourceVT)
@@ -106,10 +204,9 @@ void PresetProperties::copyPropertiesFrom (juce::ValueTree sourceVT)
                         destCellPropertiesVT.removeChild (destChild, nullptr);
                 }
                 // copy modsources
-                ValueTreeHelpers::forEachChildOfType (srcCellProperties.getValueTree (), ModSourceProperties::ModSourceTypeId, [this, &destCellPropertiesVT] (juce::ValueTree child)
+                ValueTreeHelpers::forEachChildOfType (srcCellProperties.getValueTree (), ModSourceProperties::ModSourceTypeId, [this, &destCellPropertiesVT] (juce::ValueTree modSrcChild)
                 {
-                    if (child.getType () == ModSourceProperties::ModSourceTypeId)
-                        destCellPropertiesVT.addChild (child.createCopy (), -1, nullptr);
+                    destCellPropertiesVT.addChild (modSrcChild.createCopy (), -1, nullptr);
                     return true;
                 });
                 // remove old slices

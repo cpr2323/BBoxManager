@@ -234,6 +234,7 @@ public:
 
     void initAudio ()
     {
+        // creates/adds AudioPlayerProperties to VT passed in to init
         audioPlayer.init (rootProperties.getValueTree ());
     }
 

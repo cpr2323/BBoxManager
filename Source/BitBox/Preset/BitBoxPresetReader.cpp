@@ -78,7 +78,7 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                 cellProperties.setColumn (bitBoxPresetCellElement->getIntAttribute ("column"), false);
             if (bitBoxPresetCellElement->hasAttribute ("layer"))
                 cellProperties.setLayer (bitBoxPresetCellElement->getIntAttribute ("layer"), false);
-            juce::Logger::outputDebugString ("Cell " + juce::String (cellProperties.getRow ()) + ", " + juce::String (cellProperties.getColumn ()) + ", " + juce::String (cellProperties.getLayer ()));
+            juce::Logger::outputDebugString ("Cell (" + type + ")" + juce::String (cellProperties.getRow ()) + ", " + juce::String (cellProperties.getColumn ()) + ", " + juce::String (cellProperties.getLayer ()));
             if (type == "samtempl")
             {
                 // TO DO : do I need to copy in these properties
