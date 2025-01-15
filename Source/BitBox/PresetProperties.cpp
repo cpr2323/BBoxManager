@@ -14,26 +14,26 @@
 void PresetProperties::initValueTree ()
 {
     setName ("", false);
-    // Cell (samtempl)0, 0, 0
-    // Cell (samtempl)1, 0, 0
-    // Cell (samtempl)2, 0, 0
-    // Cell (samtempl)3, 0, 0
-    // Cell (samtempl)0, 1, 0
-    // Cell (samtempl)1, 1, 0
-    // Cell (samtempl)2, 1, 0
-    // Cell (samtempl)3, 1, 0
-    // Cell (samtempl)0, 2, 0
-    // Cell (samtempl)1, 2, 0
-    // Cell (samtempl)2, 2, 0
-    // Cell (samtempl)3, 2, 0
-    // Cell (samtempl)0, 3, 0
-    // Cell (samtempl)1, 3, 0
-    // Cell (samtempl)2, 3, 0
-    // Cell (samtempl)3, 3, 0
-    // Cell (samtempl)0, 4, 0
-    // Cell (samtempl)1, 4, 0
-    // Cell (samtempl)2, 4, 0
-    // Cell (samtempl)3, 4, 0
+    // Cell (samtempl) 0, 0, 0
+    // Cell (samtempl) 1, 0, 0
+    // Cell (samtempl) 2, 0, 0
+    // Cell (samtempl) 3, 0, 0
+    // Cell (samtempl) 0, 1, 0
+    // Cell (samtempl) 1, 1, 0
+    // Cell (samtempl) 2, 1, 0
+    // Cell (samtempl) 3, 1, 0
+    // Cell (samtempl) 0, 2, 0
+    // Cell (samtempl) 1, 2, 0
+    // Cell (samtempl) 2, 2, 0
+    // Cell (samtempl) 3, 2, 0
+    // Cell (samtempl) 0, 3, 0
+    // Cell (samtempl) 1, 3, 0
+    // Cell (samtempl) 2, 3, 0
+    // Cell (samtempl) 3, 3, 0
+    // Cell (samtempl) 0, 4, 0
+    // Cell (samtempl) 1, 4, 0
+    // Cell (samtempl) 2, 4, 0
+    // Cell (samtempl) 3, 4, 0
     constexpr auto kPadLayer { 0 };
     SampleProperties templateSampleProperties { {},SampleProperties::WrapperType::owner, SampleProperties::EnableCallbacks::no };
     templateSampleProperties.getValueTree ().setProperty ("deftemplate", 1, nullptr);
@@ -41,91 +41,104 @@ void PresetProperties::initValueTree ()
     {
         for (auto row { 0 }; row < 4; ++row)
         {
+            // prepare Cell Properties
             CellProperties cell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
             cell.setRow (row, false);
             cell.setColumn (col, false);
             cell.setLayer (kPadLayer, false);
             cell.setType ("samtempl", false);
+            // add a samtempl properties to the cell
             cell.getValueTree ().addChild (templateSampleProperties.getValueTree ().createCopy (), -1, nullptr);
+            // add empty slice list to the cell
             SliceListProperties sliceListProperties { {}, SliceListProperties::WrapperType::owner, SliceListProperties::EnableCallbacks::no };
             cell.getValueTree ().addChild (sliceListProperties.getValueTree ().createCopy (), -1, nullptr);
+            // add cell to preset
             data.addChild (cell.getValueTree (), -1, nullptr);
         }
     }
 
     constexpr auto kEffectsLayer { 3 };
-    // Cell (delay)0, -1, 3
+    // Cell (delay) 0, -1, 3
+    // prepare Cell Properties
     CellProperties delayCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
     delayCell.setRow (0, false);
     delayCell.setLayer (kEffectsLayer, false);
     delayCell.setType ("delay", false);
+    // add DelayProperties to the cell
     DelayProperties delayProperties { {}, DelayProperties::WrapperType::owner, DelayProperties::EnableCallbacks::no };
     // <params delay="400" delaymustime="6" feedback="400" cutoff="120" filtquality="1000" dealybeatsync="1" filtenable="1" delaypingpong="1"/>
     delayCell.getValueTree ().addChild (delayProperties.getValueTree ().createCopy (), -1, nullptr);
+    // add cell to preset
     data.addChild (delayCell.getValueTree (), -1, nullptr);
 
 
-    // Cell (reverb)1, -1, 3
+    // Cell (reverb) 1, -1, 3
+    // prepare Cell Properties
     CellProperties reverbCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
     reverbCell.setRow (1, false);
     reverbCell.setLayer (kEffectsLayer, false);
     reverbCell.setType ("reverb", false);
+    // add ReverbProperties to the cell
     ReverbProperties reverbProperties { {}, ReverbProperties::WrapperType::owner, ReverbProperties::EnableCallbacks::no };
     // <params decay = "600" predelay = "40" damping = "500" / >
     reverbCell.getValueTree ().addChild (reverbProperties.getValueTree ().createCopy (), -1, nullptr);
+    // add cell to preset
     data.addChild (reverbCell.getValueTree (), -1, nullptr);
 
-// Cell (eq)2, -1, 3
-//     	<params eqactband="0" eqgain="0" eqcutoff="200" eqres="400" eqenable="1" eqtype="0" eqgain2="0" eqcutoff2="400" eqres2="400"
-//              eqenable2="1" eqtype2="0" eqgain3="0" eqcutoff3="600" eqres3="400" eqenable3="1" eqtype3="0" eqgain4="0" eqcutoff4="800" eqres4="400" eqenable4="1" eqtype4="0"/>
+    // Cell (eq) 2, -1, 3
+    //     	<params eqactband="0" eqgain="0" eqcutoff="200" eqres="400" eqenable="1" eqtype="0" eqgain2="0" eqcutoff2="400" eqres2="400"
+    //              eqenable2="1" eqtype2="0" eqgain3="0" eqcutoff3="600" eqres3="400" eqenable3="1" eqtype3="0" eqgain4="0" eqcutoff4="800" eqres4="400" eqenable4="1" eqtype4="0"/>
 
-// Cell (null)3, -1, 3
-// Cell (null)4, -1, 3
+    // Cell (null) 3, -1, 3
+    // Cell (null) 4, -1, 3
 
-// Cell (ioconnectin)0, -1, 8
-// Cell (ioconnectin)1, -1, 8
-// Cell (ioconnectin)2, -1, 8
-// Cell (ioconnectin)3, -1, 8
-// Cell (ioconnectin)4, -1, 8
-// Cell (ioconnectin)5, -1, 8
-// Cell (ioconnectin)6, -1, 8
-// Cell (ioconnectin)7, -1, 8
+    // Cell (ioconnectin) 0, -1, 8
+    // Cell (ioconnectin) 1, -1, 8
+    // Cell (ioconnectin) 2, -1, 8
+    // Cell (ioconnectin) 3, -1, 8
+    // Cell (ioconnectin) 4, -1, 8
+    // Cell (ioconnectin) 5, -1, 8
+    // Cell (ioconnectin) 6, -1, 8
+    // Cell (ioconnectin) 7, -1, 8
     constexpr auto kIoConnectInLayer { 8 };
     for (auto ioConnectInIndex { 0 }; ioConnectInIndex < 8; ++ioConnectInIndex)
     {
+        // prepare Cell Properties
         CellProperties ioConnectInCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
         ioConnectInCell.setRow (ioConnectInIndex, false);
         ioConnectInCell.setLayer (kIoConnectInLayer, false);
         ioConnectInCell.setType ("ioconnectin", false);
+        // add IoConnectInProperties to the cell
         IoConnectInProperties ioConnectInProperties { {}, IoConnectInProperties::WrapperType::owner, IoConnectInProperties::EnableCallbacks::no };
+        // <params inputiocon="gatein"/>
         ioConnectInProperties.setInputIoCon ("gatein", false);
-        //  <params inputiocon="gatein"/>
         ioConnectInCell.getValueTree ().addChild (ioConnectInProperties.getValueTree ().createCopy (), -1, nullptr);
+        // add cell to preset
         data.addChild (ioConnectInCell.getValueTree (), -1, nullptr);
     }
 
-// Cell (ioconnectout)0, -1, 9
-//  <params outputiocon="chanout1"/>
-// Cell (ioconnectout)1, -1, 9
-// Cell (ioconnectout)2, -1, 9
-// Cell (ioconnectout)3, -1, 9
-// Cell (ioconnectout)4, -1, 9
-// Cell (ioconnectout)5, -1, 9
-// Cell (ioconnectout)6, -1, 9
-//  <params outputiocon="masterout1"/>
-// Cell (ioconnectout)7, -1, 9
-//  <params outputiocon="masterout2"/>
+    // Cell (ioconnectout) 0, -1, 9
+    // Cell (ioconnectout) 1, -1, 9
+    // Cell (ioconnectout) 2, -1, 9
+    // Cell (ioconnectout) 3, -1, 9
+    // Cell (ioconnectout) 4, -1, 9
+    // Cell (ioconnectout) 5, -1, 9
+    // Cell (ioconnectout) 6, -1, 9
+    // Cell (ioconnectout) 7, -1, 9
     auto addIoConnectOut = [this] (int row, juce::String ioConnectOutString)
     {
         constexpr auto kIoConnectOutLayer { 9 };
+        // prepare Cell Properties
         CellProperties ioConnectOutCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
         ioConnectOutCell.setRow (row, false);
         ioConnectOutCell.setLayer (kIoConnectOutLayer, false);
         ioConnectOutCell.setType ("ioconnectout", false);
+        // add IoConnectOutProperties to the cell
         IoConnectOutProperties ioConnectOutProperties { {}, IoConnectOutProperties::WrapperType::owner, IoConnectOutProperties::EnableCallbacks::no };
+        // <params outputiocon="chanout1"/>
         ioConnectOutProperties.setOutputIoCon (ioConnectOutString, false);
-        //  <params outputiocon="chanout1"/>
         ioConnectOutCell.getValueTree ().addChild (ioConnectOutProperties.getValueTree ().createCopy (), -1, nullptr);
+        // add cell to preset
         data.addChild (ioConnectOutCell.getValueTree (), -1, nullptr);
     };
     constexpr auto kIoConnectOutLayer { 9 };
@@ -134,12 +147,15 @@ void PresetProperties::initValueTree ()
     addIoConnectOut (6, "masterout1");
     addIoConnectOut (7, "masterout2");
 
-    // Cell (song)-1, -1, -1
+    // Cell (song) -1, -1, -1
+    // prepare Cell Properties
     CellProperties songCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
     songCell.setType ("song", false);
+    // add Song Properties to the cell
     SongProperties songProperties { {}, SongProperties::WrapperType::owner, SongProperties::EnableCallbacks::no };
     // <params globtempo="120" songmode="0" sectcount="1" sectloop="1" swing="50" keymode="1" keyroot="3"/>
     songCell.getValueTree ().addChild (songProperties.getValueTree ().createCopy (), -1, nullptr);
+    // add cell to preset
     data.addChild (songCell.getValueTree (), -1, nullptr);
 }
 

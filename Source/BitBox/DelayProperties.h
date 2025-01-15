@@ -66,7 +66,17 @@ public:
         setDelayPingPong (srcDelayProperties.getDelayPingPong (), false);
     }
 
-    void initValueTree () {}
+    void initValueTree ()
+    {
+        setDelay (400, false);
+        setDelayMusTime (6, false);
+        setFeedback (400, false);
+        setCutoff (120, false);
+        setFiltQuality (1000, false);
+        setDelayBeatSync (1, false);
+        setFiltEnable (1, false);
+        setDelayPingPong (1, false);
+    }
     void processValueTree () {}
 
 private:

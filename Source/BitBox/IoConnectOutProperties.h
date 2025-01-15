@@ -24,7 +24,10 @@ public:
         setOutputIoCon (srcIoConnectOutProperties.getOutputIoCon (), false);
     }
 
-    void initValueTree () {}
+    void initValueTree ()
+    {
+        setOutputIoCon ("", false);
+    }
     void processValueTree () {}
 
 private:

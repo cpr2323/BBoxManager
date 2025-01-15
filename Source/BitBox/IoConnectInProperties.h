@@ -24,7 +24,10 @@ public:
         setInputIoCon (srcIoConnectInProperties.getInputIoCon (), false);
     }
 
-    void initValueTree () {}
+    void initValueTree ()
+    {
+        setInputIoCon ("", false);
+    }
     void processValueTree () {}
 
 private:

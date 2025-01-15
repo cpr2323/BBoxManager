@@ -34,11 +34,11 @@ private:
     juce::Label fileNameLabel;
     FileSelectLabel fileNameSelectLabel;
     juce::Label gainLabel;
-    CustomTextEditorInt gainTextEditor;
+    CustomTextEditorInt gainTextEditor; // -96 to +12db (mod)
     juce::Label pitchLabel;
-    CustomTextEditorInt pitchTextEditor;
+    CustomTextEditorInt pitchTextEditor; // -24.0 to +24.0 (mod)
     juce::Label panPosLabel;
-    CustomTextEditorInt panPosTextEditor;
+    CustomTextEditorInt panPosTextEditor; // -100% to 100% (mod)
     juce::Label samTrigTypeLabel;
     CustomTextEditorInt samTrigTypeTextEditor;
     juce::Label loopModeLabel;
@@ -52,13 +52,13 @@ private:
     juce::Label cellModeLabel;
     CustomTextEditorInt cellModeTextEditor;
     juce::Label envAttackLabel;
-    CustomTextEditorInt envAttackTextEditor;
+    CustomTextEditorInt envAttackTextEditor; // 0% to 100 % (mod)
     juce::Label envDecayLabel;
-    CustomTextEditorInt envDecayTextEditor;
+    CustomTextEditorInt envDecayTextEditor; // 0% to 100 % (mod)
     juce::Label envSusLabel;
-    CustomTextEditorInt envSusTextEditor;
+    CustomTextEditorInt envSusTextEditor; // 0% to 100 %
     juce::Label envRelLabel;
-    CustomTextEditorInt envRelTextEditor;
+    CustomTextEditorInt envRelTextEditor; // 0% to 100 % (mod)
     juce::Label samStartLabel;
     CustomTextEditorInt samStartTextEditor;
     juce::Label samLenLabel;
@@ -84,9 +84,9 @@ private:
     juce::Label chokeGrpLabel;
     CustomTextEditorInt chokeGrpTextEditor;
     juce::Label dualFilCutoffLabel;
-    CustomTextEditorInt dualFilCutoffTextEditor;
+    CustomTextEditorInt dualFilCutoffTextEditor; // -100% to +100%, negative low pass, positive high pass (mod)
     juce::Label resLabel;
-    CustomTextEditorInt resTextEditor;
+    CustomTextEditorInt resTextEditor; // 0% to 100 (mod)
     juce::Label rootNoteLabel;
     CustomTextEditorInt rootNoteTextEditor;
     juce::Label beatCountLabel;
@@ -110,15 +110,19 @@ private:
     juce::Label loopFadeAmtLabel;
     CustomTextEditorInt loopFadeAmtTextEditor;
     juce::Label lfoWaveLabel;
-    CustomTextEditorInt lfoWaveTextEditor;
+                                            // TODO lfoWaveTextEditor should be a combobox
+    CustomTextEditorInt lfoWaveTextEditor;  // saw, rev saw, triangle, pos triangle, sine, pos sine, square, pos square, random
     juce::Label lfoRateLabel;
-    CustomTextEditorInt lfoRateTextEditor;
+    CustomTextEditorInt lfoRateTextEditor;  // 0 to 100% [LFO BeatSyn off] (mod)
+                                            // 8,4,2,1,1/2,1/2t,1/4,1/4t,1/8,1/8t1/16,1/16t,1/32,1/32t,1/64 [LFO BeatSyn on] (mod)
     juce::Label lfoAmountLabel;
-    CustomTextEditorInt lfoAmountTextEditor;
+    CustomTextEditorInt lfoAmountTextEditor; // 0 to 100% (mod)
     juce::Label lfoKeyTrigLabel;
-    CustomTextEditorInt lfoKeyTrigTextEditor;
+                                                // TODO lfoKeyTrigTextEditor should be a switch
+    CustomTextEditorInt lfoKeyTrigTextEditor;   // ON/OFF
     juce::Label lfoBeatSyncLabel;
-    CustomTextEditorInt lfoBeatSyncTextEditor;
+                                                // TODO lfoBeatSyncTextEditor should be a switch
+    CustomTextEditorInt lfoBeatSyncTextEditor;  // ON/OFF
     juce::Label lfoRateBeatSyncLabel;
     CustomTextEditorInt lfoRateBeatSyncTextEditor;
     juce::Label grainSizePercLabel;

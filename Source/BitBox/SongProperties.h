@@ -60,7 +60,16 @@ public:
         setKeyRoot (srcSongProperties.getKeyRoot (), false);
     }
 
-    void initValueTree () {}
+    void initValueTree ()
+    {
+        setGlobTempo (120, false);
+        setSongMode (0, false);
+        setSectCount (1, false);
+        setSectLoop (1, false);
+        setSwing (50, false);
+        setKeyMode (1, false);
+        setKeyRoot (3, false);
+    }
     void processValueTree () {}
 
 private:

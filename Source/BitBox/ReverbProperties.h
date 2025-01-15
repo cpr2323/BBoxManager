@@ -36,7 +36,12 @@ public:
         setDamping (srcReverbProperties.getDamping (), false);
     }
 
-    void initValueTree () {}
+    void initValueTree ()
+    {
+        setDecay (600, false);
+        setPreDelay (40, false);
+        setDamping (500, false);
+    }
     void processValueTree () {}
 
 private:
