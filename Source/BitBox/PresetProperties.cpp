@@ -83,7 +83,6 @@ void PresetProperties::initValueTree ()
 // Cell (null)4, -1, 3
 
 // Cell (ioconnectin)0, -1, 8
-//  <params inputiocon="gatein"/>
 // Cell (ioconnectin)1, -1, 8
 // Cell (ioconnectin)2, -1, 8
 // Cell (ioconnectin)3, -1, 8
@@ -91,6 +90,19 @@ void PresetProperties::initValueTree ()
 // Cell (ioconnectin)5, -1, 8
 // Cell (ioconnectin)6, -1, 8
 // Cell (ioconnectin)7, -1, 8
+    constexpr auto kIoConnectInLayer { 8 };
+    for (auto ioConnectInIndex { 0 }; ioConnectInIndex < 8; ++ioConnectInIndex)
+    {
+        CellProperties ioConnectInCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
+        ioConnectInCell.setRow (ioConnectInIndex, false);
+        ioConnectInCell.setLayer (kIoConnectInLayer, false);
+        ioConnectInCell.setType ("ioconnectin", false);
+        IoConnectInProperties ioConnectInProperties { {}, IoConnectInProperties::WrapperType::owner, IoConnectInProperties::EnableCallbacks::no };
+        ioConnectInProperties.setInputIoCon ("gatein", false);
+        //  <params inputiocon="gatein"/>
+        ioConnectInCell.getValueTree ().addChild (ioConnectInProperties.getValueTree ().createCopy (), -1, nullptr);
+        data.addChild (ioConnectInCell.getValueTree (), -1, nullptr);
+    }
 
 // Cell (ioconnectout)0, -1, 9
 //  <params outputiocon="chanout1"/>
@@ -102,11 +114,33 @@ void PresetProperties::initValueTree ()
 // Cell (ioconnectout)6, -1, 9
 //  <params outputiocon="masterout1"/>
 // Cell (ioconnectout)7, -1, 9
-//  <params outputiocon = "masterout1" / >
+//  <params outputiocon="masterout2"/>
+    auto addIoConnectOut = [this] (int row, juce::String ioConnectOutString)
+    {
+        constexpr auto kIoConnectOutLayer { 9 };
+        CellProperties ioConnectOutCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
+        ioConnectOutCell.setRow (row, false);
+        ioConnectOutCell.setLayer (kIoConnectOutLayer, false);
+        ioConnectOutCell.setType ("ioconnectout", false);
+        IoConnectOutProperties ioConnectOutProperties { {}, IoConnectOutProperties::WrapperType::owner, IoConnectOutProperties::EnableCallbacks::no };
+        ioConnectOutProperties.setOutputIoCon (ioConnectOutString, false);
+        //  <params outputiocon="chanout1"/>
+        ioConnectOutCell.getValueTree ().addChild (ioConnectOutProperties.getValueTree ().createCopy (), -1, nullptr);
+        data.addChild (ioConnectOutCell.getValueTree (), -1, nullptr);
+    };
+    constexpr auto kIoConnectOutLayer { 9 };
+    for (auto ioConnectOutIndex { 0 }; ioConnectOutIndex < 8; ++ioConnectOutIndex)
+        addIoConnectOut (ioConnectOutIndex, "chanout" + juce::String (ioConnectOutIndex + 1));
+    addIoConnectOut (6, "masterout1");
+    addIoConnectOut (7, "masterout2");
 
-
-// Cell (song)-1, -1, -1
-
+    // Cell (song)-1, -1, -1
+    CellProperties songCell { {}, CellProperties::WrapperType::owner, CellProperties::EnableCallbacks::no };
+    songCell.setType ("song", false);
+    SongProperties songProperties { {}, SongProperties::WrapperType::owner, SongProperties::EnableCallbacks::no };
+    // <params globtempo="120" songmode="0" sectcount="1" sectloop="1" swing="50" keymode="1" keyroot="3"/>
+    songCell.getValueTree ().addChild (songProperties.getValueTree ().createCopy (), -1, nullptr);
+    data.addChild (songCell.getValueTree (), -1, nullptr);
 }
 
 void PresetProperties::forEachPad (std::function<bool (juce::ValueTree padVT, int padIndex)> padVTCallback)
