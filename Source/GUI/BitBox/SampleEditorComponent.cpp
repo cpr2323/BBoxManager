@@ -10,6 +10,12 @@ SampleEditorComponent::SampleEditorComponent ()
         addAndMakeVisible (editor);
     };
 
+    auto setupComboBox = [this] (juce::Label& label, juce::String text, juce::Component& combobox)
+    {
+        addAndMakeVisible (label);
+        addAndMakeVisible (combobox);
+    };
+
     fileNameSelectLabel.setColour (juce::Label::ColourIds::textColourId, juce::Colours::white);
     fileNameSelectLabel.setColour (juce::Label::ColourIds::backgroundColourId, juce::Colours::black);
     fileNameSelectLabel.setOutline (juce::Colours::white);
@@ -26,7 +32,9 @@ SampleEditorComponent::SampleEditorComponent ()
         // Clone
         // Revert
     };
+    addAndMakeVisible (fileNameSelectLabel);
 
+    // GAIN
     gainTextEditor.setTooltip ("Gain in decibels");
     gainTextEditor.getMinValueCallback = [this] () { return -96; };
     gainTextEditor.getMaxValueCallback = [this] () { return 12; };
@@ -48,69 +56,1248 @@ SampleEditorComponent::SampleEditorComponent ()
     };
     gainTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (gainLabel, "Gain (dB)", gainTextEditor);
+
+    // PITCH
+    pitchTextEditor.setTooltip ("Pitch in semitones");
+    pitchTextEditor.getMinValueCallback = [this] () { return -24; };
+    pitchTextEditor.getMaxValueCallback = [this] () { return 24; };
+    pitchTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    pitchTextEditor.updateDataCallback = [this] (int value) { pitchUiChanged (value); };
+    pitchTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            }();
+        const auto newValue { sampleProperties.getPitch () + (multiplier * direction) };
+        pitchTextEditor.setValue (newValue);
+    };
+    pitchTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (pitchLabel, "Pitch", pitchTextEditor);
+
+    // PAN
+    panPosTextEditor.setTooltip ("Pan Position in percentage");
+    panPosTextEditor.getMinValueCallback = [this] () { return -100; };
+    panPosTextEditor.getMaxValueCallback = [this] () { return 100; };
+    panPosTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    panPosTextEditor.updateDataCallback = [this] (int value) { panPosUiChanged (value); };
+    panPosTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            }();
+        const auto newValue { sampleProperties.getPanPos () + (multiplier * direction) };
+        panPosTextEditor.setValue (newValue);
+    };
+    panPosTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (panPosLabel, "Pan Position", panPosTextEditor);
-    setupLabel (samTrigTypeLabel, "Sample Trigger Type", samTrigTypeTextEditor);
+
+    // SAMPLE TRIGGER TYPE (launch mode?)
+    samTrigTypeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
+    setupComboBox (samTrigTypeLabel, "Sample Trigger Type", samTrigTypeComboBox);
+
+    // LOOP MODE
     loopModeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
-    setupLabel (loopModeLabel, "Loop Mode", loopModeComboBox);
+    setupComboBox (loopModeLabel, "Loop Mode", loopModeComboBox);
+
+    // LOOP MODES
+    loopModesTextEditor.setTooltip ("Loop modes");
+    loopModesTextEditor.getMinValueCallback = [this] () { return 0; };
+    loopModesTextEditor.getMaxValueCallback = [this] () { return 10; };
+    loopModesTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    loopModesTextEditor.updateDataCallback = [this] (int value) { loopModesUiChanged (value); };
+    loopModesTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getLoopModes () + (multiplier * direction) };
+        loopModesTextEditor.setValue (newValue);
+    };
+    loopModesTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (loopModesLabel, "Loop Modes", loopModesTextEditor);
+
+    // MIDI MODE
+    midiModeTextEditor.setTooltip ("MIDI mode");
+    midiModeTextEditor.getMinValueCallback = [this] () { return 0; };
+    midiModeTextEditor.getMaxValueCallback = [this] () { return 10; };
+    midiModeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    midiModeTextEditor.updateDataCallback = [this] (int value) { midiModeUiChanged (value); };
+    midiModeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getMidiMode () + (multiplier * direction) };
+        midiModeTextEditor.setValue (newValue);
+    };
+    midiModeTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (midiModeLabel, "MIDI Mode", midiModeTextEditor);
+
+    // REVERSE
+    reverseButton.setTooltip ("Reverse");
+    reverseButton.onClick = [this] () { reverseUiChanged (reverseButton.getToggleState () ? 1 : 0); };
+    reverseButton.onPopupMenuCallback = [this] () {};
     setupLabel (reverseLabel, "Reverse", reverseButton);
-    setupLabel (cellModeLabel, "Cell Mode", cellModeTextEditor);
+
+    // CELL MODE
+    setupLabel (cellModeLabel, "Cell Mode", cellModeComboBox);
+
+    // ENVELOPE ATTACK
+    envAttackTextEditor.setTooltip ("Envelope attack");
+    envAttackTextEditor.getMinValueCallback = [this] () { return 0; };
+    envAttackTextEditor.getMaxValueCallback = [this] () { return 100; };
+    envAttackTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    envAttackTextEditor.updateDataCallback = [this] (int value) { envAttackUiChanged (value); };
+    envAttackTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getEnvAttack () + (multiplier * direction) };
+        envAttackTextEditor.setValue (newValue);
+    };
+    envAttackTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (envAttackLabel, "Attack", envAttackTextEditor);
+
+    // ENVELOPE DECAY
+    envDecayTextEditor.setTooltip ("Envelope decay");
+    envDecayTextEditor.getMinValueCallback = [this] () { return 0; };
+    envDecayTextEditor.getMaxValueCallback = [this] () { return 100; };
+    envDecayTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    envDecayTextEditor.updateDataCallback = [this] (int value) { envDecayUiChanged (value); };
+    envDecayTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getEnvDecay () + (multiplier * direction) };
+        envDecayTextEditor.setValue (newValue);
+    };
+    envDecayTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (envDecayLabel, "Decay", envDecayTextEditor);
+
+    // ENVELOPE SUSTAIN
+    envSusTextEditor.setTooltip ("Envelope sustain");
+    envSusTextEditor.getMinValueCallback = [this] () { return 0; };
+    envSusTextEditor.getMaxValueCallback = [this] () { return 100; };
+    envSusTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    envSusTextEditor.updateDataCallback = [this] (int value) { envSusUiChanged (value); };
+    envSusTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getEnvSus () + (multiplier * direction) };
+        envSusTextEditor.setValue (newValue);
+    };
+    envSusTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (envSusLabel, "Sustain", envSusTextEditor);
+
+    // ENVELOPE RELEASE
+    envRelTextEditor.setTooltip ("Envelope release");
+    envRelTextEditor.getMinValueCallback = [this] () { return 0; };
+    envRelTextEditor.getMaxValueCallback = [this] () { return 100; };
+    envRelTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    envRelTextEditor.updateDataCallback = [this] (int value) { envRelUiChanged (value); };
+    envRelTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getEnvRel () + (multiplier * direction) };
+        envRelTextEditor.setValue (newValue);
+    };
+    envRelTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (envRelLabel, "Release", envRelTextEditor);
+
+    // SAMPLE START
+    samStartTextEditor.setTooltip ("Sample start position");
+    samStartTextEditor.getMinValueCallback = [this] () { return 0; };
+    samStartTextEditor.getMaxValueCallback = [this] () { return 100; };
+    samStartTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    samStartTextEditor.updateDataCallback = [this] (int value) { samStartUiChanged (value); };
+    samStartTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getSamStart () + (multiplier * direction) };
+        samStartTextEditor.setValue (newValue);
+    };
+    samStartTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (samStartLabel, "Sample Start", samStartTextEditor);
+
+    // SAMPLE LENGTH
+    samLenTextEditor.setTooltip ("Sample length");
+    samLenTextEditor.getMinValueCallback = [this] () { return 0; };
+    samLenTextEditor.getMaxValueCallback = [this] () { return 100; };
+    samLenTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    samLenTextEditor.updateDataCallback = [this] (int value) { samLenUiChanged (value); };
+    samLenTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getSamLen () + (multiplier * direction) };
+        samLenTextEditor.setValue (newValue);
+    };
+    samLenTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (samLenLabel, "Sample Length", samLenTextEditor);
+
+    // LOOP START
+    loopStartTextEditor.setTooltip ("Loop start position");
+    loopStartTextEditor.getMinValueCallback = [this] () { return 0; };
+    loopStartTextEditor.getMaxValueCallback = [this] () { return 100; };
+    loopStartTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    loopStartTextEditor.updateDataCallback = [this] (int value) { loopStartUiChanged (value); };
+    loopStartTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getLoopStart () + (multiplier * direction) };
+        loopStartTextEditor.setValue (newValue);
+    };
+    loopStartTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (loopStartLabel, "Loop Start", loopStartTextEditor);
+
+    // LOOP END
+    loopEndTextEditor.setTooltip ("Loop end position");
+    loopEndTextEditor.getMinValueCallback = [this] () { return 0; };
+    loopEndTextEditor.getMaxValueCallback = [this] () { return 100; };
+    loopEndTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    loopEndTextEditor.updateDataCallback = [this] (int value) { loopEndUiChanged (value); };
+    loopEndTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getLoopEnd () + (multiplier * direction) };
+        loopEndTextEditor.setValue (newValue);
+    };
+    loopEndTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (loopEndLabel, "Loop End", loopEndTextEditor);
+
+    // QUANT SIZE
+    quantSizeTextEditor.setTooltip ("Quantization size");
+    quantSizeTextEditor.getMinValueCallback = [this] () { return 0; };
+    quantSizeTextEditor.getMaxValueCallback = [this] () { return 100; };
+    quantSizeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    quantSizeTextEditor.updateDataCallback = [this] (int value) { quantSizeUiChanged (value); };
+    quantSizeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getQuantSize () + (multiplier * direction) };
+        quantSizeTextEditor.setValue (newValue);
+    };
+    quantSizeTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (quantSizeLabel, "Quant Size", quantSizeTextEditor);
+
+    // SYNC TYPE
+    syncTypeTextEditor.setTooltip ("Sync type");
+    syncTypeTextEditor.getMinValueCallback = [this] () { return 0; };
+    syncTypeTextEditor.getMaxValueCallback = [this] () { return 10; };
+    syncTypeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    syncTypeTextEditor.updateDataCallback = [this] (int value) { syncTypeUiChanged (value); };
+    syncTypeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getSyncType () + (multiplier * direction) };
+        syncTypeTextEditor.setValue (newValue);
+    };
+    syncTypeTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (syncTypeLabel, "Sync Type", syncTypeTextEditor);
+
+    // ACTIVE SLICE
+    actSliceTextEditor.setTooltip ("Active slice");
+    actSliceTextEditor.getMinValueCallback = [this] () { return 0; };
+    actSliceTextEditor.getMaxValueCallback = [this] () { return 100; };
+    actSliceTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    actSliceTextEditor.updateDataCallback = [this] (int value) { actSliceUiChanged (value); };
+    actSliceTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getActSlice () + (multiplier * direction) };
+        actSliceTextEditor.setValue (newValue);
+    };
+    actSliceTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (actSliceLabel, "Active Slice", actSliceTextEditor);
+
+    // OUTPUT BUS
+    outputBusTextEditor.setTooltip ("Output bus");
+    outputBusTextEditor.getMinValueCallback = [this] () { return 0; };
+    outputBusTextEditor.getMaxValueCallback = [this] () { return 10; };
+    outputBusTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    outputBusTextEditor.updateDataCallback = [this] (int value) { outputBusUiChanged (value); };
+    outputBusTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getOutputBus () + (multiplier * direction) };
+        outputBusTextEditor.setValue (newValue);
+    };
+    outputBusTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (outputBusLabel, "Output Bus", outputBusTextEditor);
+
+    // POLY MODE
+    polyModeTextEditor.setTooltip ("Polyphonic mode");
+    polyModeTextEditor.getMinValueCallback = [this] () { return 0; };
+    polyModeTextEditor.getMaxValueCallback = [this] () { return 10; };
+    polyModeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    polyModeTextEditor.updateDataCallback = [this] (int value) { polyModeUiChanged (value); };
+    polyModeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getPolyMode () + (multiplier * direction) };
+        polyModeTextEditor.setValue (newValue);
+    };
+    polyModeTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (polyModeLabel, "Poly Mode", polyModeTextEditor);
+
+    // POLY MODE SLICE
+    polyModeSliceTextEditor.setTooltip ("Polyphonic mode slice");
+    polyModeSliceTextEditor.getMinValueCallback = [this] () { return 0; };
+    polyModeSliceTextEditor.getMaxValueCallback = [this] () { return 10; };
+    polyModeSliceTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    polyModeSliceTextEditor.updateDataCallback = [this] (int value) { polyModeSliceUiChanged (value); };
+    polyModeSliceTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getPolyModeSlice () + (multiplier * direction) };
+        polyModeSliceTextEditor.setValue (newValue);
+    };
+    polyModeSliceTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (polyModeSliceLabel, "Poly Mode Slice", polyModeSliceTextEditor);
+
+// SLICE STEP MODE
+    sliceStepModeTextEditor.setTooltip ("Slice step mode");
+    sliceStepModeTextEditor.getMinValueCallback = [this] () { return 0; };
+    sliceStepModeTextEditor.getMaxValueCallback = [this] () { return 10; };
+    sliceStepModeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    sliceStepModeTextEditor.updateDataCallback = [this] (int value) { sliceStepModeUiChanged (value); };
+    sliceStepModeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getSliceStepMode () + (multiplier * direction) };
+        sliceStepModeTextEditor.setValue (newValue);
+    };
+    sliceStepModeTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (sliceStepModeLabel, "Slice Step Mode", sliceStepModeTextEditor);
+
+    // CHOKE GROUP
+    chokeGrpTextEditor.setTooltip ("Choke group");
+    chokeGrpTextEditor.getMinValueCallback = [this] () { return 0; };
+    chokeGrpTextEditor.getMaxValueCallback = [this] () { return 10; };
+    chokeGrpTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    chokeGrpTextEditor.updateDataCallback = [this] (int value) { chokeGrpUiChanged (value); };
+    chokeGrpTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getChokeGrp () + (multiplier * direction) };
+        chokeGrpTextEditor.setValue (newValue);
+    };
+    chokeGrpTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (chokeGrpLabel, "Choke Group", chokeGrpTextEditor);
+
+    // DUAL FILTER CUTOFF
+    dualFilCutoffTextEditor.setTooltip ("Dual filter cutoff");
+    dualFilCutoffTextEditor.getMinValueCallback = [this] () { return -100; };
+    dualFilCutoffTextEditor.getMaxValueCallback = [this] () { return 100; };
+    dualFilCutoffTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    dualFilCutoffTextEditor.updateDataCallback = [this] (int value) { dualFilCutoffUiChanged (value); };
+    dualFilCutoffTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getDualFilCutoff () + (multiplier * direction) };
+        dualFilCutoffTextEditor.setValue (newValue);
+    };
+    dualFilCutoffTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (dualFilCutoffLabel, "Dual Filter Cutoff", dualFilCutoffTextEditor);
+
+    // RESONANCE
+    resTextEditor.setTooltip ("Resonance");
+    resTextEditor.getMinValueCallback = [this] () { return 0; };
+    resTextEditor.getMaxValueCallback = [this] () { return 100; };
+    resTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    resTextEditor.updateDataCallback = [this] (int value) { resUiChanged (value); };
+    resTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getRes () + (multiplier * direction) };
+        resTextEditor.setValue (newValue);
+    };
+    resTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (resLabel, "Resonance", resTextEditor);
+
+    // ROOT NOTE
+    rootNoteTextEditor.setTooltip ("Root note");
+    rootNoteTextEditor.getMinValueCallback = [this] () { return 0; };
+    rootNoteTextEditor.getMaxValueCallback = [this] () { return 100; };
+    rootNoteTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    rootNoteTextEditor.updateDataCallback = [this] (int value) { rootNoteUiChanged (value); };
+    rootNoteTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getRootNote () + (multiplier * direction) };
+        rootNoteTextEditor.setValue (newValue);
+    };
+    rootNoteTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (rootNoteLabel, "Root Note", rootNoteTextEditor);
+
+    // BEAT COUNT
+    beatCountTextEditor.setTooltip ("Beat count");
+    beatCountTextEditor.getMinValueCallback = [this] () { return 0; };
+    beatCountTextEditor.getMaxValueCallback = [this] () { return 100; };
+    beatCountTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    beatCountTextEditor.updateDataCallback = [this] (int value) { beatCountUiChanged (value); };
+    beatCountTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getBeatCount () + (multiplier * direction) };
+        beatCountTextEditor.setValue (newValue);
+    };
+    beatCountTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (beatCountLabel, "Beat Count", beatCountTextEditor);
+
+    // FX1 SEND
+    fx1SendTextEditor.setTooltip ("FX1 send level");
+    fx1SendTextEditor.getMinValueCallback = [this] () { return 0; };
+    fx1SendTextEditor.getMaxValueCallback = [this] () { return 100; };
+    fx1SendTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    fx1SendTextEditor.updateDataCallback = [this] (int value) { fx1SendUiChanged (value); };
+    fx1SendTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getFx1Send () + (multiplier * direction) };
+        fx1SendTextEditor.setValue (newValue);
+    };
+    fx1SendTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (fx1SendLabel, "FX1 Send", fx1SendTextEditor);
+
+    // FX2 SEND
+    fx2SendTextEditor.setTooltip ("FX2 send level");
+    fx2SendTextEditor.getMinValueCallback = [this] () { return 0; };
+    fx2SendTextEditor.getMaxValueCallback = [this] () { return 100; };
+    fx2SendTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    fx2SendTextEditor.updateDataCallback = [this] (int value) { fx2SendUiChanged (value); };
+    fx2SendTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getFx2Send () + (multiplier * direction) };
+        fx2SendTextEditor.setValue (newValue);
+    };
+    fx2SendTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (fx2SendLabel, "FX2 Send", fx2SendTextEditor);
+
+    // MULTI SAMPLE MODE
+    multiSamModeTextEditor.setTooltip ("Multi sample mode");
+    multiSamModeTextEditor.getMinValueCallback = [this] () { return 0; };
+    multiSamModeTextEditor.getMaxValueCallback = [this] () { return 10; };
+    multiSamModeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    multiSamModeTextEditor.updateDataCallback = [this] (int value) { multiSamModeUiChanged (value); };
+    multiSamModeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getMultiSamMode () + (multiplier * direction) };
+        multiSamModeTextEditor.setValue (newValue);
+    };
+    multiSamModeTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (multiSamModeLabel, "Multi Sample Mode", multiSamModeTextEditor);
+
+    // INTERPOLATION QUALITY
+    interpQualTextEditor.setTooltip ("Interpolation quality");
+    interpQualTextEditor.getMinValueCallback = [this] () { return 0; };
+    interpQualTextEditor.getMaxValueCallback = [this] () { return 10; };
+    interpQualTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    interpQualTextEditor.updateDataCallback = [this] (int value) { interpQualUiChanged (value); };
+    interpQualTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getInterpQual () + (multiplier * direction) };
+        interpQualTextEditor.setValue (newValue);
+    };
+    interpQualTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (interpQualLabel, "Interpolation Quality", interpQualTextEditor);
+
+// PLAY THROUGH
+    playThruTextEditor.setTooltip ("Play through");
+    playThruTextEditor.getMinValueCallback = [this] () { return 0; };
+    playThruTextEditor.getMaxValueCallback = [this] () { return 1; };
+    playThruTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    playThruTextEditor.updateDataCallback = [this] (int value) { playThruUiChanged (value); };
+    playThruTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 1;
+                else
+                    return 1;
+            } ();
+        const auto newValue { sampleProperties.getPlayThru () + (multiplier * direction) };
+        playThruTextEditor.setValue (newValue);
+    };
+    playThruTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (playThruLabel, "Play Through", playThruTextEditor);
+
+    // SLICER QUANT SIZE
+    slicerQuantSizeTextEditor.setTooltip ("Slicer quantization size");
+    slicerQuantSizeTextEditor.getMinValueCallback = [this] () { return 0; };
+    slicerQuantSizeTextEditor.getMaxValueCallback = [this] () { return 100; };
+    slicerQuantSizeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    slicerQuantSizeTextEditor.updateDataCallback = [this] (int value) { slicerQuantSizeUiChanged (value); };
+    slicerQuantSizeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getSlicerQuantSize () + (multiplier * direction) };
+        slicerQuantSizeTextEditor.setValue (newValue);
+    };
+    slicerQuantSizeTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (slicerQuantSizeLabel, "Slicer Quant Size", slicerQuantSizeTextEditor);
+
+    // SLICER SYNC
+    slicerSyncTextEditor.setTooltip ("Slicer sync");
+    slicerSyncTextEditor.getMinValueCallback = [this] () { return 0; };
+    slicerSyncTextEditor.getMaxValueCallback = [this] () { return 1; };
+    slicerSyncTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    slicerSyncTextEditor.updateDataCallback = [this] (int value) { slicerSyncUiChanged (value); };
+    slicerSyncTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 1;
+                else
+                    return 1;
+            } ();
+        const auto newValue { sampleProperties.getSlicerSync () + (multiplier * direction) };
+        slicerSyncTextEditor.setValue (newValue);
+    };
+    slicerSyncTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (slicerSyncLabel, "Slicer Sync", slicerSyncTextEditor);
+
+    // PAD NOTE
+    padNoteTextEditor.setTooltip ("Pad note");
+    padNoteTextEditor.getMinValueCallback = [this] () { return 0; };
+    padNoteTextEditor.getMaxValueCallback = [this] () { return 127; };
+    padNoteTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    padNoteTextEditor.updateDataCallback = [this] (int value) { padNoteUiChanged (value); };
+    padNoteTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 1;
+                else
+                    return 1;
+            } ();
+        const auto newValue { sampleProperties.getPadNote () + (multiplier * direction) };
+        padNoteTextEditor.setValue (newValue);
+    };
+    padNoteTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (padNoteLabel, "Pad Note", padNoteTextEditor);
+
+    // LOOP FADE AMOUNT
+    loopFadeAmtTextEditor.setTooltip ("Loop fade amount");
+    loopFadeAmtTextEditor.getMinValueCallback = [this] () { return 0; };
+    loopFadeAmtTextEditor.getMaxValueCallback = [this] () { return 100; };
+    loopFadeAmtTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    loopFadeAmtTextEditor.updateDataCallback = [this] (int value) { loopFadeAmtUiChanged (value); };
+    loopFadeAmtTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getLoopFadeAmt () + (multiplier * direction) };
+        loopFadeAmtTextEditor.setValue (newValue);
+    };
+    loopFadeAmtTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (loopFadeAmtLabel, "Loop Fade Amount", loopFadeAmtTextEditor);
+
+    // LFO WAVE
+    lfoWaveTextEditor.setTooltip ("LFO wave");
+    lfoWaveTextEditor.getMinValueCallback = [this] () { return 0; };
+    lfoWaveTextEditor.getMaxValueCallback = [this] () { return 7; };
+    lfoWaveTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    lfoWaveTextEditor.updateDataCallback = [this] (int value) { lfoWaveUiChanged (value); };
+    lfoWaveTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 1;
+                else
+                    return 1;
+            } ();
+        const auto newValue { sampleProperties.getLfoWave () + (multiplier * direction) };
+        lfoWaveTextEditor.setValue (newValue);
+    };
+    lfoWaveTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (lfoWaveLabel, "LFO Wave", lfoWaveTextEditor);
+
+    // LFO RATE
+    lfoRateTextEditor.setTooltip ("LFO rate");
+    lfoRateTextEditor.getMinValueCallback = [this] () { return 0; };
+    lfoRateTextEditor.getMaxValueCallback = [this] () { return 100; };
+    lfoRateTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    lfoRateTextEditor.updateDataCallback = [this] (int value) { lfoRateUiChanged (value); };
+    lfoRateTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getLfoRate () + (multiplier * direction) };
+        lfoRateTextEditor.setValue (newValue);
+    };
+    lfoRateTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (lfoRateLabel, "LFO Rate", lfoRateTextEditor);
+
+    // LFO AMOUNT
+    lfoAmountTextEditor.setTooltip ("LFO amount");
+    lfoAmountTextEditor.getMinValueCallback = [this] () { return 0; };
+    lfoAmountTextEditor.getMaxValueCallback = [this] () { return 100; };
+    lfoAmountTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    lfoAmountTextEditor.updateDataCallback = [this] (int value) { lfoAmountUiChanged (value); };
+    lfoAmountTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getLfoAmount () + (multiplier * direction) };
+        lfoAmountTextEditor.setValue (newValue);
+    };
+    lfoAmountTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (lfoAmountLabel, "LFO Amount", lfoAmountTextEditor);
+
+    // LFO KEY TRIGGER
+    lfoKeyTrigTextEditor.setTooltip ("LFO key trigger");
+    lfoKeyTrigTextEditor.getMinValueCallback = [this] () { return 0; };
+    lfoKeyTrigTextEditor.getMaxValueCallback = [this] () { return 1; };
+    lfoKeyTrigTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    lfoKeyTrigTextEditor.updateDataCallback = [this] (int value) { lfoKeyTrigUiChanged (value); };
+    lfoKeyTrigTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 1;
+                else
+                    return 1;
+            } ();
+        const auto newValue { sampleProperties.getLfoKeyTrig () + (multiplier * direction) };
+        lfoKeyTrigTextEditor.setValue (newValue);
+    };
+    lfoKeyTrigTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (lfoKeyTrigLabel, "LFO Key Trigger", lfoKeyTrigTextEditor);
+
+    // LFO BEAT SYNC
+    lfoBeatSyncTextEditor.setTooltip ("LFO beat sync");
+    lfoBeatSyncTextEditor.getMinValueCallback = [this] () { return 0; };
+    lfoBeatSyncTextEditor.getMaxValueCallback = [this] () { return 1; };
+    lfoBeatSyncTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    lfoBeatSyncTextEditor.updateDataCallback = [this] (int value) { lfoBeatSyncUiChanged (value); };
+    lfoBeatSyncTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 1;
+                else
+                    return 1;
+            } ();
+        const auto newValue { sampleProperties.getLfoBeatSync () + (multiplier * direction) };
+        lfoBeatSyncTextEditor.setValue (newValue);
+    };
+    lfoBeatSyncTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (lfoBeatSyncLabel, "LFO Beat Sync", lfoBeatSyncTextEditor);
+
+    // LFO RATE BEAT SYNC
+    lfoRateBeatSyncTextEditor.setTooltip ("LFO rate beat sync");
+    lfoRateBeatSyncTextEditor.getMinValueCallback = [this] () { return 0; };
+    lfoRateBeatSyncTextEditor.getMaxValueCallback = [this] () { return 100; };
+    lfoRateBeatSyncTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    lfoRateBeatSyncTextEditor.updateDataCallback = [this] (int value) { lfoRateBeatSyncUiChanged (value); };
+    lfoRateBeatSyncTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getLfoRateBeatSync () + (multiplier * direction) };
+        lfoRateBeatSyncTextEditor.setValue (newValue);
+    };
+    lfoRateBeatSyncTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (lfoRateBeatSyncLabel, "LFO Rate Beat Sync", lfoRateBeatSyncTextEditor);
+
+// GRAIN SIZE PERCENTAGE
+    grainSizePercTextEditor.setTooltip ("Grain size percentage");
+    grainSizePercTextEditor.getMinValueCallback = [this] () { return 0; };
+    grainSizePercTextEditor.getMaxValueCallback = [this] () { return 100; };
+    grainSizePercTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    grainSizePercTextEditor.updateDataCallback = [this] (int value) { grainSizePercUiChanged (value); };
+    grainSizePercTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getGrainSizePerc () + (multiplier * direction) };
+        grainSizePercTextEditor.setValue (newValue);
+    };
+    grainSizePercTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (grainSizePercLabel, "Grain Size Percentage", grainSizePercTextEditor);
+
+    // GRAIN SCATTER
+    grainScatTextEditor.setTooltip ("Grain scatter");
+    grainScatTextEditor.getMinValueCallback = [this] () { return 0; };
+    grainScatTextEditor.getMaxValueCallback = [this] () { return 100; };
+    grainScatTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    grainScatTextEditor.updateDataCallback = [this] (int value) { grainScatUiChanged (value); };
+    grainScatTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getGrainScat () + (multiplier * direction) };
+        grainScatTextEditor.setValue (newValue);
+    };
+    grainScatTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (grainScatLabel, "Grain Scatter", grainScatTextEditor);
+
+    // GRAIN PAN RANDOM
+    grainPanRndTextEditor.setTooltip ("Grain pan random");
+    grainPanRndTextEditor.getMinValueCallback = [this] () { return 0; };
+    grainPanRndTextEditor.getMaxValueCallback = [this] () { return 100; };
+    grainPanRndTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    grainPanRndTextEditor.updateDataCallback = [this] (int value) { grainPanRndUiChanged (value); };
+    grainPanRndTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getGrainPanRnd () + (multiplier * direction) };
+        grainPanRndTextEditor.setValue (newValue);
+    };
+    grainPanRndTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (grainPanRndLabel, "Grain Pan Random", grainPanRndTextEditor);
+
+    // GRAIN DENSITY
+    grainDensityTextEditor.setTooltip ("Grain density");
+    grainDensityTextEditor.getMinValueCallback = [this] () { return 0; };
+    grainDensityTextEditor.getMaxValueCallback = [this] () { return 100; };
+    grainDensityTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    grainDensityTextEditor.updateDataCallback = [this] (int value) { grainDensityUiChanged (value); };
+    grainDensityTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getGrainDensity () + (multiplier * direction) };
+        grainDensityTextEditor.setValue (newValue);
+    };
+    grainDensityTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (grainDensityLabel, "Grain Density", grainDensityTextEditor);
+
+    // SLICE MODE
+    sliceModeTextEditor.setTooltip ("Slice mode");
+    sliceModeTextEditor.getMinValueCallback = [this] () { return 0; };
+    sliceModeTextEditor.getMaxValueCallback = [this] () { return 10; };
+    sliceModeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    sliceModeTextEditor.updateDataCallback = [this] (int value) { sliceModeUiChanged (value); };
+    sliceModeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getSliceMode () + (multiplier * direction) };
+        sliceModeTextEditor.setValue (newValue);
+    };
+    sliceModeTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (sliceModeLabel, "Slice Mode", sliceModeTextEditor);
+
+    // LEGATO MODE
+    legatoModeTextEditor.setTooltip ("Legato mode");
+    legatoModeTextEditor.getMinValueCallback = [this] () { return 0; };
+    legatoModeTextEditor.getMaxValueCallback = [this] () { return 10; };
+    legatoModeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    legatoModeTextEditor.updateDataCallback = [this] (int value) { legatoModeUiChanged (value); };
+    legatoModeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getLegatoMode () + (multiplier * direction) };
+        legatoModeTextEditor.setValue (newValue);
+    };
+    legatoModeTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (legatoModeLabel, "Legato Mode", legatoModeTextEditor);
+
+    // GAIN SSRC WINDOW
+    gainSsrcWinTextEditor.setTooltip ("Gain SSRC window");
+    gainSsrcWinTextEditor.getMinValueCallback = [this] () { return 0; };
+    gainSsrcWinTextEditor.getMaxValueCallback = [this] () { return 100; };
+    gainSsrcWinTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    gainSsrcWinTextEditor.updateDataCallback = [this] (int value) { gainSsrcWinUiChanged (value); };
+    gainSsrcWinTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getGainSsrcWin () + (multiplier * direction) };
+        gainSsrcWinTextEditor.setValue (newValue);
+    };
+    gainSsrcWinTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (gainSsrcWinLabel, "Gain SSRC Window", gainSsrcWinTextEditor);
+
+    // GRAIN READ SPEED
+    grainReadSpeedTextEditor.setTooltip ("Grain read speed");
+    grainReadSpeedTextEditor.getMinValueCallback = [this] () { return 0; };
+    grainReadSpeedTextEditor.getMaxValueCallback = [this] () { return 100; };
+    grainReadSpeedTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    grainReadSpeedTextEditor.updateDataCallback = [this] (int value) { grainReadSpeedUiChanged (value); };
+    grainReadSpeedTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getGrainReadSpeed () + (multiplier * direction) };
+        grainReadSpeedTextEditor.setValue (newValue);
+    };
+    grainReadSpeedTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (grainReadSpeedLabel, "Grain Read Speed", grainReadSpeedTextEditor);
+
+    // RECORD PRESET LENGTH
+    recPresetLenTextEditor.setTooltip ("Record preset length");
+    recPresetLenTextEditor.getMinValueCallback = [this] () { return 0; };
+    recPresetLenTextEditor.getMaxValueCallback = [this] () { return 100; };
+    recPresetLenTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    recPresetLenTextEditor.updateDataCallback = [this] (int value) { recPresetLenUiChanged (value); };
+    recPresetLenTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getRecPresetLen () + (multiplier * direction) };
+        recPresetLenTextEditor.setValue (newValue);
+    };
+    recPresetLenTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (recPresetLenLabel, "Record Preset Length", recPresetLenTextEditor);
+
+    // RECORD QUANTIZATION
+    recQuantTextEditor.setTooltip ("Record quantization");
+    recQuantTextEditor.getMinValueCallback = [this] () { return 0; };
+    recQuantTextEditor.getMaxValueCallback = [this] () { return 100; };
+    recQuantTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    recQuantTextEditor.updateDataCallback = [this] (int value) { recQuantUiChanged (value); };
+    recQuantTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getRecQuant () + (multiplier * direction) };
+        recQuantTextEditor.setValue (newValue);
+    };
+    recQuantTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (recQuantLabel, "Record Quantization", recQuantTextEditor);
+
+    // RECORD INPUT
+    recInputTextEditor.setTooltip ("Record input");
+    recInputTextEditor.getMinValueCallback = [this] () { return 0; };
+    recInputTextEditor.getMaxValueCallback = [this] () { return 100; };
+    recInputTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    recInputTextEditor.updateDataCallback = [this] (int value) { recInputUiChanged (value); };
+    recInputTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getRecInput () + (multiplier * direction) };
+        recInputTextEditor.setValue (newValue);
+    };
+    recInputTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (recInputLabel, "Record Input", recInputTextEditor);
+
+    // RECORD USE THRESHOLD
+    recUseThresTextEditor.setTooltip ("Record use threshold");
+    recUseThresTextEditor.getMinValueCallback = [this] () { return 0; };
+    recUseThresTextEditor.getMaxValueCallback = [this] () { return 1; };
+    recUseThresTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    recUseThresTextEditor.updateDataCallback = [this] (int value) { recUseThresUiChanged (value); };
+    recUseThresTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 1;
+                else
+                    return 1;
+            } ();
+        const auto newValue { sampleProperties.getRecUseThres () + (multiplier * direction) };
+        recUseThresTextEditor.setValue (newValue);
+    };
+    recUseThresTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (recUseThresLabel, "Record Use Threshold", recUseThresTextEditor);
+
+    // RECORD THRESHOLD
+    recThresTextEditor.setTooltip ("Record threshold");
+    recThresTextEditor.getMinValueCallback = [this] () { return 0; };
+    recThresTextEditor.getMaxValueCallback = [this] () { return 100; };
+    recThresTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    recThresTextEditor.updateDataCallback = [this] (int value) { recThresUiChanged (value); };
+    recThresTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 5;
+                else
+                    return 10;
+            } ();
+        const auto newValue { sampleProperties.getRecThres () + (multiplier * direction) };
+        recThresTextEditor.setValue (newValue);
+    };
+    recThresTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (recThresLabel, "Record Threshold", recThresTextEditor);
+
+    // RECORD MONITOR OUTPUT BUS
+    recMonOutBusTextEditor.setTooltip ("Record monitor output bus");
+    recMonOutBusTextEditor.getMinValueCallback = [this] () { return 0; };
+    recMonOutBusTextEditor.getMaxValueCallback = [this] () { return 10; };
+    recMonOutBusTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    recMonOutBusTextEditor.updateDataCallback = [this] (int value) { recMonOutBusUiChanged (value); };
+    recMonOutBusTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 2;
+                else
+                    return 5;
+            } ();
+        const auto newValue { sampleProperties.getRecMonOutBus () + (multiplier * direction) };
+        recMonOutBusTextEditor.setValue (newValue);
+    };
+    recMonOutBusTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (recMonOutBusLabel, "Record Monitor Output Bus", recMonOutBusTextEditor);
 }
 
 SampleEditorComponent::~SampleEditorComponent ()
 {
     loopModeComboBox.setLookAndFeel (nullptr);
+    samTrigTypeComboBox.setLookAndFeel (nullptr);
 }
 
 void SampleEditorComponent::init (juce::ValueTree samplePropertiesVT)
@@ -247,16 +1434,15 @@ juce::ValueTree SampleEditorComponent::getSamplePropertiesVT ()
     return sampleProperties.getValueTree ();
 }
 
-void SampleEditorComponent::gainDataChanged (int gain) {
-    gainTextEditor.setText (juce::String (gain)); }
+void SampleEditorComponent::gainDataChanged (int gain) { gainTextEditor.setText (juce::String (gain)); }
 void SampleEditorComponent::pitchDataChanged (int pitch) { pitchTextEditor.setText (juce::String (pitch)); }
 void SampleEditorComponent::panPosDataChanged (int panPos) { panPosTextEditor.setText (juce::String (panPos)); }
-void SampleEditorComponent::samTrigTypeDataChanged (int samTrigType) { samTrigTypeTextEditor.setText (juce::String (samTrigType)); }
+void SampleEditorComponent::samTrigTypeDataChanged (int samTrigType) { samTrigTypeComboBox.setText (juce::String (samTrigType)); }
 void SampleEditorComponent::loopModeDataChanged (int loopMode) { loopModeComboBox.setSelectedId (loopMode); }
 void SampleEditorComponent::loopModesDataChanged (int loopModes) { loopModesTextEditor.setText (juce::String (loopModes)); }
 void SampleEditorComponent::midiModeDataChanged (int midiMode) { midiModeTextEditor.setText (juce::String (midiMode)); }
 void SampleEditorComponent::reverseDataChanged (int reverse) { reverseButton.setToggleState (reverse, juce::dontSendNotification); }
-void SampleEditorComponent::cellModeDataChanged (int cellMode) { cellModeTextEditor.setText (juce::String (cellMode)); }
+void SampleEditorComponent::cellModeDataChanged (int cellMode) { cellModeComboBox.setText (juce::String (cellMode)); }
 void SampleEditorComponent::envAttackDataChanged (int envAttack) { envAttackTextEditor.setText (juce::String (envAttack)); }
 void SampleEditorComponent::envDecayDataChanged (int envDecay) { envDecayTextEditor.setText (juce::String (envDecay)); }
 void SampleEditorComponent::envSusDataChanged (int envSus) { envSusTextEditor.setText (juce::String (envSus)); }
@@ -398,23 +1584,23 @@ void SampleEditorComponent::resized ()
     auto rightColumn = area.reduced (5);
 
     auto setupBounds = [] (juce::Label& label, juce::Component& editor, juce::Rectangle<int>& columnArea)
-        {
-            auto row = columnArea.removeFromTop (20);
-            label.setBounds (row.removeFromLeft (row.getWidth () * 0.6666));
-            editor.setBounds (row);
-        };
+    {
+        auto row = columnArea.removeFromTop (20);
+        label.setBounds (row.removeFromLeft (row.getWidth () * 0.6666));
+        editor.setBounds (row);
+    };
 
         // Left column items
     setupBounds (fileNameLabel, fileNameSelectLabel, leftColumn);
     setupBounds (gainLabel, gainTextEditor, leftColumn);
     setupBounds (pitchLabel, pitchTextEditor, leftColumn);
     setupBounds (panPosLabel, panPosTextEditor, leftColumn);
-    setupBounds (samTrigTypeLabel, samTrigTypeTextEditor, leftColumn);
+    setupBounds (samTrigTypeLabel, samTrigTypeComboBox, leftColumn);
     setupBounds (loopModeLabel, loopModeComboBox, leftColumn);
     setupBounds (loopModesLabel, loopModesTextEditor, leftColumn);
     setupBounds (midiModeLabel, midiModeTextEditor, leftColumn);
     setupBounds (reverseLabel, reverseButton, leftColumn);
-    setupBounds (cellModeLabel, cellModeTextEditor, leftColumn);
+    setupBounds (cellModeLabel, cellModeComboBox, leftColumn);
     setupBounds (envAttackLabel, envAttackTextEditor, leftColumn);
     setupBounds (envDecayLabel, envDecayTextEditor, leftColumn);
     setupBounds (envSusLabel, envSusTextEditor, leftColumn);

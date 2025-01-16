@@ -235,7 +235,11 @@ void PresetProperties::copyPropertiesFrom (juce::ValueTree sourceVT)
         ValueTreeHelpers::forEachChild (srcCellVT, [this, &srcCellProperties, &destCellPropertiesVT] (juce::ValueTree srcCellChild)
         {
             const auto srcCellType { srcCellProperties.getType () };
-            if (srcCellType == "sample")
+            if (srcCellType == "samtempl")
+            {
+                jassertfalse;
+            }
+            else if (srcCellType == "sample")
             {
                 SampleProperties srcSampleProperties { srcCellProperties.getValueTree().getChildWithName (SampleProperties::SampleTypeId), SampleProperties::WrapperType::client, SampleProperties::EnableCallbacks::no};
                 const auto srcCellMode { srcSampleProperties.getCellMode () };

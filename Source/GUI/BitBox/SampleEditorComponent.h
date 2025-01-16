@@ -40,17 +40,17 @@ private:
     juce::Label panPosLabel;
     CustomTextEditorInt panPosTextEditor; // -100% to 100% (mod)
     juce::Label samTrigTypeLabel;
-    CustomTextEditorInt samTrigTypeTextEditor;
+    CustomComboBox samTrigTypeComboBox; // (launch mode?) Trigger, Gate, Toggle
     juce::Label loopModeLabel;
-    CustomComboBox loopModeComboBox;
+    CustomComboBox loopModeComboBox; // on/off
     juce::Label loopModesLabel;
-    CustomTextEditorInt loopModesTextEditor;
+    CustomTextEditorInt loopModesTextEditor; // ?
     juce::Label midiModeLabel;
     CustomTextEditorInt midiModeTextEditor;
     juce::Label reverseLabel;
     RoundedSlideSwitch reverseButton;
     juce::Label cellModeLabel;
-    CustomTextEditorInt cellModeTextEditor;
+    CustomComboBox cellModeComboBox;
     juce::Label envAttackLabel;
     CustomTextEditorInt envAttackTextEditor; // 0% to 100 % (mod)
     juce::Label envDecayLabel;
