@@ -14,11 +14,44 @@ SampleEditorComponent::SampleEditorComponent ()
     fileNameSelectLabel.setColour (juce::Label::ColourIds::backgroundColourId, juce::Colours::black);
     fileNameSelectLabel.setOutline (juce::Colours::white);
     setupLabel (fileNameLabel, "File Name", fileNameSelectLabel);
+    fileNameSelectLabel.onFilesSelected = [this] (const juce::StringArray& files)
+    {
+        // if (!handleSampleAssignment (files [0]))
+        // {
+        //     // TODO - indicate an error? first thought was a red outline that fades out over a couple of second
+        // }
+    };
+    fileNameSelectLabel.onPopupMenuCallback = [this] ()
+    {
+        // Clone
+        // Revert
+    };
 
+    gainTextEditor.setTooltip ("Gain in decibels");
+    gainTextEditor.getMinValueCallback = [this] () { return -96; };
+    gainTextEditor.getMaxValueCallback = [this] () { return 12; };
+    gainTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
+    gainTextEditor.updateDataCallback = [this] (int value) { gainUiChanged (value); };
+    gainTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
+    {
+        const auto multiplier = [dragSpeed] ()
+            {
+                if (dragSpeed == DragSpeed::slow)
+                    return 1;
+                else if (dragSpeed == DragSpeed::medium)
+                    return 10;
+                else
+                    return 25;
+            } ();
+        const auto newValue { sampleProperties.getGainDb () + (multiplier * direction) };
+        gainTextEditor.setValue (newValue);
+    };
+    gainTextEditor.onPopupMenuCallback = [this] () {};
     setupLabel (gainLabel, "Gain (dB)", gainTextEditor);
     setupLabel (pitchLabel, "Pitch", pitchTextEditor);
     setupLabel (panPosLabel, "Pan Position", panPosTextEditor);
     setupLabel (samTrigTypeLabel, "Sample Trigger Type", samTrigTypeTextEditor);
+    loopModeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     setupLabel (loopModeLabel, "Loop Mode", loopModeComboBox);
     setupLabel (loopModesLabel, "Loop Modes", loopModesTextEditor);
     setupLabel (midiModeLabel, "MIDI Mode", midiModeTextEditor);
@@ -77,6 +110,7 @@ SampleEditorComponent::SampleEditorComponent ()
 
 SampleEditorComponent::~SampleEditorComponent ()
 {
+    loopModeComboBox.setLookAndFeel (nullptr);
 }
 
 void SampleEditorComponent::init (juce::ValueTree samplePropertiesVT)
