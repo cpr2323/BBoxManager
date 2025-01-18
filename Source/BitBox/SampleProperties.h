@@ -166,8 +166,8 @@ public:
     void setLegatoMode (int legatoMode, bool includeSelfCallback);
     int getLegatoMode ();
 
-    void setGainSsrcWin (int gainSsrcWin, bool includeSelfCallback);
-    int getGainSsrcWin ();
+    void setGrainsSrcWin (int grainsSrcWin, bool includeSelfCallback);
+    int getGrainsSrcWin ();
 
     void setGrainReadSpeed (int grainReadSpeed, bool includeSelfCallback);
     int getGrainReadSpeed ();
@@ -242,7 +242,7 @@ public:
     static inline const juce::Identifier GrainDensityPropertyId { "grainDensity" };
     static inline const juce::Identifier SliceModePropertyId { "sliceMode" };
     static inline const juce::Identifier LegatoModePropertyId { "legatoMode" };
-    static inline const juce::Identifier GainSsrcWinPropertyId { "gainSsrcWin" };
+    static inline const juce::Identifier GrainsSrcWinPropertyId { "grainsSrcWin" };
     static inline const juce::Identifier GrainReadSpeedPropertyId { "grainReadSpeed" };
     static inline const juce::Identifier RecPresetLenPropertyId { "recPresetLen" };
     static inline const juce::Identifier RecQuantPropertyId { "recQuant" };
@@ -302,7 +302,7 @@ public:
     std::function<void (int grainDensity)> onGrainDensityChange;
     std::function<void (int sliceMode)> onSliceModeChange;
     std::function<void (int legatoMode)> onLegatoModeChange;
-    std::function<void (int gainSsrcWin)> onGainSsrcWinChange;
+    std::function<void (int grainsSrcWin)> onGrainsSrcWinChange;
     std::function<void (int grainReadSpeed)> onGrainReadSpeedChange;
     std::function<void (int recPresetLen)> onRecPresetLenChange;
     std::function<void (int recQuant)> onRecQuantChange;

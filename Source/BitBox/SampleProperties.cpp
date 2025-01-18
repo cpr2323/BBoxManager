@@ -153,8 +153,8 @@ int SampleProperties::getSliceMode () { return getValue<int> (SliceModePropertyI
 void SampleProperties::setLegatoMode (int legatoMode, bool includeSelfCallback) { setValue (legatoMode, LegatoModePropertyId, includeSelfCallback); }
 int SampleProperties::getLegatoMode () { return getValue<int> (LegatoModePropertyId); }
 
-void SampleProperties::setGainSsrcWin (int gainSsrcWin, bool includeSelfCallback) { setValue (gainSsrcWin, GainSsrcWinPropertyId, includeSelfCallback); }
-int SampleProperties::getGainSsrcWin () { return getValue<int> (GainSsrcWinPropertyId); }
+void SampleProperties::setGrainsSrcWin (int grainsSrcWin, bool includeSelfCallback) { setValue (grainsSrcWin, GrainsSrcWinPropertyId, includeSelfCallback); }
+int SampleProperties::getGrainsSrcWin () { return getValue<int> (GrainsSrcWinPropertyId); }
 
 void SampleProperties::setGrainReadSpeed (int grainReadSpeed, bool includeSelfCallback) { setValue (grainReadSpeed, GrainReadSpeedPropertyId, includeSelfCallback); }
 int SampleProperties::getGrainReadSpeed () { return getValue<int> (GrainReadSpeedPropertyId); }
@@ -231,7 +231,7 @@ void SampleProperties::copyPropertiesFrom (juce::ValueTree source)
     setGrainDensity (srcSampleProperties.getGrainDensity (), false);
     setSliceMode (srcSampleProperties.getSliceMode (), false);
     setLegatoMode (srcSampleProperties.getLegatoMode (), false);
-    setGainSsrcWin (srcSampleProperties.getGainSsrcWin (), false);
+    setGrainsSrcWin (srcSampleProperties.getGrainsSrcWin (), false);
     setGrainReadSpeed (srcSampleProperties.getGrainReadSpeed (), false);
     setRecPresetLen (srcSampleProperties.getRecPresetLen (), false);
     setRecQuant (srcSampleProperties.getRecQuant (), false);
@@ -500,10 +500,10 @@ void SampleProperties::valueTreePropertyChanged (juce::ValueTree& treeWhosePrope
             if (onLegatoModeChange != nullptr)
                 onLegatoModeChange (getLegatoMode ());
         }
-        else if (property == GainSsrcWinPropertyId)
+        else if (property == GrainsSrcWinPropertyId)
         {
-            if (onGainSsrcWinChange != nullptr)
-                onGainSsrcWinChange (getGainSsrcWin ());
+            if (onGrainsSrcWinChange != nullptr)
+                onGrainsSrcWinChange (getGrainsSrcWin ());
         }
         else if (property == GrainReadSpeedPropertyId)
         {

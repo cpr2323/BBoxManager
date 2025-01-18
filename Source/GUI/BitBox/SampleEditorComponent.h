@@ -42,7 +42,7 @@ private:
     juce::Label samTrigTypeLabel;
     CustomComboBox samTrigTypeComboBox; // (launch mode?) Trigger, Gate, Toggle
     juce::Label loopModeLabel;
-    CustomComboBox loopModeComboBox; // on/off
+    CustomComboBox loopModeComboBox; // Off, On
     juce::Label loopModesLabel; // ?
     CustomTextEditorInt loopModesTextEditor; // ?
     juce::Label midiModeLabel; // ?
@@ -68,48 +68,47 @@ private:
     juce::Label loopEndLabel;
     CustomTextEditorInt loopEndTextEditor;
     juce::Label quantSizeLabel;
-    CustomTextEditorInt quantSizeTextEditor;
+    CustomTextEditorInt quantSizeTextEditor; // ?
     juce::Label syncTypeLabel;
-    CustomTextEditorInt syncTypeTextEditor;
+    CustomTextEditorInt syncTypeTextEditor; // ?
     juce::Label actSliceLabel;
-    CustomTextEditorInt actSliceTextEditor;
+    CustomTextEditorInt actSliceTextEditor; // ?
     juce::Label outputBusLabel;
-    CustomComboBox outputBusComboBox;
+    CustomComboBox outputBusComboBox; // "Out 1/2", "Out 3/4", "Out 5/6", "Out 7/8", "Out 1", "Out 2", "Out 3", "Out 4", "Out 5", "Out 6", "Out 7", "Out 8"
     juce::Label polyModeLabel;
-    CustomComboBox polyModeComboBox;
+    CustomComboBox polyModeComboBox; // "Mono", "Poly 2", "Poly 4", "Poly 6", "Poly 8", "Poly X"
     juce::Label polyModeSliceLabel;
-    CustomTextEditorInt polyModeSliceTextEditor;
+    CustomTextEditorInt polyModeSliceTextEditor; // ?
     juce::Label sliceStepModeLabel;
-    CustomComboBox sliceStepModeComboBox;
-
+    CustomComboBox sliceStepModeComboBox; // "None", "Forward", "Backward", "Random", "Stagger"
     juce::Label chokeGrpLabel;
-    CustomTextEditorInt chokeGrpTextEditor;
+    CustomComboBox chokeGrpComboBox; // "Excl X", "Excl A", "Excl B", "Excl C", "Excl D"
     juce::Label dualFilCutoffLabel;
     CustomTextEditorInt dualFilCutoffTextEditor; // -100% to +100%, negative low pass, positive high pass (mod)
     juce::Label resLabel;
     CustomTextEditorInt resTextEditor; // 0% to 100 (mod)
     juce::Label rootNoteLabel;
-    CustomTextEditorInt rootNoteTextEditor;
+    CustomComboBox rootNoteComboBox; // C#-1 (midi note #0) through G9
     juce::Label beatCountLabel;
-    CustomTextEditorInt beatCountTextEditor;
+    CustomTextEditorInt beatCountTextEditor; // 1-512
     juce::Label fx1SendLabel;
-    CustomTextEditorInt fx1SendTextEditor;
+    CustomTextEditorInt fx1SendTextEditor; // 0-100%?
     juce::Label fx2SendLabel;
-    CustomTextEditorInt fx2SendTextEditor;
+    CustomTextEditorInt fx2SendTextEditor; // 0-100%?
     juce::Label multiSamModeLabel;
-    CustomTextEditorInt multiSamModeTextEditor;
+    CustomTextEditorInt multiSamModeTextEditor; // bool used with a Sample type to make it multi-sample
     juce::Label interpQualLabel;
-    CustomTextEditorInt interpQualTextEditor;
+    CustomComboBox interpQualComboBox; // Normal, HighQ
     juce::Label playThruLabel;
-    CustomTextEditorInt playThruTextEditor;
+    CustomComboBox playThruComboBox; // Off, On
     juce::Label slicerQuantSizeLabel;
-    CustomTextEditorInt slicerQuantSizeTextEditor;
+    CustomComboBox slicerQuantSizeComboBox; // None, 1/64, 1/32T, 1/32, 1/16T, 1/16, 1/8T, 1/8, 1/4T,1/4, 1/2T, 1/2, 1 bar, 2
     juce::Label slicerSyncLabel;
-    CustomTextEditorInt slicerSyncTextEditor;
+    CustomComboBox slicerSyncComboBox; // Off, On
     juce::Label padNoteLabel;
-    CustomTextEditorInt padNoteTextEditor;
+    CustomComboBox padNoteComboBox; // C#-1 (midi note #0) through G9
     juce::Label loopFadeAmtLabel;
-    CustomTextEditorInt loopFadeAmtTextEditor;
+    CustomTextEditorInt loopFadeAmtTextEditor; // 0 to 100%
     juce::Label lfoWaveLabel;
     CustomComboBox lfoWaveComboBox;  // saw, rev saw, triangle, pos triangle, sine, pos sine, square, pos square, random
     juce::Label lfoRateLabel;
@@ -118,27 +117,25 @@ private:
     juce::Label lfoAmountLabel;
     CustomTextEditorInt lfoAmountTextEditor; // 0 to 100% (mod)
     juce::Label lfoKeyTrigLabel;
-                                                // TODO lfoKeyTrigTextEditor should be a switch
     CustomComboBox lfoKeyTrigComboBox;   // ON/OFF
     juce::Label lfoBeatSyncLabel;
-                                                // TODO lfoBeatSyncTextEditor should be a switch
     CustomComboBox lfoBeatSyncComboBox;  // ON/OFF
     juce::Label lfoRateBeatSyncLabel;
-    CustomTextEditorInt lfoRateBeatSyncTextEditor;
+    CustomTextEditorInt lfoRateBeatSyncTextEditor; // ?? maybe: 8,4,2,1,1/2,1/2t,1/4,1/4t,1/8,1/8t1/16,1/16t,1/32,1/32t,1/64 [LFO BeatSyn on] (mod)
     juce::Label grainSizePercLabel;
-    CustomTextEditorInt grainSizePercTextEditor;
+    CustomTextEditorInt grainSizePercTextEditor; // 0 to 100% (mod)
     juce::Label grainScatLabel;
-    CustomTextEditorInt grainScatTextEditor;
+    CustomTextEditorInt grainScatTextEditor; // 0 to 100%
     juce::Label grainPanRndLabel;
-    CustomTextEditorInt grainPanRndTextEditor;
+    CustomTextEditorInt grainPanRndTextEditor; // 0 to 100%
     juce::Label grainDensityLabel;
-    CustomTextEditorInt grainDensityTextEditor;
+    CustomTextEditorInt grainDensityTextEditor; // 0 to 100%
     juce::Label sliceModeLabel;
-    CustomTextEditorInt sliceModeTextEditor;
+    CustomComboBox sliceModeComboBox; // slicer loop mode? on, off?
     juce::Label legatoModeLabel;
     CustomTextEditorInt legatoModeTextEditor;
-    juce::Label gainSsrcWinLabel;
-    CustomTextEditorInt gainSsrcWinTextEditor;
+    juce::Label grainsSrcWinLabel;
+    CustomTextEditorInt grainsSrcWinTextEditor;
     juce::Label grainReadSpeedLabel;
     CustomTextEditorInt grainReadSpeedTextEditor;
     juce::Label recPresetLenLabel;
@@ -206,7 +203,7 @@ private:
     void grainDensityDataChanged (int grainDensity);
     void sliceModeDataChanged (int sliceMode);
     void legatoModeDataChanged (int legatoMode);
-    void gainSsrcWinDataChanged (int gainSsrcWin);
+    void grainsSrcWinDataChanged (int grainsSrcWin);
     void grainReadSpeedDataChanged (int grainReadSpeed);
     void recPresetLenDataChanged (int recPresetLen);
     void recQuantDataChanged (int recQuant);
@@ -265,7 +262,7 @@ private:
     void grainDensityUiChanged (int grainDensity);
     void sliceModeUiChanged (int sliceMode);
     void legatoModeUiChanged (int legatoMode);
-    void gainSsrcWinUiChanged (int gainSsrcWin);
+    void grainsSrcWinUiChanged (int grainsSrcWin);
     void grainReadSpeedUiChanged (int grainReadSpeed);
     void recPresetLenUiChanged (int recPresetLen);
     void recQuantUiChanged (int recQuant);

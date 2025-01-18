@@ -144,7 +144,7 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                 sampleProperties.setGrainDensity (paramsElement->getIntAttribute ("graindensity"), false);
                 sampleProperties.setSliceMode (paramsElement->getIntAttribute ("slicemode"), false);
                 sampleProperties.setLegatoMode (paramsElement->getIntAttribute ("legatomode"), false);
-                sampleProperties.setGainSsrcWin (paramsElement->getIntAttribute ("gainssrcwin"), false);
+                sampleProperties.setGrainsSrcWin (paramsElement->getIntAttribute ("gainssrcwin"), false);
                 sampleProperties.setGrainReadSpeed (paramsElement->getIntAttribute ("grainreadspeed"), false);
                 sampleProperties.setRecPresetLen (paramsElement->getIntAttribute ("recpresetlen"), false);
                 sampleProperties.setRecQuant (paramsElement->getIntAttribute ("recquant"), false);
