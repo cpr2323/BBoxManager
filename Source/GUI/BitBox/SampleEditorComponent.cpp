@@ -2,7 +2,7 @@
 
 SampleEditorComponent::SampleEditorComponent ()
 {
-    auto setupLabel = [this] (juce::Label& label, juce::String text, juce::Component& editor)
+    auto setupEditor = [this] (juce::Label& label, juce::String text, juce::Component& editor)
     {
         label.setColour (juce::Label::textColourId, juce::Colours::black);
         label.setText (text, juce::dontSendNotification);
@@ -12,6 +12,8 @@ SampleEditorComponent::SampleEditorComponent ()
 
     auto setupComboBox = [this] (juce::Label& label, juce::String text, juce::Component& combobox)
     {
+        label.setColour (juce::Label::textColourId, juce::Colours::black);
+        label.setText (text, juce::dontSendNotification);
         addAndMakeVisible (label);
         addAndMakeVisible (combobox);
     };
@@ -19,7 +21,7 @@ SampleEditorComponent::SampleEditorComponent ()
     fileNameSelectLabel.setColour (juce::Label::ColourIds::textColourId, juce::Colours::white);
     fileNameSelectLabel.setColour (juce::Label::ColourIds::backgroundColourId, juce::Colours::black);
     fileNameSelectLabel.setOutline (juce::Colours::white);
-    setupLabel (fileNameLabel, "File Name", fileNameSelectLabel);
+    setupEditor (fileNameLabel, "File Name", fileNameSelectLabel);
     fileNameSelectLabel.onFilesSelected = [this] (const juce::StringArray& files)
     {
         // if (!handleSampleAssignment (files [0]))
@@ -55,7 +57,7 @@ SampleEditorComponent::SampleEditorComponent ()
         gainTextEditor.setValue (newValue);
     };
     gainTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (gainLabel, "Gain (dB)", gainTextEditor);
+    setupEditor (gainLabel, "Gain (dB)", gainTextEditor);
 
     // PITCH
     pitchTextEditor.setTooltip ("Pitch in semitones");
@@ -78,7 +80,7 @@ SampleEditorComponent::SampleEditorComponent ()
         pitchTextEditor.setValue (newValue);
     };
     pitchTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (pitchLabel, "Pitch", pitchTextEditor);
+    setupEditor (pitchLabel, "Pitch", pitchTextEditor);
 
     // PAN
     panPosTextEditor.setTooltip ("Pan Position in percentage");
@@ -101,10 +103,13 @@ SampleEditorComponent::SampleEditorComponent ()
         panPosTextEditor.setValue (newValue);
     };
     panPosTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (panPosLabel, "Pan Position", panPosTextEditor);
+    setupEditor (panPosLabel, "Pan Position", panPosTextEditor);
 
     // SAMPLE TRIGGER TYPE (launch mode?)
     samTrigTypeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
+    samTrigTypeComboBox.addItem ("Trigger", 1);
+    samTrigTypeComboBox.addItem ("Gate", 2);
+    samTrigTypeComboBox.addItem ("Toggle", 3);
     setupComboBox (samTrigTypeLabel, "Sample Trigger Type", samTrigTypeComboBox);
 
     // LOOP MODE
@@ -132,7 +137,7 @@ SampleEditorComponent::SampleEditorComponent ()
         loopModesTextEditor.setValue (newValue);
     };
     loopModesTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (loopModesLabel, "Loop Modes", loopModesTextEditor);
+    setupEditor (loopModesLabel, "Loop Modes", loopModesTextEditor);
 
     // MIDI MODE
     midiModeTextEditor.setTooltip ("MIDI mode");
@@ -155,16 +160,19 @@ SampleEditorComponent::SampleEditorComponent ()
         midiModeTextEditor.setValue (newValue);
     };
     midiModeTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (midiModeLabel, "MIDI Mode", midiModeTextEditor);
+    setupEditor (midiModeLabel, "MIDI Mode", midiModeTextEditor);
 
     // REVERSE
-    reverseButton.setTooltip ("Reverse");
-    reverseButton.onClick = [this] () { reverseUiChanged (reverseButton.getToggleState () ? 1 : 0); };
-    reverseButton.onPopupMenuCallback = [this] () {};
-    setupLabel (reverseLabel, "Reverse", reverseButton);
+    reverseComboBox.addItem ("Forward", 1);
+    reverseComboBox.addItem ("Reverse", 2);
+    setupComboBox (reverseLabel, "Reverse", reverseComboBox);
 
     // CELL MODE
-    setupLabel (cellModeLabel, "Cell Mode", cellModeComboBox);
+    cellModeComboBox.addItem ("Sample", 1);
+    cellModeComboBox.addItem ("Clip", 2);
+    cellModeComboBox.addItem ("Slicer", 3);
+    cellModeComboBox.addItem ("Granular", 4);
+    setupComboBox (cellModeLabel, "Cell Mode", cellModeComboBox);
 
     // ENVELOPE ATTACK
     envAttackTextEditor.setTooltip ("Envelope attack");
@@ -187,7 +195,7 @@ SampleEditorComponent::SampleEditorComponent ()
         envAttackTextEditor.setValue (newValue);
     };
     envAttackTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (envAttackLabel, "Attack", envAttackTextEditor);
+    setupEditor (envAttackLabel, "Attack", envAttackTextEditor);
 
     // ENVELOPE DECAY
     envDecayTextEditor.setTooltip ("Envelope decay");
@@ -210,7 +218,7 @@ SampleEditorComponent::SampleEditorComponent ()
         envDecayTextEditor.setValue (newValue);
     };
     envDecayTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (envDecayLabel, "Decay", envDecayTextEditor);
+    setupEditor (envDecayLabel, "Decay", envDecayTextEditor);
 
     // ENVELOPE SUSTAIN
     envSusTextEditor.setTooltip ("Envelope sustain");
@@ -233,7 +241,7 @@ SampleEditorComponent::SampleEditorComponent ()
         envSusTextEditor.setValue (newValue);
     };
     envSusTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (envSusLabel, "Sustain", envSusTextEditor);
+    setupEditor (envSusLabel, "Sustain", envSusTextEditor);
 
     // ENVELOPE RELEASE
     envRelTextEditor.setTooltip ("Envelope release");
@@ -256,7 +264,7 @@ SampleEditorComponent::SampleEditorComponent ()
         envRelTextEditor.setValue (newValue);
     };
     envRelTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (envRelLabel, "Release", envRelTextEditor);
+    setupEditor (envRelLabel, "Release", envRelTextEditor);
 
     // SAMPLE START
     samStartTextEditor.setTooltip ("Sample start position");
@@ -279,7 +287,7 @@ SampleEditorComponent::SampleEditorComponent ()
         samStartTextEditor.setValue (newValue);
     };
     samStartTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (samStartLabel, "Sample Start", samStartTextEditor);
+    setupEditor (samStartLabel, "Sample Start", samStartTextEditor);
 
     // SAMPLE LENGTH
     samLenTextEditor.setTooltip ("Sample length");
@@ -302,7 +310,7 @@ SampleEditorComponent::SampleEditorComponent ()
         samLenTextEditor.setValue (newValue);
     };
     samLenTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (samLenLabel, "Sample Length", samLenTextEditor);
+    setupEditor (samLenLabel, "Sample Length", samLenTextEditor);
 
     // LOOP START
     loopStartTextEditor.setTooltip ("Loop start position");
@@ -325,7 +333,7 @@ SampleEditorComponent::SampleEditorComponent ()
         loopStartTextEditor.setValue (newValue);
     };
     loopStartTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (loopStartLabel, "Loop Start", loopStartTextEditor);
+    setupEditor (loopStartLabel, "Loop Start", loopStartTextEditor);
 
     // LOOP END
     loopEndTextEditor.setTooltip ("Loop end position");
@@ -348,7 +356,7 @@ SampleEditorComponent::SampleEditorComponent ()
         loopEndTextEditor.setValue (newValue);
     };
     loopEndTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (loopEndLabel, "Loop End", loopEndTextEditor);
+    setupEditor (loopEndLabel, "Loop End", loopEndTextEditor);
 
     // QUANT SIZE
     quantSizeTextEditor.setTooltip ("Quantization size");
@@ -371,7 +379,7 @@ SampleEditorComponent::SampleEditorComponent ()
         quantSizeTextEditor.setValue (newValue);
     };
     quantSizeTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (quantSizeLabel, "Quant Size", quantSizeTextEditor);
+    setupEditor (quantSizeLabel, "Quant Size", quantSizeTextEditor);
 
     // SYNC TYPE
     syncTypeTextEditor.setTooltip ("Sync type");
@@ -394,7 +402,7 @@ SampleEditorComponent::SampleEditorComponent ()
         syncTypeTextEditor.setValue (newValue);
     };
     syncTypeTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (syncTypeLabel, "Sync Type", syncTypeTextEditor);
+    setupEditor (syncTypeLabel, "Sync Type", syncTypeTextEditor);
 
     // ACTIVE SLICE
     actSliceTextEditor.setTooltip ("Active slice");
@@ -417,53 +425,31 @@ SampleEditorComponent::SampleEditorComponent ()
         actSliceTextEditor.setValue (newValue);
     };
     actSliceTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (actSliceLabel, "Active Slice", actSliceTextEditor);
+    setupEditor (actSliceLabel, "Active Slice", actSliceTextEditor);
 
     // OUTPUT BUS
-    outputBusTextEditor.setTooltip ("Output bus");
-    outputBusTextEditor.getMinValueCallback = [this] () { return 0; };
-    outputBusTextEditor.getMaxValueCallback = [this] () { return 10; };
-    outputBusTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    outputBusTextEditor.updateDataCallback = [this] (int value) { outputBusUiChanged (value); };
-    outputBusTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 2;
-                else
-                    return 5;
-            } ();
-        const auto newValue { sampleProperties.getOutputBus () + (multiplier * direction) };
-        outputBusTextEditor.setValue (newValue);
-    };
-    outputBusTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (outputBusLabel, "Output Bus", outputBusTextEditor);
+    outputBusComboBox.addItem ("Out 1/2", 1);
+    outputBusComboBox.addItem ("Out 3/4", 2);
+    outputBusComboBox.addItem ("Out 5/6", 3);
+    outputBusComboBox.addItem ("Out 7/8", 4);
+    outputBusComboBox.addItem ("Out 1", 5);
+    outputBusComboBox.addItem ("Out 2", 6);
+    outputBusComboBox.addItem ("Out 3", 7);
+    outputBusComboBox.addItem ("Out 4", 8);
+    outputBusComboBox.addItem ("Out 5", 9);
+    outputBusComboBox.addItem ("Out 6", 10);
+    outputBusComboBox.addItem ("Out 7", 11);
+    outputBusComboBox.addItem ("Out 8", 12);
+    setupComboBox (outputBusLabel, "Output Bus", outputBusComboBox);
 
     // POLY MODE
-    polyModeTextEditor.setTooltip ("Polyphonic mode");
-    polyModeTextEditor.getMinValueCallback = [this] () { return 0; };
-    polyModeTextEditor.getMaxValueCallback = [this] () { return 10; };
-    polyModeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    polyModeTextEditor.updateDataCallback = [this] (int value) { polyModeUiChanged (value); };
-    polyModeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 2;
-                else
-                    return 5;
-            } ();
-        const auto newValue { sampleProperties.getPolyMode () + (multiplier * direction) };
-        polyModeTextEditor.setValue (newValue);
-    };
-    polyModeTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (polyModeLabel, "Poly Mode", polyModeTextEditor);
+    polyModeComboBox.addItem ("Mono", 1);
+    polyModeComboBox.addItem ("Poly 2", 2);
+    polyModeComboBox.addItem ("Poly 4", 3);
+    polyModeComboBox.addItem ("Poly 6", 4);
+    polyModeComboBox.addItem ("Poly 8", 5);
+    polyModeComboBox.addItem ("Poly X", 6);
+    setupComboBox (polyModeLabel, "Poly Mode", polyModeComboBox);
 
     // POLY MODE SLICE
     polyModeSliceTextEditor.setTooltip ("Polyphonic mode slice");
@@ -486,30 +472,15 @@ SampleEditorComponent::SampleEditorComponent ()
         polyModeSliceTextEditor.setValue (newValue);
     };
     polyModeSliceTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (polyModeSliceLabel, "Poly Mode Slice", polyModeSliceTextEditor);
+    setupEditor (polyModeSliceLabel, "Poly Mode Slice", polyModeSliceTextEditor);
 
-// SLICE STEP MODE
-    sliceStepModeTextEditor.setTooltip ("Slice step mode");
-    sliceStepModeTextEditor.getMinValueCallback = [this] () { return 0; };
-    sliceStepModeTextEditor.getMaxValueCallback = [this] () { return 10; };
-    sliceStepModeTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    sliceStepModeTextEditor.updateDataCallback = [this] (int value) { sliceStepModeUiChanged (value); };
-    sliceStepModeTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 2;
-                else
-                    return 5;
-            } ();
-        const auto newValue { sampleProperties.getSliceStepMode () + (multiplier * direction) };
-        sliceStepModeTextEditor.setValue (newValue);
-    };
-    sliceStepModeTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (sliceStepModeLabel, "Slice Step Mode", sliceStepModeTextEditor);
+    // SLICE STEP MODE
+    sliceStepModeComboBox.addItem ("None", 1);
+    sliceStepModeComboBox.addItem ("Forward", 2);
+    sliceStepModeComboBox.addItem ("Backward", 3);
+    sliceStepModeComboBox.addItem ("Random", 4);
+    sliceStepModeComboBox.addItem ("Stagger", 5);
+    setupComboBox (sliceStepModeLabel, "Slice Step Mode", sliceStepModeComboBox);
 
     // CHOKE GROUP
     chokeGrpTextEditor.setTooltip ("Choke group");
@@ -532,7 +503,7 @@ SampleEditorComponent::SampleEditorComponent ()
         chokeGrpTextEditor.setValue (newValue);
     };
     chokeGrpTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (chokeGrpLabel, "Choke Group", chokeGrpTextEditor);
+    setupEditor (chokeGrpLabel, "Choke Group", chokeGrpTextEditor);
 
     // DUAL FILTER CUTOFF
     dualFilCutoffTextEditor.setTooltip ("Dual filter cutoff");
@@ -555,7 +526,7 @@ SampleEditorComponent::SampleEditorComponent ()
         dualFilCutoffTextEditor.setValue (newValue);
     };
     dualFilCutoffTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (dualFilCutoffLabel, "Dual Filter Cutoff", dualFilCutoffTextEditor);
+    setupEditor (dualFilCutoffLabel, "Dual Filter Cutoff", dualFilCutoffTextEditor);
 
     // RESONANCE
     resTextEditor.setTooltip ("Resonance");
@@ -578,7 +549,7 @@ SampleEditorComponent::SampleEditorComponent ()
         resTextEditor.setValue (newValue);
     };
     resTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (resLabel, "Resonance", resTextEditor);
+    setupEditor (resLabel, "Resonance", resTextEditor);
 
     // ROOT NOTE
     rootNoteTextEditor.setTooltip ("Root note");
@@ -601,7 +572,7 @@ SampleEditorComponent::SampleEditorComponent ()
         rootNoteTextEditor.setValue (newValue);
     };
     rootNoteTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (rootNoteLabel, "Root Note", rootNoteTextEditor);
+    setupEditor (rootNoteLabel, "Root Note", rootNoteTextEditor);
 
     // BEAT COUNT
     beatCountTextEditor.setTooltip ("Beat count");
@@ -624,7 +595,7 @@ SampleEditorComponent::SampleEditorComponent ()
         beatCountTextEditor.setValue (newValue);
     };
     beatCountTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (beatCountLabel, "Beat Count", beatCountTextEditor);
+    setupEditor (beatCountLabel, "Beat Count", beatCountTextEditor);
 
     // FX1 SEND
     fx1SendTextEditor.setTooltip ("FX1 send level");
@@ -647,7 +618,7 @@ SampleEditorComponent::SampleEditorComponent ()
         fx1SendTextEditor.setValue (newValue);
     };
     fx1SendTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (fx1SendLabel, "FX1 Send", fx1SendTextEditor);
+    setupEditor (fx1SendLabel, "FX1 Send", fx1SendTextEditor);
 
     // FX2 SEND
     fx2SendTextEditor.setTooltip ("FX2 send level");
@@ -670,7 +641,7 @@ SampleEditorComponent::SampleEditorComponent ()
         fx2SendTextEditor.setValue (newValue);
     };
     fx2SendTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (fx2SendLabel, "FX2 Send", fx2SendTextEditor);
+    setupEditor (fx2SendLabel, "FX2 Send", fx2SendTextEditor);
 
     // MULTI SAMPLE MODE
     multiSamModeTextEditor.setTooltip ("Multi sample mode");
@@ -693,7 +664,7 @@ SampleEditorComponent::SampleEditorComponent ()
         multiSamModeTextEditor.setValue (newValue);
     };
     multiSamModeTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (multiSamModeLabel, "Multi Sample Mode", multiSamModeTextEditor);
+    setupEditor (multiSamModeLabel, "Multi Sample Mode", multiSamModeTextEditor);
 
     // INTERPOLATION QUALITY
     interpQualTextEditor.setTooltip ("Interpolation quality");
@@ -716,7 +687,7 @@ SampleEditorComponent::SampleEditorComponent ()
         interpQualTextEditor.setValue (newValue);
     };
     interpQualTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (interpQualLabel, "Interpolation Quality", interpQualTextEditor);
+    setupEditor (interpQualLabel, "Interpolation Quality", interpQualTextEditor);
 
 // PLAY THROUGH
     playThruTextEditor.setTooltip ("Play through");
@@ -739,7 +710,7 @@ SampleEditorComponent::SampleEditorComponent ()
         playThruTextEditor.setValue (newValue);
     };
     playThruTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (playThruLabel, "Play Through", playThruTextEditor);
+    setupEditor (playThruLabel, "Play Through", playThruTextEditor);
 
     // SLICER QUANT SIZE
     slicerQuantSizeTextEditor.setTooltip ("Slicer quantization size");
@@ -762,7 +733,7 @@ SampleEditorComponent::SampleEditorComponent ()
         slicerQuantSizeTextEditor.setValue (newValue);
     };
     slicerQuantSizeTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (slicerQuantSizeLabel, "Slicer Quant Size", slicerQuantSizeTextEditor);
+    setupEditor (slicerQuantSizeLabel, "Slicer Quant Size", slicerQuantSizeTextEditor);
 
     // SLICER SYNC
     slicerSyncTextEditor.setTooltip ("Slicer sync");
@@ -785,7 +756,7 @@ SampleEditorComponent::SampleEditorComponent ()
         slicerSyncTextEditor.setValue (newValue);
     };
     slicerSyncTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (slicerSyncLabel, "Slicer Sync", slicerSyncTextEditor);
+    setupEditor (slicerSyncLabel, "Slicer Sync", slicerSyncTextEditor);
 
     // PAD NOTE
     padNoteTextEditor.setTooltip ("Pad note");
@@ -808,7 +779,7 @@ SampleEditorComponent::SampleEditorComponent ()
         padNoteTextEditor.setValue (newValue);
     };
     padNoteTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (padNoteLabel, "Pad Note", padNoteTextEditor);
+    setupEditor (padNoteLabel, "Pad Note", padNoteTextEditor);
 
     // LOOP FADE AMOUNT
     loopFadeAmtTextEditor.setTooltip ("Loop fade amount");
@@ -831,30 +802,22 @@ SampleEditorComponent::SampleEditorComponent ()
         loopFadeAmtTextEditor.setValue (newValue);
     };
     loopFadeAmtTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (loopFadeAmtLabel, "Loop Fade Amount", loopFadeAmtTextEditor);
+    setupEditor (loopFadeAmtLabel, "Loop Fade Amount", loopFadeAmtTextEditor);
 
     // LFO WAVE
-    lfoWaveTextEditor.setTooltip ("LFO wave");
-    lfoWaveTextEditor.getMinValueCallback = [this] () { return 0; };
-    lfoWaveTextEditor.getMaxValueCallback = [this] () { return 7; };
-    lfoWaveTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    lfoWaveTextEditor.updateDataCallback = [this] (int value) { lfoWaveUiChanged (value); };
-    lfoWaveTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 1;
-                else
-                    return 1;
-            } ();
-        const auto newValue { sampleProperties.getLfoWave () + (multiplier * direction) };
-        lfoWaveTextEditor.setValue (newValue);
-    };
-    lfoWaveTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (lfoWaveLabel, "LFO Wave", lfoWaveTextEditor);
+    // saw, rev saw, triangle, pos triangle, sine, pos sine, square, pos square, random
+    lfoWaveComboBox.setTooltip ("LFO wave");
+    lfoWaveComboBox.addItem ("saw", 1);
+    lfoWaveComboBox.addItem ("rev saw", 2);
+    lfoWaveComboBox.addItem ("triangle", 3);
+    lfoWaveComboBox.addItem ("pos triangle", 4);
+    lfoWaveComboBox.addItem ("sine", 5);
+    lfoWaveComboBox.addItem ("pos sine", 6);
+    lfoWaveComboBox.addItem ("square", 7);
+    lfoWaveComboBox.addItem ("pos square", 8);
+    lfoWaveComboBox.addItem ("random", 9);
+    lfoWaveComboBox.setLookAndFeel (&noArrowComboBoxLnF);
+    setupComboBox (lfoWaveLabel, "LFO Wave", lfoWaveComboBox);
 
     // LFO RATE
     lfoRateTextEditor.setTooltip ("LFO rate");
@@ -877,7 +840,7 @@ SampleEditorComponent::SampleEditorComponent ()
         lfoRateTextEditor.setValue (newValue);
     };
     lfoRateTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (lfoRateLabel, "LFO Rate", lfoRateTextEditor);
+    setupEditor (lfoRateLabel, "LFO Rate", lfoRateTextEditor);
 
     // LFO AMOUNT
     lfoAmountTextEditor.setTooltip ("LFO amount");
@@ -900,7 +863,7 @@ SampleEditorComponent::SampleEditorComponent ()
         lfoAmountTextEditor.setValue (newValue);
     };
     lfoAmountTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (lfoAmountLabel, "LFO Amount", lfoAmountTextEditor);
+    setupEditor (lfoAmountLabel, "LFO Amount", lfoAmountTextEditor);
 
     // LFO KEY TRIGGER
     lfoKeyTrigTextEditor.setTooltip ("LFO key trigger");
@@ -923,7 +886,7 @@ SampleEditorComponent::SampleEditorComponent ()
         lfoKeyTrigTextEditor.setValue (newValue);
     };
     lfoKeyTrigTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (lfoKeyTrigLabel, "LFO Key Trigger", lfoKeyTrigTextEditor);
+    setupEditor (lfoKeyTrigLabel, "LFO Key Trigger", lfoKeyTrigTextEditor);
 
     // LFO BEAT SYNC
     lfoBeatSyncTextEditor.setTooltip ("LFO beat sync");
@@ -946,7 +909,7 @@ SampleEditorComponent::SampleEditorComponent ()
         lfoBeatSyncTextEditor.setValue (newValue);
     };
     lfoBeatSyncTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (lfoBeatSyncLabel, "LFO Beat Sync", lfoBeatSyncTextEditor);
+    setupEditor (lfoBeatSyncLabel, "LFO Beat Sync", lfoBeatSyncTextEditor);
 
     // LFO RATE BEAT SYNC
     lfoRateBeatSyncTextEditor.setTooltip ("LFO rate beat sync");
@@ -969,7 +932,7 @@ SampleEditorComponent::SampleEditorComponent ()
         lfoRateBeatSyncTextEditor.setValue (newValue);
     };
     lfoRateBeatSyncTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (lfoRateBeatSyncLabel, "LFO Rate Beat Sync", lfoRateBeatSyncTextEditor);
+    setupEditor (lfoRateBeatSyncLabel, "LFO Rate Beat Sync", lfoRateBeatSyncTextEditor);
 
 // GRAIN SIZE PERCENTAGE
     grainSizePercTextEditor.setTooltip ("Grain size percentage");
@@ -992,7 +955,7 @@ SampleEditorComponent::SampleEditorComponent ()
         grainSizePercTextEditor.setValue (newValue);
     };
     grainSizePercTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (grainSizePercLabel, "Grain Size Percentage", grainSizePercTextEditor);
+    setupEditor (grainSizePercLabel, "Grain Size Percentage", grainSizePercTextEditor);
 
     // GRAIN SCATTER
     grainScatTextEditor.setTooltip ("Grain scatter");
@@ -1015,7 +978,7 @@ SampleEditorComponent::SampleEditorComponent ()
         grainScatTextEditor.setValue (newValue);
     };
     grainScatTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (grainScatLabel, "Grain Scatter", grainScatTextEditor);
+    setupEditor (grainScatLabel, "Grain Scatter", grainScatTextEditor);
 
     // GRAIN PAN RANDOM
     grainPanRndTextEditor.setTooltip ("Grain pan random");
@@ -1038,7 +1001,7 @@ SampleEditorComponent::SampleEditorComponent ()
         grainPanRndTextEditor.setValue (newValue);
     };
     grainPanRndTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (grainPanRndLabel, "Grain Pan Random", grainPanRndTextEditor);
+    setupEditor (grainPanRndLabel, "Grain Pan Random", grainPanRndTextEditor);
 
     // GRAIN DENSITY
     grainDensityTextEditor.setTooltip ("Grain density");
@@ -1061,7 +1024,7 @@ SampleEditorComponent::SampleEditorComponent ()
         grainDensityTextEditor.setValue (newValue);
     };
     grainDensityTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (grainDensityLabel, "Grain Density", grainDensityTextEditor);
+    setupEditor (grainDensityLabel, "Grain Density", grainDensityTextEditor);
 
     // SLICE MODE
     sliceModeTextEditor.setTooltip ("Slice mode");
@@ -1084,7 +1047,7 @@ SampleEditorComponent::SampleEditorComponent ()
         sliceModeTextEditor.setValue (newValue);
     };
     sliceModeTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (sliceModeLabel, "Slice Mode", sliceModeTextEditor);
+    setupEditor (sliceModeLabel, "Slice Mode", sliceModeTextEditor);
 
     // LEGATO MODE
     legatoModeTextEditor.setTooltip ("Legato mode");
@@ -1107,7 +1070,7 @@ SampleEditorComponent::SampleEditorComponent ()
         legatoModeTextEditor.setValue (newValue);
     };
     legatoModeTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (legatoModeLabel, "Legato Mode", legatoModeTextEditor);
+    setupEditor (legatoModeLabel, "Legato Mode", legatoModeTextEditor);
 
     // GAIN SSRC WINDOW
     gainSsrcWinTextEditor.setTooltip ("Gain SSRC window");
@@ -1130,7 +1093,7 @@ SampleEditorComponent::SampleEditorComponent ()
         gainSsrcWinTextEditor.setValue (newValue);
     };
     gainSsrcWinTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (gainSsrcWinLabel, "Gain SSRC Window", gainSsrcWinTextEditor);
+    setupEditor (gainSsrcWinLabel, "Gain SSRC Window", gainSsrcWinTextEditor);
 
     // GRAIN READ SPEED
     grainReadSpeedTextEditor.setTooltip ("Grain read speed");
@@ -1153,7 +1116,7 @@ SampleEditorComponent::SampleEditorComponent ()
         grainReadSpeedTextEditor.setValue (newValue);
     };
     grainReadSpeedTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (grainReadSpeedLabel, "Grain Read Speed", grainReadSpeedTextEditor);
+    setupEditor (grainReadSpeedLabel, "Grain Read Speed", grainReadSpeedTextEditor);
 
     // RECORD PRESET LENGTH
     recPresetLenTextEditor.setTooltip ("Record preset length");
@@ -1176,7 +1139,7 @@ SampleEditorComponent::SampleEditorComponent ()
         recPresetLenTextEditor.setValue (newValue);
     };
     recPresetLenTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (recPresetLenLabel, "Record Preset Length", recPresetLenTextEditor);
+    setupEditor (recPresetLenLabel, "Record Preset Length", recPresetLenTextEditor);
 
     // RECORD QUANTIZATION
     recQuantTextEditor.setTooltip ("Record quantization");
@@ -1199,7 +1162,7 @@ SampleEditorComponent::SampleEditorComponent ()
         recQuantTextEditor.setValue (newValue);
     };
     recQuantTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (recQuantLabel, "Record Quantization", recQuantTextEditor);
+    setupEditor (recQuantLabel, "Record Quantization", recQuantTextEditor);
 
     // RECORD INPUT
     recInputTextEditor.setTooltip ("Record input");
@@ -1222,7 +1185,7 @@ SampleEditorComponent::SampleEditorComponent ()
         recInputTextEditor.setValue (newValue);
     };
     recInputTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (recInputLabel, "Record Input", recInputTextEditor);
+    setupEditor (recInputLabel, "Record Input", recInputTextEditor);
 
     // RECORD USE THRESHOLD
     recUseThresTextEditor.setTooltip ("Record use threshold");
@@ -1245,7 +1208,7 @@ SampleEditorComponent::SampleEditorComponent ()
         recUseThresTextEditor.setValue (newValue);
     };
     recUseThresTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (recUseThresLabel, "Record Use Threshold", recUseThresTextEditor);
+    setupEditor (recUseThresLabel, "Record Use Threshold", recUseThresTextEditor);
 
     // RECORD THRESHOLD
     recThresTextEditor.setTooltip ("Record threshold");
@@ -1268,7 +1231,7 @@ SampleEditorComponent::SampleEditorComponent ()
         recThresTextEditor.setValue (newValue);
     };
     recThresTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (recThresLabel, "Record Threshold", recThresTextEditor);
+    setupEditor (recThresLabel, "Record Threshold", recThresTextEditor);
 
     // RECORD MONITOR OUTPUT BUS
     recMonOutBusTextEditor.setTooltip ("Record monitor output bus");
@@ -1291,11 +1254,12 @@ SampleEditorComponent::SampleEditorComponent ()
         recMonOutBusTextEditor.setValue (newValue);
     };
     recMonOutBusTextEditor.onPopupMenuCallback = [this] () {};
-    setupLabel (recMonOutBusLabel, "Record Monitor Output Bus", recMonOutBusTextEditor);
+    setupEditor (recMonOutBusLabel, "Record Monitor Output Bus", recMonOutBusTextEditor);
 }
 
 SampleEditorComponent::~SampleEditorComponent ()
 {
+    lfoWaveComboBox.setLookAndFeel (nullptr);
     loopModeComboBox.setLookAndFeel (nullptr);
     samTrigTypeComboBox.setLookAndFeel (nullptr);
 }
@@ -1472,7 +1436,7 @@ void SampleEditorComponent::slicerQuantSizeDataChanged (int slicerQuantSize) { s
 void SampleEditorComponent::slicerSyncDataChanged (int slicerSync) { slicerSyncTextEditor.setText (juce::String (slicerSync)); }
 void SampleEditorComponent::padNoteDataChanged (int padNote) { padNoteTextEditor.setText (juce::String (padNote)); }
 void SampleEditorComponent::loopFadeAmtDataChanged (int loopFadeAmt) { loopFadeAmtTextEditor.setText (juce::String (loopFadeAmt)); }
-void SampleEditorComponent::lfoWaveDataChanged (int lfoWave) { lfoWaveTextEditor.setText (juce::String (lfoWave)); }
+void SampleEditorComponent::lfoWaveDataChanged (int lfoWave) { /*lfoWaveComboBox.setText (juce::String (lfoWave));*/ }
 void SampleEditorComponent::lfoRateDataChanged (int lfoRate) { lfoRateTextEditor.setText (juce::String (lfoRate)); }
 void SampleEditorComponent::lfoAmountDataChanged (int lfoAmount) { lfoAmountTextEditor.setText (juce::String (lfoAmount)); }
 void SampleEditorComponent::lfoKeyTrigDataChanged (int lfoKeyTrig) { lfoKeyTrigTextEditor.setText (juce::String (lfoKeyTrig)); }
@@ -1634,7 +1598,7 @@ void SampleEditorComponent::resized ()
     setupBounds (loopFadeAmtLabel, loopFadeAmtTextEditor, middleColumn);
 
     // Right column items
-    setupBounds (lfoWaveLabel, lfoWaveTextEditor, rightColumn);
+    setupBounds (lfoWaveLabel, lfoWaveComboBox, rightColumn);
     setupBounds (lfoRateLabel, lfoRateTextEditor, rightColumn);
     setupBounds (lfoAmountLabel, lfoAmountTextEditor, rightColumn);
     setupBounds (lfoKeyTrigLabel, lfoKeyTrigTextEditor, rightColumn);

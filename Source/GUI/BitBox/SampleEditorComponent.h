@@ -43,14 +43,14 @@ private:
     CustomComboBox samTrigTypeComboBox; // (launch mode?) Trigger, Gate, Toggle
     juce::Label loopModeLabel;
     CustomComboBox loopModeComboBox; // on/off
-    juce::Label loopModesLabel;
+    juce::Label loopModesLabel; // ?
     CustomTextEditorInt loopModesTextEditor; // ?
-    juce::Label midiModeLabel;
-    CustomTextEditorInt midiModeTextEditor;
+    juce::Label midiModeLabel; // ?
+    CustomTextEditorInt midiModeTextEditor; // ?
     juce::Label reverseLabel;
-    RoundedSlideSwitch reverseButton;
+    CustomComboBox reverseComboBox; // on/off
     juce::Label cellModeLabel;
-    CustomComboBox cellModeComboBox;
+    CustomComboBox cellModeComboBox; // sample, clip, slicer, granular
     juce::Label envAttackLabel;
     CustomTextEditorInt envAttackTextEditor; // 0% to 100 % (mod)
     juce::Label envDecayLabel;
@@ -74,13 +74,14 @@ private:
     juce::Label actSliceLabel;
     CustomTextEditorInt actSliceTextEditor;
     juce::Label outputBusLabel;
-    CustomTextEditorInt outputBusTextEditor;
+    CustomComboBox outputBusComboBox;
     juce::Label polyModeLabel;
-    CustomTextEditorInt polyModeTextEditor;
+    CustomComboBox polyModeComboBox;
     juce::Label polyModeSliceLabel;
     CustomTextEditorInt polyModeSliceTextEditor;
     juce::Label sliceStepModeLabel;
-    CustomTextEditorInt sliceStepModeTextEditor;
+    CustomComboBox sliceStepModeComboBox;
+
     juce::Label chokeGrpLabel;
     CustomTextEditorInt chokeGrpTextEditor;
     juce::Label dualFilCutoffLabel;
@@ -110,8 +111,7 @@ private:
     juce::Label loopFadeAmtLabel;
     CustomTextEditorInt loopFadeAmtTextEditor;
     juce::Label lfoWaveLabel;
-                                            // TODO lfoWaveTextEditor should be a combobox
-    CustomTextEditorInt lfoWaveTextEditor;  // saw, rev saw, triangle, pos triangle, sine, pos sine, square, pos square, random
+    CustomComboBox lfoWaveComboBox;  // saw, rev saw, triangle, pos triangle, sine, pos sine, square, pos square, random
     juce::Label lfoRateLabel;
     CustomTextEditorInt lfoRateTextEditor;  // 0 to 100% [LFO BeatSyn off] (mod)
                                             // 8,4,2,1,1/2,1/2t,1/4,1/4t,1/8,1/8t1/16,1/16t,1/32,1/32t,1/64 [LFO BeatSyn on] (mod)
@@ -119,10 +119,10 @@ private:
     CustomTextEditorInt lfoAmountTextEditor; // 0 to 100% (mod)
     juce::Label lfoKeyTrigLabel;
                                                 // TODO lfoKeyTrigTextEditor should be a switch
-    CustomTextEditorInt lfoKeyTrigTextEditor;   // ON/OFF
+    CustomComboBox lfoKeyTrigComboBox;   // ON/OFF
     juce::Label lfoBeatSyncLabel;
                                                 // TODO lfoBeatSyncTextEditor should be a switch
-    CustomTextEditorInt lfoBeatSyncTextEditor;  // ON/OFF
+    CustomComboBox lfoBeatSyncComboBox;  // ON/OFF
     juce::Label lfoRateBeatSyncLabel;
     CustomTextEditorInt lfoRateBeatSyncTextEditor;
     juce::Label grainSizePercLabel;
