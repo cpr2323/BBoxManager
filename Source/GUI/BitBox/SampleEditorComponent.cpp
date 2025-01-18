@@ -538,7 +538,7 @@ SampleEditorComponent::SampleEditorComponent ()
 
     // ROOT NOTE
     for (auto midiNoteNumber { 0 }; midiNoteNumber < 128; ++midiNoteNumber)
-        rootNoteComboBox.addItem (juce::MidiMessage::getMidiNoteName(midiNoteNumber, true, true, 60), 1);
+        rootNoteComboBox.addItem (juce::MidiMessage::getMidiNoteName (midiNoteNumber, true, true, 60), midiNoteNumber + 1);
     setupComboBox (rootNoteLabel, "Root Note", rootNoteComboBox);
 
     // BEAT COUNT
@@ -667,7 +667,7 @@ SampleEditorComponent::SampleEditorComponent ()
 
     // PAD NOTE
     for (auto midiNoteNumber { 0 }; midiNoteNumber < 128; ++midiNoteNumber)
-        padNoteComboBox.addItem (juce::MidiMessage::getMidiNoteName (midiNoteNumber, true, true, 60), 1);
+        padNoteComboBox.addItem (juce::MidiMessage::getMidiNoteName (midiNoteNumber, true, true, 60), midiNoteNumber + 1);
     setupEditor (padNoteLabel, "Pad Note", padNoteComboBox);
 
     // LOOP FADE AMOUNT
@@ -757,12 +757,12 @@ SampleEditorComponent::SampleEditorComponent ()
     // LFO KEY TRIGGER
     lfoKeyTrigComboBox.addItem ("OFF", 1);
     lfoKeyTrigComboBox.addItem ("ON", 2);
-    setupEditor (lfoKeyTrigLabel, "LFO Key Trigger", lfoKeyTrigComboBox);
+    setupComboBox (lfoKeyTrigLabel, "LFO Key Trigger", lfoKeyTrigComboBox);
 
     // LFO BEAT SYNC
     lfoBeatSyncComboBox.addItem ("OFF", 1);
     lfoBeatSyncComboBox.addItem ("ON", 2);
-    setupEditor (lfoBeatSyncLabel, "LFO Beat Sync", lfoBeatSyncComboBox);
+    setupComboBox (lfoBeatSyncLabel, "LFO Beat Sync", lfoBeatSyncComboBox);
 
     // LFO RATE BEAT SYNC
     lfoRateBeatSyncTextEditor.setTooltip ("LFO rate beat sync");
@@ -882,7 +882,7 @@ SampleEditorComponent::SampleEditorComponent ()
     // SLICE MODE
     sliceModeComboBox.addItem ("Off", 1);
     sliceModeComboBox.addItem ("On", 2);
-    setupEditor (sliceModeLabel, "Slice Mode", sliceModeComboBox);
+    setupComboBox(sliceModeLabel, "Slice Mode", sliceModeComboBox);
 
     // LEGATO MODE
     legatoModeTextEditor.setTooltip ("Legato mode");
@@ -954,96 +954,42 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (grainReadSpeedLabel, "Grain Read Speed", grainReadSpeedTextEditor);
 
     // RECORD PRESET LENGTH
-    recPresetLenTextEditor.setTooltip ("Record preset length");
-    recPresetLenTextEditor.getMinValueCallback = [this] () { return 0; };
-    recPresetLenTextEditor.getMaxValueCallback = [this] () { return 100; };
-    recPresetLenTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    recPresetLenTextEditor.updateDataCallback = [this] (int value) { recPresetLenUiChanged (value); };
-    recPresetLenTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 5;
-                else
-                    return 10;
-            } ();
-        const auto newValue { sampleProperties.getRecPresetLen () + (multiplier * direction) };
-        recPresetLenTextEditor.setValue (newValue);
-    };
-    recPresetLenTextEditor.onPopupMenuCallback = [this] () {};
-    setupEditor (recPresetLenLabel, "Record Preset Length", recPresetLenTextEditor);
+    recPresetLenComboBox.addItem ("Custom", 1);
+    recPresetLenComboBox.addItem ("1/4", 2);
+    recPresetLenComboBox.addItem ("1/2", 3);
+    recPresetLenComboBox.addItem ("1 bar", 4);
+    recPresetLenComboBox.addItem ("2 bars", 5);
+    recPresetLenComboBox.addItem ("4 bars", 6);
+    recPresetLenComboBox.addItem ("8 bars", 7);
+    recPresetLenComboBox.addItem ("16 bars", 8);
+    recPresetLenComboBox.addItem ("32 bars", 9);
+    recPresetLenComboBox.addItem ("64 bars", 10);
+    recPresetLenComboBox.addItem ("128 bars", 11);
+    setupComboBox (recPresetLenLabel, "Record Preset Length", recPresetLenComboBox);
 
     // RECORD QUANTIZATION
-    recQuantTextEditor.setTooltip ("Record quantization");
-    recQuantTextEditor.getMinValueCallback = [this] () { return 0; };
-    recQuantTextEditor.getMaxValueCallback = [this] () { return 100; };
-    recQuantTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    recQuantTextEditor.updateDataCallback = [this] (int value) { recQuantUiChanged (value); };
-    recQuantTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 5;
-                else
-                    return 10;
-            } ();
-        const auto newValue { sampleProperties.getRecQuant () + (multiplier * direction) };
-        recQuantTextEditor.setValue (newValue);
-    };
-    recQuantTextEditor.onPopupMenuCallback = [this] () {};
-    setupEditor (recQuantLabel, "Record Quantization", recQuantTextEditor);
+    recQuantComboBox.addItem ("None", 1);
+    recQuantComboBox.addItem ("1/16", 2);
+    recQuantComboBox.addItem ("1/8", 3);
+    recQuantComboBox.addItem ("1/4", 4);
+    recQuantComboBox.addItem ("1/2", 5);
+    recQuantComboBox.addItem ("1 bar", 6);
+    recQuantComboBox.addItem ("2 bars", 7);
+    recQuantComboBox.addItem ("4 bars", 8);
+    recQuantComboBox.addItem ("8 bars", 9);
+    setupComboBox (recQuantLabel, "Record Quantization", recQuantComboBox);
 
     // RECORD INPUT
-    recInputTextEditor.setTooltip ("Record input");
-    recInputTextEditor.getMinValueCallback = [this] () { return 0; };
-    recInputTextEditor.getMaxValueCallback = [this] () { return 100; };
-    recInputTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    recInputTextEditor.updateDataCallback = [this] (int value) { recInputUiChanged (value); };
-    recInputTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 5;
-                else
-                    return 10;
-            } ();
-        const auto newValue { sampleProperties.getRecInput () + (multiplier * direction) };
-        recInputTextEditor.setValue (newValue);
-    };
-    recInputTextEditor.onPopupMenuCallback = [this] () {};
-    setupEditor (recInputLabel, "Record Input", recInputTextEditor);
+    recInputComboBox.addItem ("In 1/2", 1);
+    recInputComboBox.addItem ("In 1", 2);
+    recInputComboBox.addItem ("In 2", 3);
+    recInputComboBox.addItem ("Resam", 4);
+    setupComboBox (recInputLabel, "Record Input", recInputComboBox);
 
     // RECORD USE THRESHOLD
-    recUseThresTextEditor.setTooltip ("Record use threshold");
-    recUseThresTextEditor.getMinValueCallback = [this] () { return 0; };
-    recUseThresTextEditor.getMaxValueCallback = [this] () { return 1; };
-    recUseThresTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    recUseThresTextEditor.updateDataCallback = [this] (int value) { recUseThresUiChanged (value); };
-    recUseThresTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 1;
-                else
-                    return 1;
-            } ();
-        const auto newValue { sampleProperties.getRecUseThres () + (multiplier * direction) };
-        recUseThresTextEditor.setValue (newValue);
-    };
-    recUseThresTextEditor.onPopupMenuCallback = [this] () {};
-    setupEditor (recUseThresLabel, "Record Use Threshold", recUseThresTextEditor);
+    recUseThresComboBox.addItem ("Off", 1);
+    recUseThresComboBox.addItem ("On", 2);
+    setupComboBox (recUseThresLabel, "Record Use Threshold", recUseThresComboBox);
 
     // RECORD THRESHOLD
     recThresTextEditor.setTooltip ("Record threshold");
@@ -1069,27 +1015,10 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (recThresLabel, "Record Threshold", recThresTextEditor);
 
     // RECORD MONITOR OUTPUT BUS
-    recMonOutBusTextEditor.setTooltip ("Record monitor output bus");
-    recMonOutBusTextEditor.getMinValueCallback = [this] () { return 0; };
-    recMonOutBusTextEditor.getMaxValueCallback = [this] () { return 10; };
-    recMonOutBusTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    recMonOutBusTextEditor.updateDataCallback = [this] (int value) { recMonOutBusUiChanged (value); };
-    recMonOutBusTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 2;
-                else
-                    return 5;
-            } ();
-        const auto newValue { sampleProperties.getRecMonOutBus () + (multiplier * direction) };
-        recMonOutBusTextEditor.setValue (newValue);
-    };
-    recMonOutBusTextEditor.onPopupMenuCallback = [this] () {};
-    setupEditor (recMonOutBusLabel, "Record Monitor Output Bus", recMonOutBusTextEditor);
+    recMonOutBusComboBox.addItem ("Off", 1);
+    recMonOutBusComboBox.addItem ("Auto", 2);
+    recMonOutBusComboBox.addItem ("On", 3);
+    setupComboBox (recMonOutBusLabel, "Record Monitor Output Bus", recMonOutBusComboBox);
 }
 
 SampleEditorComponent::~SampleEditorComponent ()
@@ -1240,7 +1169,7 @@ void SampleEditorComponent::samTrigTypeDataChanged (int samTrigType) { samTrigTy
 void SampleEditorComponent::loopModeDataChanged (int loopMode) { loopModeComboBox.setSelectedId (loopMode); }
 void SampleEditorComponent::loopModesDataChanged (int loopModes) { loopModesTextEditor.setText (juce::String (loopModes)); }
 void SampleEditorComponent::midiModeDataChanged (int midiMode) { midiModeTextEditor.setText (juce::String (midiMode)); }
-void SampleEditorComponent::reverseDataChanged (int reverse) { reverseButton.setToggleState (reverse, juce::dontSendNotification); }
+void SampleEditorComponent::reverseDataChanged (int reverse) { reverseComboBox.setSelectedId (reverse, juce::dontSendNotification); }
 void SampleEditorComponent::cellModeDataChanged (int cellMode) { cellModeComboBox.setText (juce::String (cellMode)); }
 void SampleEditorComponent::envAttackDataChanged (int envAttack) { envAttackTextEditor.setText (juce::String (envAttack)); }
 void SampleEditorComponent::envDecayDataChanged (int envDecay) { envDecayTextEditor.setText (juce::String (envDecay)); }
@@ -1253,44 +1182,44 @@ void SampleEditorComponent::loopEndDataChanged (int loopEnd) { loopEndTextEditor
 void SampleEditorComponent::quantSizeDataChanged (int quantSize) { quantSizeTextEditor.setText (juce::String (quantSize)); }
 void SampleEditorComponent::syncTypeDataChanged (int syncType) { syncTypeTextEditor.setText (juce::String (syncType)); }
 void SampleEditorComponent::actSliceDataChanged (int actSlice) { actSliceTextEditor.setText (juce::String (actSlice)); }
-void SampleEditorComponent::outputBusDataChanged (int outputBus) { outputBusTextEditor.setText (juce::String (outputBus)); }
-void SampleEditorComponent::polyModeDataChanged (int polyMode) { polyModeTextEditor.setText (juce::String (polyMode)); }
+void SampleEditorComponent::outputBusDataChanged (int outputBus) { outputBusComboBox.setSelectedId (outputBus); }
+void SampleEditorComponent::polyModeDataChanged (int polyMode) { polyModeComboBox.setSelectedId (polyMode); }
 void SampleEditorComponent::polyModeSliceDataChanged (int polyModeSlice) { polyModeSliceTextEditor.setText (juce::String (polyModeSlice)); }
-void SampleEditorComponent::sliceStepModeDataChanged (int sliceStepMode) { sliceStepModeTextEditor.setText (juce::String (sliceStepMode)); }
-void SampleEditorComponent::chokeGrpDataChanged (int chokeGrp) { chokeGrpTextEditor.setText (juce::String (chokeGrp)); }
+void SampleEditorComponent::sliceStepModeDataChanged (int sliceStepMode) { sliceStepModeComboBox.setSelectedId (sliceStepMode); }
+void SampleEditorComponent::chokeGrpDataChanged (int chokeGrp) { chokeGrpComboBox.setSelectedId (chokeGrp); }
 void SampleEditorComponent::dualFilCutoffDataChanged (int dualFilCutoff) { dualFilCutoffTextEditor.setText (juce::String (dualFilCutoff)); }
 void SampleEditorComponent::resDataChanged (int res) { resTextEditor.setText (juce::String (res)); }
-void SampleEditorComponent::rootNoteDataChanged (int rootNote) { rootNoteTextEditor.setText (juce::String (rootNote)); }
+void SampleEditorComponent::rootNoteDataChanged (int rootNote) { rootNoteComboBox.setSelectedId (rootNote); }
 void SampleEditorComponent::beatCountDataChanged (int beatCount) { beatCountTextEditor.setText (juce::String (beatCount)); }
 void SampleEditorComponent::fx1SendDataChanged (int fx1Send) { fx1SendTextEditor.setText (juce::String (fx1Send)); }
 void SampleEditorComponent::fx2SendDataChanged (int fx2Send) { fx2SendTextEditor.setText (juce::String (fx2Send)); }
 void SampleEditorComponent::multiSamModeDataChanged (int multiSamMode) { multiSamModeTextEditor.setText (juce::String (multiSamMode)); }
-void SampleEditorComponent::interpQualDataChanged (int interpQual) { interpQualTextEditor.setText (juce::String (interpQual)); }
-void SampleEditorComponent::playThruDataChanged (int playThru) { playThruTextEditor.setText (juce::String (playThru)); }
-void SampleEditorComponent::slicerQuantSizeDataChanged (int slicerQuantSize) { slicerQuantSizeTextEditor.setText (juce::String (slicerQuantSize)); }
-void SampleEditorComponent::slicerSyncDataChanged (int slicerSync) { slicerSyncTextEditor.setText (juce::String (slicerSync)); }
-void SampleEditorComponent::padNoteDataChanged (int padNote) { padNoteTextEditor.setText (juce::String (padNote)); }
+void SampleEditorComponent::interpQualDataChanged (int interpQual) { interpQualComboBox.setSelectedId (interpQual); }
+void SampleEditorComponent::playThruDataChanged (int playThru) { playThruComboBox.setSelectedId (playThru); }
+void SampleEditorComponent::slicerQuantSizeDataChanged (int slicerQuantSize) { slicerQuantSizeComboBox.setSelectedId (slicerQuantSize); }
+void SampleEditorComponent::slicerSyncDataChanged (int slicerSync) { slicerSyncComboBox.setSelectedId (slicerSync); }
+void SampleEditorComponent::padNoteDataChanged (int padNote) { padNoteComboBox.setSelectedId (padNote); }
 void SampleEditorComponent::loopFadeAmtDataChanged (int loopFadeAmt) { loopFadeAmtTextEditor.setText (juce::String (loopFadeAmt)); }
 void SampleEditorComponent::lfoWaveDataChanged (int lfoWave) { /*lfoWaveComboBox.setText (juce::String (lfoWave));*/ }
 void SampleEditorComponent::lfoRateDataChanged (int lfoRate) { lfoRateTextEditor.setText (juce::String (lfoRate)); }
 void SampleEditorComponent::lfoAmountDataChanged (int lfoAmount) { lfoAmountTextEditor.setText (juce::String (lfoAmount)); }
-void SampleEditorComponent::lfoKeyTrigDataChanged (int lfoKeyTrig) { lfoKeyTrigTextEditor.setText (juce::String (lfoKeyTrig)); }
-void SampleEditorComponent::lfoBeatSyncDataChanged (int lfoBeatSync) { lfoBeatSyncTextEditor.setText (juce::String (lfoBeatSync)); }
+void SampleEditorComponent::lfoKeyTrigDataChanged (int lfoKeyTrig) { lfoKeyTrigComboBox.setSelectedId (lfoKeyTrig); }
+void SampleEditorComponent::lfoBeatSyncDataChanged (int lfoBeatSync) { lfoBeatSyncComboBox.setSelectedId (lfoBeatSync); }
 void SampleEditorComponent::lfoRateBeatSyncDataChanged (int lfoRateBeatSync) { lfoRateBeatSyncTextEditor.setText (juce::String (lfoRateBeatSync)); }
 void SampleEditorComponent::grainSizePercDataChanged (int grainSizePerc) { grainSizePercTextEditor.setText (juce::String (grainSizePerc)); }
 void SampleEditorComponent::grainScatDataChanged (int grainScat) { grainScatTextEditor.setText (juce::String (grainScat)); }
 void SampleEditorComponent::grainPanRndDataChanged (int grainPanRnd) { grainPanRndTextEditor.setText (juce::String (grainPanRnd)); }
 void SampleEditorComponent::grainDensityDataChanged (int grainDensity) { grainDensityTextEditor.setText (juce::String (grainDensity)); }
-void SampleEditorComponent::sliceModeDataChanged (int sliceMode) { sliceModeTextEditor.setText (juce::String (sliceMode)); }
+void SampleEditorComponent::sliceModeDataChanged (int sliceMode) { sliceModeComboBox.setSelectedId (sliceMode); }
 void SampleEditorComponent::legatoModeDataChanged (int legatoMode) { legatoModeTextEditor.setText (juce::String (legatoMode)); }
 void SampleEditorComponent::grainsSrcWinDataChanged (int grainsSrcWin) { grainsSrcWinTextEditor.setText (juce::String (grainsSrcWin)); }
 void SampleEditorComponent::grainReadSpeedDataChanged (int grainReadSpeed) { grainReadSpeedTextEditor.setText (juce::String (grainReadSpeed)); }
-void SampleEditorComponent::recPresetLenDataChanged (int recPresetLen) { recPresetLenTextEditor.setText (juce::String (recPresetLen)); }
-void SampleEditorComponent::recQuantDataChanged (int recQuant) { recQuantTextEditor.setText (juce::String (recQuant)); }
-void SampleEditorComponent::recInputDataChanged (int recInput) { recInputTextEditor.setText (juce::String (recInput)); }
-void SampleEditorComponent::recUseThresDataChanged (int recUseThres) { recUseThresTextEditor.setText (juce::String (recUseThres)); }
+void SampleEditorComponent::recPresetLenDataChanged (int recPresetLen) { recPresetLenComboBox.setSelectedId (recPresetLen); }
+void SampleEditorComponent::recQuantDataChanged (int recQuant) { recQuantComboBox.setSelectedId (recQuant); }
+void SampleEditorComponent::recInputDataChanged (int recInput) { recInputComboBox.setSelectedId (recInput); }
+void SampleEditorComponent::recUseThresDataChanged (int recUseThres) { recUseThresComboBox.setSelectedId (recUseThres); }
 void SampleEditorComponent::recThresDataChanged (int recThres) { recThresTextEditor.setText (juce::String (recThres)); }
-void SampleEditorComponent::recMonOutBusDataChanged (int recMonOutBus) { recMonOutBusTextEditor.setText (juce::String (recMonOutBus)); }
+void SampleEditorComponent::recMonOutBusDataChanged (int recMonOutBus) { recMonOutBusComboBox.setSelectedId (recMonOutBus); }
 
 void SampleEditorComponent::gainUiChanged (int gain) { sampleProperties.setGainDb (gain, false); }
 void SampleEditorComponent::pitchUiChanged (int pitch) { sampleProperties.setPitch (pitch, false); }
@@ -1398,7 +1327,7 @@ void SampleEditorComponent::resized ()
     setupBounds (loopModeLabel, loopModeComboBox, leftColumn);
     setupBounds (loopModesLabel, loopModesTextEditor, leftColumn);
     setupBounds (midiModeLabel, midiModeTextEditor, leftColumn);
-    setupBounds (reverseLabel, reverseButton, leftColumn);
+    setupBounds (reverseLabel, reverseComboBox, leftColumn);
     setupBounds (cellModeLabel, cellModeComboBox, leftColumn);
     setupBounds (envAttackLabel, envAttackTextEditor, leftColumn);
     setupBounds (envDecayLabel, envDecayTextEditor, leftColumn);
@@ -1413,46 +1342,46 @@ void SampleEditorComponent::resized ()
     // Middle column items
     setupBounds (syncTypeLabel, syncTypeTextEditor, middleColumn);
     setupBounds (actSliceLabel, actSliceTextEditor, middleColumn);
-    setupBounds (outputBusLabel, outputBusTextEditor, middleColumn);
-    setupBounds (polyModeLabel, polyModeTextEditor, middleColumn);
+    setupBounds (outputBusLabel, outputBusComboBox, middleColumn);
+    setupBounds (polyModeLabel, polyModeComboBox, middleColumn);
     setupBounds (polyModeSliceLabel, polyModeSliceTextEditor, middleColumn);
-    setupBounds (sliceStepModeLabel, sliceStepModeTextEditor, middleColumn);
-    setupBounds (chokeGrpLabel, chokeGrpTextEditor, middleColumn);
+    setupBounds (sliceStepModeLabel, sliceStepModeComboBox, middleColumn);
+    setupBounds (chokeGrpLabel, chokeGrpComboBox, middleColumn);
     setupBounds (dualFilCutoffLabel, dualFilCutoffTextEditor, middleColumn);
     setupBounds (resLabel, resTextEditor, middleColumn);
-    setupBounds (rootNoteLabel, rootNoteTextEditor, middleColumn);
+    setupBounds (rootNoteLabel, rootNoteComboBox, middleColumn);
     setupBounds (beatCountLabel, beatCountTextEditor, middleColumn);
     setupBounds (fx1SendLabel, fx1SendTextEditor, middleColumn);
     setupBounds (fx2SendLabel, fx2SendTextEditor, middleColumn);
     setupBounds (multiSamModeLabel, multiSamModeTextEditor, middleColumn);
-    setupBounds (interpQualLabel, interpQualTextEditor, middleColumn);
-    setupBounds (playThruLabel, playThruTextEditor, middleColumn);
-    setupBounds (slicerQuantSizeLabel, slicerQuantSizeTextEditor, middleColumn);
-    setupBounds (slicerSyncLabel, slicerSyncTextEditor, middleColumn);
-    setupBounds (padNoteLabel, padNoteTextEditor, middleColumn);
+    setupBounds (interpQualLabel, interpQualComboBox, middleColumn);
+    setupBounds (playThruLabel, playThruComboBox, middleColumn);
+    setupBounds (slicerQuantSizeLabel, slicerQuantSizeComboBox, middleColumn);
+    setupBounds (slicerSyncLabel, slicerSyncComboBox, middleColumn);
+    setupBounds (padNoteLabel, padNoteComboBox, middleColumn);
     setupBounds (loopFadeAmtLabel, loopFadeAmtTextEditor, middleColumn);
 
     // Right column items
     setupBounds (lfoWaveLabel, lfoWaveComboBox, rightColumn);
     setupBounds (lfoRateLabel, lfoRateTextEditor, rightColumn);
     setupBounds (lfoAmountLabel, lfoAmountTextEditor, rightColumn);
-    setupBounds (lfoKeyTrigLabel, lfoKeyTrigTextEditor, rightColumn);
-    setupBounds (lfoBeatSyncLabel, lfoBeatSyncTextEditor, rightColumn);
+    setupBounds (lfoKeyTrigLabel, lfoKeyTrigComboBox, rightColumn);
+    setupBounds (lfoBeatSyncLabel, lfoBeatSyncComboBox, rightColumn);
     setupBounds (lfoRateBeatSyncLabel, lfoRateBeatSyncTextEditor, rightColumn);
     setupBounds (grainSizePercLabel, grainSizePercTextEditor, rightColumn);
     setupBounds (grainScatLabel, grainScatTextEditor, rightColumn);
     setupBounds (grainPanRndLabel, grainPanRndTextEditor, rightColumn);
     setupBounds (grainDensityLabel, grainDensityTextEditor, rightColumn);
-    setupBounds (sliceModeLabel, sliceModeTextEditor, rightColumn);
+    setupBounds (sliceModeLabel, sliceModeComboBox, rightColumn);
     setupBounds (legatoModeLabel, legatoModeTextEditor, rightColumn);
     setupBounds (grainsSrcWinLabel, grainsSrcWinTextEditor, rightColumn);
     setupBounds (grainReadSpeedLabel, grainReadSpeedTextEditor, rightColumn);
-    setupBounds (recPresetLenLabel, recPresetLenTextEditor, rightColumn);
-    setupBounds (recQuantLabel, recQuantTextEditor, rightColumn);
-    setupBounds (recInputLabel, recInputTextEditor, rightColumn);
-    setupBounds (recUseThresLabel, recUseThresTextEditor, rightColumn);
+    setupBounds (recPresetLenLabel, recPresetLenComboBox, rightColumn);
+    setupBounds (recQuantLabel, recQuantComboBox, rightColumn);
+    setupBounds (recInputLabel, recInputComboBox, rightColumn);
+    setupBounds (recUseThresLabel, recUseThresComboBox, rightColumn);
     setupBounds (recThresLabel, recThresTextEditor, rightColumn);
-    setupBounds (recMonOutBusLabel, recMonOutBusTextEditor, rightColumn);
+    setupBounds (recMonOutBusLabel, recMonOutBusComboBox, rightColumn);
 }
 
 

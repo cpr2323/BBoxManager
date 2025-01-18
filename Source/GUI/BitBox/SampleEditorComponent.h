@@ -43,9 +43,9 @@ private:
     CustomComboBox samTrigTypeComboBox; // (launch mode?) Trigger, Gate, Toggle
     juce::Label loopModeLabel;
     CustomComboBox loopModeComboBox; // Off, On
-    juce::Label loopModesLabel; // ?
+    juce::Label loopModesLabel;
     CustomTextEditorInt loopModesTextEditor; // ?
-    juce::Label midiModeLabel; // ?
+    juce::Label midiModeLabel;
     CustomTextEditorInt midiModeTextEditor; // ?
     juce::Label reverseLabel;
     CustomComboBox reverseComboBox; // on/off
@@ -129,27 +129,27 @@ private:
     juce::Label grainPanRndLabel;
     CustomTextEditorInt grainPanRndTextEditor; // 0 to 100%
     juce::Label grainDensityLabel;
-    CustomTextEditorInt grainDensityTextEditor; // 0 to 100%
+    CustomTextEditorInt grainDensityTextEditor; // 0 to 100% (mod)
     juce::Label sliceModeLabel;
     CustomComboBox sliceModeComboBox; // slicer loop mode? on, off?
     juce::Label legatoModeLabel;
-    CustomTextEditorInt legatoModeTextEditor;
+    CustomTextEditorInt legatoModeTextEditor; // ?
     juce::Label grainsSrcWinLabel;
-    CustomTextEditorInt grainsSrcWinTextEditor;
+    CustomTextEditorInt grainsSrcWinTextEditor; // 0 to 100% (mod)
     juce::Label grainReadSpeedLabel;
-    CustomTextEditorInt grainReadSpeedTextEditor;
+    CustomTextEditorInt grainReadSpeedTextEditor; // 0 to 200% (mod)
     juce::Label recPresetLenLabel;
-    CustomTextEditorInt recPresetLenTextEditor;
+    CustomComboBox recPresetLenComboBox; // Custom, 1/4, 1/2, 1 bar, 2 bars, 4 bars, 8 bars, 16 bars, 32 bars, 64 bars, 128 bars
     juce::Label recQuantLabel;
-    CustomTextEditorInt recQuantTextEditor;
+    CustomComboBox recQuantComboBox; // None, 1/16, 1/8, 1/4, 1/2, 1 bar, 2, 4, 8
     juce::Label recInputLabel;
-    CustomTextEditorInt recInputTextEditor;
+    CustomComboBox recInputComboBox; // In 1/2, In 1, In 2, Resam
     juce::Label recUseThresLabel;
-    CustomTextEditorInt recUseThresTextEditor;
+    CustomComboBox recUseThresComboBox; // Off, On
     juce::Label recThresLabel;
-    CustomTextEditorInt recThresTextEditor;
+    CustomTextEditorInt recThresTextEditor; // -96.00 dB to +00.0 dB
     juce::Label recMonOutBusLabel;
-    CustomTextEditorInt recMonOutBusTextEditor;
+    CustomComboBox recMonOutBusComboBox; // Off, Auto, On
 
     NoArrowComboBoxLnF noArrowComboBoxLnF;
 
