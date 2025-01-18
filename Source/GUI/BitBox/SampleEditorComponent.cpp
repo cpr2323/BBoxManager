@@ -114,6 +114,9 @@ SampleEditorComponent::SampleEditorComponent ()
 
     // LOOP MODE
     loopModeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
+    loopModeComboBox.addItem ("None", 1);
+    loopModeComboBox.addItem ("Forward", 2);
+    loopModeComboBox.addItem ("Bidrectional", 3);
     setupComboBox (loopModeLabel, "Loop Mode", loopModeComboBox);
 
     // LOOP MODES
@@ -163,11 +166,13 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (midiModeLabel, "MIDI Mode", midiModeTextEditor);
 
     // REVERSE
+    reverseComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     reverseComboBox.addItem ("Forward", 1);
     reverseComboBox.addItem ("Reverse", 2);
     setupComboBox (reverseLabel, "Reverse", reverseComboBox);
 
     // CELL MODE
+    cellModeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     cellModeComboBox.addItem ("Sample", 1);
     cellModeComboBox.addItem ("Clip", 2);
     cellModeComboBox.addItem ("Slicer", 3);
@@ -428,6 +433,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (actSliceLabel, "Active Slice", actSliceTextEditor);
 
     // OUTPUT BUS
+    outputBusComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     outputBusComboBox.addItem ("Out 1/2", 1);
     outputBusComboBox.addItem ("Out 3/4", 2);
     outputBusComboBox.addItem ("Out 5/6", 3);
@@ -443,6 +449,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupComboBox (outputBusLabel, "Output Bus", outputBusComboBox);
 
     // POLY MODE
+    polyModeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     polyModeComboBox.addItem ("Mono", 1);
     polyModeComboBox.addItem ("Poly 2", 2);
     polyModeComboBox.addItem ("Poly 4", 3);
@@ -475,6 +482,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (polyModeSliceLabel, "Poly Mode Slice", polyModeSliceTextEditor);
 
     // SLICE STEP MODE
+    sliceStepModeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     sliceStepModeComboBox.addItem ("None", 1);
     sliceStepModeComboBox.addItem ("Forward", 2);
     sliceStepModeComboBox.addItem ("Backward", 3);
@@ -483,6 +491,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupComboBox (sliceStepModeLabel, "Slice Step Mode", sliceStepModeComboBox);
 
     // CHOKE GROUP
+    chokeGrpComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     chokeGrpComboBox.addItem ("Excl X", 1);
     chokeGrpComboBox.addItem ("Excl A", 2);
     chokeGrpComboBox.addItem ("Excl B", 3);
@@ -537,6 +546,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (resLabel, "Resonance", resTextEditor);
 
     // ROOT NOTE
+    rootNoteComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     for (auto midiNoteNumber { 0 }; midiNoteNumber < 128; ++midiNoteNumber)
         rootNoteComboBox.addItem (juce::MidiMessage::getMidiNoteName (midiNoteNumber, true, true, 60), midiNoteNumber + 1);
     setupComboBox (rootNoteLabel, "Root Note", rootNoteComboBox);
@@ -634,16 +644,19 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (multiSamModeLabel, "Multi Sample Mode", multiSamModeTextEditor);
 
     // INTERPOLATION QUALITY
+    interpQualComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     interpQualComboBox.addItem ("Normal", 1);
     interpQualComboBox.addItem ("HighQ", 2);
     setupComboBox (interpQualLabel, "Interpolation Quality", interpQualComboBox);
 
     // PLAY THROUGH
+    playThruComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     playThruComboBox.addItem ("Off", 1);
     playThruComboBox.addItem ("On", 2);
     setupComboBox (playThruLabel, "Play Through", playThruComboBox);
 
     // SLICER QUANT SIZE
+    slicerQuantSizeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     slicerQuantSizeComboBox.addItem ("None", 1);
     slicerQuantSizeComboBox.addItem ("1/64", 2);
     slicerQuantSizeComboBox.addItem ("1/32T", 3);
@@ -661,11 +674,13 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (slicerQuantSizeLabel, "Slicer Quant Size", slicerQuantSizeComboBox);
 
     // SLICER SYNC
+    slicerSyncComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     slicerSyncComboBox.addItem ("Off", 1);
     slicerSyncComboBox.addItem ("On", 2);
     setupEditor (slicerSyncLabel, "Slicer Sync", slicerSyncComboBox);
 
     // PAD NOTE
+    padNoteComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     for (auto midiNoteNumber { 0 }; midiNoteNumber < 128; ++midiNoteNumber)
         padNoteComboBox.addItem (juce::MidiMessage::getMidiNoteName (midiNoteNumber, true, true, 60), midiNoteNumber + 1);
     setupEditor (padNoteLabel, "Pad Note", padNoteComboBox);
@@ -694,8 +709,8 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (loopFadeAmtLabel, "Loop Fade Amount", loopFadeAmtTextEditor);
 
     // LFO WAVE
-    // saw, rev saw, triangle, pos triangle, sine, pos sine, square, pos square, random
     lfoWaveComboBox.setTooltip ("LFO wave");
+    lfoWaveComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     lfoWaveComboBox.addItem ("saw", 1);
     lfoWaveComboBox.addItem ("rev saw", 2);
     lfoWaveComboBox.addItem ("triangle", 3);
@@ -755,13 +770,15 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (lfoAmountLabel, "LFO Amount", lfoAmountTextEditor);
 
     // LFO KEY TRIGGER
-    lfoKeyTrigComboBox.addItem ("OFF", 1);
-    lfoKeyTrigComboBox.addItem ("ON", 2);
+    lfoKeyTrigComboBox.setLookAndFeel (&noArrowComboBoxLnF);
+    lfoKeyTrigComboBox.addItem ("Off", 1);
+    lfoKeyTrigComboBox.addItem ("On", 2);
     setupComboBox (lfoKeyTrigLabel, "LFO Key Trigger", lfoKeyTrigComboBox);
 
     // LFO BEAT SYNC
-    lfoBeatSyncComboBox.addItem ("OFF", 1);
-    lfoBeatSyncComboBox.addItem ("ON", 2);
+    lfoBeatSyncComboBox.setLookAndFeel (&noArrowComboBoxLnF);
+    lfoBeatSyncComboBox.addItem ("Off", 1);
+    lfoBeatSyncComboBox.addItem ("On", 2);
     setupComboBox (lfoBeatSyncLabel, "LFO Beat Sync", lfoBeatSyncComboBox);
 
     // LFO RATE BEAT SYNC
@@ -880,6 +897,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (grainDensityLabel, "Grain Density", grainDensityTextEditor);
 
     // SLICE MODE
+    sliceModeComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     sliceModeComboBox.addItem ("Off", 1);
     sliceModeComboBox.addItem ("On", 2);
     setupComboBox(sliceModeLabel, "Slice Mode", sliceModeComboBox);
@@ -954,6 +972,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (grainReadSpeedLabel, "Grain Read Speed", grainReadSpeedTextEditor);
 
     // RECORD PRESET LENGTH
+    recPresetLenComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     recPresetLenComboBox.addItem ("Custom", 1);
     recPresetLenComboBox.addItem ("1/4", 2);
     recPresetLenComboBox.addItem ("1/2", 3);
@@ -968,6 +987,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupComboBox (recPresetLenLabel, "Record Preset Length", recPresetLenComboBox);
 
     // RECORD QUANTIZATION
+    recQuantComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     recQuantComboBox.addItem ("None", 1);
     recQuantComboBox.addItem ("1/16", 2);
     recQuantComboBox.addItem ("1/8", 3);
@@ -980,6 +1000,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupComboBox (recQuantLabel, "Record Quantization", recQuantComboBox);
 
     // RECORD INPUT
+    recInputComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     recInputComboBox.addItem ("In 1/2", 1);
     recInputComboBox.addItem ("In 1", 2);
     recInputComboBox.addItem ("In 2", 3);
@@ -987,6 +1008,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupComboBox (recInputLabel, "Record Input", recInputComboBox);
 
     // RECORD USE THRESHOLD
+    recUseThresComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     recUseThresComboBox.addItem ("Off", 1);
     recUseThresComboBox.addItem ("On", 2);
     setupComboBox (recUseThresLabel, "Record Use Threshold", recUseThresComboBox);
@@ -1015,6 +1037,7 @@ SampleEditorComponent::SampleEditorComponent ()
     setupEditor (recThresLabel, "Record Threshold", recThresTextEditor);
 
     // RECORD MONITOR OUTPUT BUS
+    recMonOutBusComboBox.setLookAndFeel (&noArrowComboBoxLnF);
     recMonOutBusComboBox.addItem ("Off", 1);
     recMonOutBusComboBox.addItem ("Auto", 2);
     recMonOutBusComboBox.addItem ("On", 3);
@@ -1023,9 +1046,29 @@ SampleEditorComponent::SampleEditorComponent ()
 
 SampleEditorComponent::~SampleEditorComponent ()
 {
+    cellModeComboBox.setLookAndFeel (nullptr);
+    chokeGrpComboBox.setLookAndFeel (nullptr);
+    interpQualComboBox.setLookAndFeel (nullptr);
+    lfoBeatSyncComboBox.setLookAndFeel (nullptr);
+    lfoKeyTrigComboBox.setLookAndFeel (nullptr);
     lfoWaveComboBox.setLookAndFeel (nullptr);
     loopModeComboBox.setLookAndFeel (nullptr);
+    outputBusComboBox.setLookAndFeel (nullptr);
+    padNoteComboBox.setLookAndFeel (nullptr);
+    playThruComboBox.setLookAndFeel (nullptr);
+    polyModeComboBox.setLookAndFeel (nullptr);
+    recInputComboBox.setLookAndFeel (nullptr);
+    recMonOutBusComboBox.setLookAndFeel (nullptr);
+    recPresetLenComboBox.setLookAndFeel (nullptr);
+    recQuantComboBox.setLookAndFeel (nullptr);
+    recUseThresComboBox.setLookAndFeel (nullptr);
+    reverseComboBox.setLookAndFeel (nullptr);
+    rootNoteComboBox.setLookAndFeel (nullptr);
     samTrigTypeComboBox.setLookAndFeel (nullptr);
+    sliceModeComboBox.setLookAndFeel (nullptr);
+    slicerQuantSizeComboBox.setLookAndFeel (nullptr);
+    slicerSyncComboBox.setLookAndFeel (nullptr);
+    sliceStepModeComboBox.setLookAndFeel (nullptr);
 }
 
 void SampleEditorComponent::init (juce::ValueTree samplePropertiesVT)
@@ -1166,11 +1209,11 @@ void SampleEditorComponent::gainDataChanged (int gain) { gainTextEditor.setText 
 void SampleEditorComponent::pitchDataChanged (int pitch) { pitchTextEditor.setText (juce::String (pitch)); }
 void SampleEditorComponent::panPosDataChanged (int panPos) { panPosTextEditor.setText (juce::String (panPos)); }
 void SampleEditorComponent::samTrigTypeDataChanged (int samTrigType) { samTrigTypeComboBox.setText (juce::String (samTrigType)); }
-void SampleEditorComponent::loopModeDataChanged (int loopMode) { loopModeComboBox.setSelectedId (loopMode); }
+void SampleEditorComponent::loopModeDataChanged (int loopMode) { loopModeComboBox.setSelectedId (loopMode + 1); }
 void SampleEditorComponent::loopModesDataChanged (int loopModes) { loopModesTextEditor.setText (juce::String (loopModes)); }
 void SampleEditorComponent::midiModeDataChanged (int midiMode) { midiModeTextEditor.setText (juce::String (midiMode)); }
-void SampleEditorComponent::reverseDataChanged (int reverse) { reverseComboBox.setSelectedId (reverse, juce::dontSendNotification); }
-void SampleEditorComponent::cellModeDataChanged (int cellMode) { cellModeComboBox.setText (juce::String (cellMode)); }
+void SampleEditorComponent::reverseDataChanged (int reverse) { reverseComboBox.setSelectedId (reverse + 1, juce::dontSendNotification); }
+void SampleEditorComponent::cellModeDataChanged (int cellMode) { cellModeComboBox.setSelectedId (cellMode + 1); }
 void SampleEditorComponent::envAttackDataChanged (int envAttack) { envAttackTextEditor.setText (juce::String (envAttack)); }
 void SampleEditorComponent::envDecayDataChanged (int envDecay) { envDecayTextEditor.setText (juce::String (envDecay)); }
 void SampleEditorComponent::envSusDataChanged (int envSus) { envSusTextEditor.setText (juce::String (envSus)); }
@@ -1182,44 +1225,44 @@ void SampleEditorComponent::loopEndDataChanged (int loopEnd) { loopEndTextEditor
 void SampleEditorComponent::quantSizeDataChanged (int quantSize) { quantSizeTextEditor.setText (juce::String (quantSize)); }
 void SampleEditorComponent::syncTypeDataChanged (int syncType) { syncTypeTextEditor.setText (juce::String (syncType)); }
 void SampleEditorComponent::actSliceDataChanged (int actSlice) { actSliceTextEditor.setText (juce::String (actSlice)); }
-void SampleEditorComponent::outputBusDataChanged (int outputBus) { outputBusComboBox.setSelectedId (outputBus); }
-void SampleEditorComponent::polyModeDataChanged (int polyMode) { polyModeComboBox.setSelectedId (polyMode); }
+void SampleEditorComponent::outputBusDataChanged (int outputBus) { outputBusComboBox.setSelectedId (outputBus + 1); }
+void SampleEditorComponent::polyModeDataChanged (int polyMode) { polyModeComboBox.setSelectedId (polyMode + 1); }
 void SampleEditorComponent::polyModeSliceDataChanged (int polyModeSlice) { polyModeSliceTextEditor.setText (juce::String (polyModeSlice)); }
-void SampleEditorComponent::sliceStepModeDataChanged (int sliceStepMode) { sliceStepModeComboBox.setSelectedId (sliceStepMode); }
-void SampleEditorComponent::chokeGrpDataChanged (int chokeGrp) { chokeGrpComboBox.setSelectedId (chokeGrp); }
+void SampleEditorComponent::sliceStepModeDataChanged (int sliceStepMode) { sliceStepModeComboBox.setSelectedId (sliceStepMode + 1); }
+void SampleEditorComponent::chokeGrpDataChanged (int chokeGrp) { chokeGrpComboBox.setSelectedId (chokeGrp + 1); }
 void SampleEditorComponent::dualFilCutoffDataChanged (int dualFilCutoff) { dualFilCutoffTextEditor.setText (juce::String (dualFilCutoff)); }
 void SampleEditorComponent::resDataChanged (int res) { resTextEditor.setText (juce::String (res)); }
-void SampleEditorComponent::rootNoteDataChanged (int rootNote) { rootNoteComboBox.setSelectedId (rootNote); }
+void SampleEditorComponent::rootNoteDataChanged (int rootNote) { rootNoteComboBox.setSelectedId (rootNote + 1); }
 void SampleEditorComponent::beatCountDataChanged (int beatCount) { beatCountTextEditor.setText (juce::String (beatCount)); }
 void SampleEditorComponent::fx1SendDataChanged (int fx1Send) { fx1SendTextEditor.setText (juce::String (fx1Send)); }
 void SampleEditorComponent::fx2SendDataChanged (int fx2Send) { fx2SendTextEditor.setText (juce::String (fx2Send)); }
 void SampleEditorComponent::multiSamModeDataChanged (int multiSamMode) { multiSamModeTextEditor.setText (juce::String (multiSamMode)); }
-void SampleEditorComponent::interpQualDataChanged (int interpQual) { interpQualComboBox.setSelectedId (interpQual); }
-void SampleEditorComponent::playThruDataChanged (int playThru) { playThruComboBox.setSelectedId (playThru); }
-void SampleEditorComponent::slicerQuantSizeDataChanged (int slicerQuantSize) { slicerQuantSizeComboBox.setSelectedId (slicerQuantSize); }
-void SampleEditorComponent::slicerSyncDataChanged (int slicerSync) { slicerSyncComboBox.setSelectedId (slicerSync); }
-void SampleEditorComponent::padNoteDataChanged (int padNote) { padNoteComboBox.setSelectedId (padNote); }
+void SampleEditorComponent::interpQualDataChanged (int interpQual) { interpQualComboBox.setSelectedId (interpQual + 1); }
+void SampleEditorComponent::playThruDataChanged (int playThru) { playThruComboBox.setSelectedId (playThru + 1); }
+void SampleEditorComponent::slicerQuantSizeDataChanged (int slicerQuantSize) { slicerQuantSizeComboBox.setSelectedId (slicerQuantSize + 1); }
+void SampleEditorComponent::slicerSyncDataChanged (int slicerSync) { slicerSyncComboBox.setSelectedId (slicerSync + 1); }
+void SampleEditorComponent::padNoteDataChanged (int padNote) { padNoteComboBox.setSelectedId (padNote + 1); }
 void SampleEditorComponent::loopFadeAmtDataChanged (int loopFadeAmt) { loopFadeAmtTextEditor.setText (juce::String (loopFadeAmt)); }
 void SampleEditorComponent::lfoWaveDataChanged (int lfoWave) { /*lfoWaveComboBox.setText (juce::String (lfoWave));*/ }
 void SampleEditorComponent::lfoRateDataChanged (int lfoRate) { lfoRateTextEditor.setText (juce::String (lfoRate)); }
 void SampleEditorComponent::lfoAmountDataChanged (int lfoAmount) { lfoAmountTextEditor.setText (juce::String (lfoAmount)); }
-void SampleEditorComponent::lfoKeyTrigDataChanged (int lfoKeyTrig) { lfoKeyTrigComboBox.setSelectedId (lfoKeyTrig); }
-void SampleEditorComponent::lfoBeatSyncDataChanged (int lfoBeatSync) { lfoBeatSyncComboBox.setSelectedId (lfoBeatSync); }
+void SampleEditorComponent::lfoKeyTrigDataChanged (int lfoKeyTrig) { lfoKeyTrigComboBox.setSelectedId (lfoKeyTrig + 1); }
+void SampleEditorComponent::lfoBeatSyncDataChanged (int lfoBeatSync) { lfoBeatSyncComboBox.setSelectedId (lfoBeatSync + 1); }
 void SampleEditorComponent::lfoRateBeatSyncDataChanged (int lfoRateBeatSync) { lfoRateBeatSyncTextEditor.setText (juce::String (lfoRateBeatSync)); }
 void SampleEditorComponent::grainSizePercDataChanged (int grainSizePerc) { grainSizePercTextEditor.setText (juce::String (grainSizePerc)); }
 void SampleEditorComponent::grainScatDataChanged (int grainScat) { grainScatTextEditor.setText (juce::String (grainScat)); }
 void SampleEditorComponent::grainPanRndDataChanged (int grainPanRnd) { grainPanRndTextEditor.setText (juce::String (grainPanRnd)); }
 void SampleEditorComponent::grainDensityDataChanged (int grainDensity) { grainDensityTextEditor.setText (juce::String (grainDensity)); }
-void SampleEditorComponent::sliceModeDataChanged (int sliceMode) { sliceModeComboBox.setSelectedId (sliceMode); }
+void SampleEditorComponent::sliceModeDataChanged (int sliceMode) { sliceModeComboBox.setSelectedId (sliceMode + 1); }
 void SampleEditorComponent::legatoModeDataChanged (int legatoMode) { legatoModeTextEditor.setText (juce::String (legatoMode)); }
 void SampleEditorComponent::grainsSrcWinDataChanged (int grainsSrcWin) { grainsSrcWinTextEditor.setText (juce::String (grainsSrcWin)); }
 void SampleEditorComponent::grainReadSpeedDataChanged (int grainReadSpeed) { grainReadSpeedTextEditor.setText (juce::String (grainReadSpeed)); }
-void SampleEditorComponent::recPresetLenDataChanged (int recPresetLen) { recPresetLenComboBox.setSelectedId (recPresetLen); }
-void SampleEditorComponent::recQuantDataChanged (int recQuant) { recQuantComboBox.setSelectedId (recQuant); }
-void SampleEditorComponent::recInputDataChanged (int recInput) { recInputComboBox.setSelectedId (recInput); }
-void SampleEditorComponent::recUseThresDataChanged (int recUseThres) { recUseThresComboBox.setSelectedId (recUseThres); }
+void SampleEditorComponent::recPresetLenDataChanged (int recPresetLen) { recPresetLenComboBox.setSelectedId (recPresetLen + 1); }
+void SampleEditorComponent::recQuantDataChanged (int recQuant) { recQuantComboBox.setSelectedId (recQuant + 1); }
+void SampleEditorComponent::recInputDataChanged (int recInput) { recInputComboBox.setSelectedId (recInput + 1); }
+void SampleEditorComponent::recUseThresDataChanged (int recUseThres) { recUseThresComboBox.setSelectedId (recUseThres + 1); }
 void SampleEditorComponent::recThresDataChanged (int recThres) { recThresTextEditor.setText (juce::String (recThres)); }
-void SampleEditorComponent::recMonOutBusDataChanged (int recMonOutBus) { recMonOutBusComboBox.setSelectedId (recMonOutBus); }
+void SampleEditorComponent::recMonOutBusDataChanged (int recMonOutBus) { recMonOutBusComboBox.setSelectedId (recMonOutBus + 1); }
 
 void SampleEditorComponent::gainUiChanged (int gain) { sampleProperties.setGainDb (gain, false); }
 void SampleEditorComponent::pitchUiChanged (int pitch) { sampleProperties.setPitch (pitch, false); }
