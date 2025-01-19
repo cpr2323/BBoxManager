@@ -18,10 +18,11 @@ SampleEditorComponent::SampleEditorComponent ()
         addAndMakeVisible (combobox);
     };
 
+    fileNameLabel.setText ("File Name", juce::dontSendNotification);
+    addAndMakeVisible (fileNameLabel);
     fileNameSelectLabel.setColour (juce::Label::ColourIds::textColourId, juce::Colours::white);
     fileNameSelectLabel.setColour (juce::Label::ColourIds::backgroundColourId, juce::Colours::black);
     fileNameSelectLabel.setOutline (juce::Colours::white);
-    setupEditor (fileNameLabel, "File Name", fileNameSelectLabel);
     fileNameSelectLabel.onFilesSelected = [this] (const juce::StringArray& files)
     {
         // if (!handleSampleAssignment (files [0]))
@@ -782,29 +783,27 @@ SampleEditorComponent::SampleEditorComponent ()
     setupComboBox (lfoBeatSyncLabel, "LFO Beat Sync", lfoBeatSyncComboBox);
 
     // LFO RATE BEAT SYNC
-    lfoRateBeatSyncTextEditor.setTooltip ("LFO rate beat sync");
-    lfoRateBeatSyncTextEditor.getMinValueCallback = [this] () { return 0; };
-    lfoRateBeatSyncTextEditor.getMaxValueCallback = [this] () { return 100; };
-    lfoRateBeatSyncTextEditor.toStringCallback = [this] (int value) { return juce::String (value); };
-    lfoRateBeatSyncTextEditor.updateDataCallback = [this] (int value) { lfoRateBeatSyncUiChanged (value); };
-    lfoRateBeatSyncTextEditor.onDragCallback = [this] (DragSpeed dragSpeed, int direction)
-    {
-        const auto multiplier = [dragSpeed] ()
-            {
-                if (dragSpeed == DragSpeed::slow)
-                    return 1;
-                else if (dragSpeed == DragSpeed::medium)
-                    return 5;
-                else
-                    return 10;
-            } ();
-        const auto newValue { sampleProperties.getLfoRateBeatSync () + (multiplier * direction) };
-        lfoRateBeatSyncTextEditor.setValue (newValue);
-    };
-    lfoRateBeatSyncTextEditor.onPopupMenuCallback = [this] () {};
-    setupEditor (lfoRateBeatSyncLabel, "LFO Rate Beat Sync", lfoRateBeatSyncTextEditor);
+    lfoRateBeatSyncComboBox.setLookAndFeel (&noArrowComboBoxLnF);
+    lfoRateBeatSyncComboBox.addItem ("1/64", 1);
+    lfoRateBeatSyncComboBox.addItem ("1/32t", 2);
+    lfoRateBeatSyncComboBox.addItem ("1/32", 3);
+    lfoRateBeatSyncComboBox.addItem ("1/16t", 4);
+    lfoRateBeatSyncComboBox.addItem ("1/16", 5);
+    lfoRateBeatSyncComboBox.addItem ("1/8t", 6);
+    lfoRateBeatSyncComboBox.addItem ("1/8", 7);
+    lfoRateBeatSyncComboBox.addItem ("1/4t", 8);
+    lfoRateBeatSyncComboBox.addItem ("1/4", 9);
+    lfoRateBeatSyncComboBox.addItem ("1/2t", 10);
+    lfoRateBeatSyncComboBox.addItem ("1/2", 11);
+    lfoRateBeatSyncComboBox.addItem ("1", 12);
+    lfoRateBeatSyncComboBox.addItem ("2", 13);
+    lfoRateBeatSyncComboBox.addItem ("4", 14);
+    lfoRateBeatSyncComboBox.addItem ("8", 15);
+    setupComboBox (lfoRateBeatSyncLabel, "LFO Rate Beat Sync", lfoRateBeatSyncComboBox);
+    // TODO - this will eventually occupy the same space as 
+    //lfoRateBeatSyncComboBox.setVisible (false);
 
-// GRAIN SIZE PERCENTAGE
+    // GRAIN SIZE PERCENTAGE
     grainSizePercTextEditor.setTooltip ("Grain size percentage");
     grainSizePercTextEditor.getMinValueCallback = [this] () { return 0; };
     grainSizePercTextEditor.getMaxValueCallback = [this] () { return 100; };
@@ -1046,6 +1045,7 @@ SampleEditorComponent::SampleEditorComponent ()
 
 SampleEditorComponent::~SampleEditorComponent ()
 {
+    lfoRateBeatSyncComboBox.setLookAndFeel (nullptr);
     cellModeComboBox.setLookAndFeel (nullptr);
     chokeGrpComboBox.setLookAndFeel (nullptr);
     interpQualComboBox.setLookAndFeel (nullptr);
@@ -1075,6 +1075,7 @@ void SampleEditorComponent::init (juce::ValueTree samplePropertiesVT)
 {
     sampleProperties.wrap (samplePropertiesVT, SampleProperties::WrapperType::client, SampleProperties::EnableCallbacks::yes);
 
+    sampleProperties.onFileNameChange = [this] (juce::String fileName) { fileNameDataChanged (fileName); };
     sampleProperties.onGainDbChange = [this] (int gain) { gainDataChanged (gain); };
     sampleProperties.onPitchChange = [this] (int pitch) { pitchDataChanged (pitch); };
     sampleProperties.onPanPosChange = [this] (int panPos) { panPosDataChanged (panPos); };
@@ -1134,6 +1135,7 @@ void SampleEditorComponent::init (juce::ValueTree samplePropertiesVT)
     sampleProperties.onRecThresChange = [this] (int recThres) { recThresDataChanged (recThres); };
     sampleProperties.onRecMonOutBusChange = [this] (int recMonOutBus) { recMonOutBusDataChanged (recMonOutBus); };
 
+    fileNameDataChanged (sampleProperties.getFileName ());
     gainDataChanged (sampleProperties.getGainDb ());
     pitchDataChanged (sampleProperties.getPitch ());
     panPosDataChanged (sampleProperties.getPanPos ());
@@ -1205,6 +1207,7 @@ juce::ValueTree SampleEditorComponent::getSamplePropertiesVT ()
     return sampleProperties.getValueTree ();
 }
 
+void SampleEditorComponent::fileNameDataChanged (juce::String fileName) { fileNameSelectLabel.setText (juce::File (fileName).getFileNameWithoutExtension (), juce::NotificationType::dontSendNotification); }
 void SampleEditorComponent::gainDataChanged (int gain) { gainTextEditor.setText (juce::String (gain)); }
 void SampleEditorComponent::pitchDataChanged (int pitch) { pitchTextEditor.setText (juce::String (pitch)); }
 void SampleEditorComponent::panPosDataChanged (int panPos) { panPosTextEditor.setText (juce::String (panPos)); }
@@ -1243,12 +1246,12 @@ void SampleEditorComponent::slicerQuantSizeDataChanged (int slicerQuantSize) { s
 void SampleEditorComponent::slicerSyncDataChanged (int slicerSync) { slicerSyncComboBox.setSelectedId (slicerSync + 1); }
 void SampleEditorComponent::padNoteDataChanged (int padNote) { padNoteComboBox.setSelectedId (padNote + 1); }
 void SampleEditorComponent::loopFadeAmtDataChanged (int loopFadeAmt) { loopFadeAmtTextEditor.setText (juce::String (loopFadeAmt)); }
-void SampleEditorComponent::lfoWaveDataChanged (int lfoWave) { /*lfoWaveComboBox.setText (juce::String (lfoWave));*/ }
+void SampleEditorComponent::lfoWaveDataChanged (int lfoWave) { lfoWaveComboBox.setSelectedId (lfoWave + 1); }
 void SampleEditorComponent::lfoRateDataChanged (int lfoRate) { lfoRateTextEditor.setText (juce::String (lfoRate)); }
 void SampleEditorComponent::lfoAmountDataChanged (int lfoAmount) { lfoAmountTextEditor.setText (juce::String (lfoAmount)); }
 void SampleEditorComponent::lfoKeyTrigDataChanged (int lfoKeyTrig) { lfoKeyTrigComboBox.setSelectedId (lfoKeyTrig + 1); }
 void SampleEditorComponent::lfoBeatSyncDataChanged (int lfoBeatSync) { lfoBeatSyncComboBox.setSelectedId (lfoBeatSync + 1); }
-void SampleEditorComponent::lfoRateBeatSyncDataChanged (int lfoRateBeatSync) { lfoRateBeatSyncTextEditor.setText (juce::String (lfoRateBeatSync)); }
+void SampleEditorComponent::lfoRateBeatSyncDataChanged (int lfoRateBeatSync) { lfoRateBeatSyncComboBox.setSelectedId (lfoRateBeatSync + 1); }
 void SampleEditorComponent::grainSizePercDataChanged (int grainSizePerc) { grainSizePercTextEditor.setText (juce::String (grainSizePerc)); }
 void SampleEditorComponent::grainScatDataChanged (int grainScat) { grainScatTextEditor.setText (juce::String (grainScat)); }
 void SampleEditorComponent::grainPanRndDataChanged (int grainPanRnd) { grainPanRndTextEditor.setText (juce::String (grainPanRnd)); }
@@ -1264,6 +1267,12 @@ void SampleEditorComponent::recUseThresDataChanged (int recUseThres) { recUseThr
 void SampleEditorComponent::recThresDataChanged (int recThres) { recThresTextEditor.setText (juce::String (recThres)); }
 void SampleEditorComponent::recMonOutBusDataChanged (int recMonOutBus) { recMonOutBusComboBox.setSelectedId (recMonOutBus + 1); }
 
+
+void SampleEditorComponent::fileNameUiChanged (juce::String fileName)
+{
+    // TO DO - load sample
+    sampleProperties.setFileName (fileName, false);
+}
 void SampleEditorComponent::gainUiChanged (int gain) { sampleProperties.setGainDb (gain, false); }
 void SampleEditorComponent::pitchUiChanged (int pitch) { sampleProperties.setPitch (pitch, false); }
 void SampleEditorComponent::panPosUiChanged (int panPos) { sampleProperties.setPanPos (panPos, false); }
@@ -1410,7 +1419,7 @@ void SampleEditorComponent::resized ()
     setupBounds (lfoAmountLabel, lfoAmountTextEditor, rightColumn);
     setupBounds (lfoKeyTrigLabel, lfoKeyTrigComboBox, rightColumn);
     setupBounds (lfoBeatSyncLabel, lfoBeatSyncComboBox, rightColumn);
-    setupBounds (lfoRateBeatSyncLabel, lfoRateBeatSyncTextEditor, rightColumn);
+    setupBounds (lfoRateBeatSyncLabel, lfoRateBeatSyncComboBox, rightColumn);
     setupBounds (grainSizePercLabel, grainSizePercTextEditor, rightColumn);
     setupBounds (grainScatLabel, grainScatTextEditor, rightColumn);
     setupBounds (grainPanRndLabel, grainPanRndTextEditor, rightColumn);

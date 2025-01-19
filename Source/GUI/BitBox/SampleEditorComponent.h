@@ -112,8 +112,7 @@ private:
     juce::Label lfoWaveLabel;
     CustomComboBox lfoWaveComboBox;  // saw, rev saw, triangle, pos triangle, sine, pos sine, square, pos square, random
     juce::Label lfoRateLabel;
-    CustomTextEditorInt lfoRateTextEditor;  // 0 to 100% [LFO BeatSyn off] (mod)
-                                            // 8,4,2,1,1/2,1/2t,1/4,1/4t,1/8,1/8t1/16,1/16t,1/32,1/32t,1/64 [LFO BeatSyn on] (mod)
+    CustomTextEditorInt lfoRateTextEditor;  // (used if lfo beat sync off) 0 to 100% (mod)
     juce::Label lfoAmountLabel;
     CustomTextEditorInt lfoAmountTextEditor; // 0 to 100% (mod)
     juce::Label lfoKeyTrigLabel;
@@ -121,7 +120,7 @@ private:
     juce::Label lfoBeatSyncLabel;
     CustomComboBox lfoBeatSyncComboBox;  // ON/OFF
     juce::Label lfoRateBeatSyncLabel;
-    CustomTextEditorInt lfoRateBeatSyncTextEditor; // ?? maybe: 8,4,2,1,1/2,1/2t,1/4,1/4t,1/8,1/8t1/16,1/16t,1/32,1/32t,1/64 [LFO BeatSyn on] (mod)
+    CustomComboBox lfoRateBeatSyncComboBox; // (used if beat sync on) 8,4,2,1,1/2,1/2t,1/4,1/4t,1/8,1/8t1/16,1/16t,1/32,1/32t,1/64 (mod)
     juce::Label grainSizePercLabel;
     CustomTextEditorInt grainSizePercTextEditor; // 0 to 100% (mod)
     juce::Label grainScatLabel;
@@ -153,6 +152,7 @@ private:
 
     NoArrowComboBoxLnF noArrowComboBoxLnF;
 
+    void fileNameDataChanged (juce::String fileName);
     void gainDataChanged (int gain);
     void pitchDataChanged (int pitch);
     void panPosDataChanged (int panPos);
@@ -212,6 +212,7 @@ private:
     void recThresDataChanged (int recThres);
     void recMonOutBusDataChanged (int recMonOutBus);
 
+    void fileNameUiChanged (juce::String fileName);
     void gainUiChanged (int gain);
     void pitchUiChanged (int pitch);
     void panPosUiChanged (int panPos);

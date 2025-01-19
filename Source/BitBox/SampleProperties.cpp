@@ -181,6 +181,7 @@ void SampleProperties::copyPropertiesFrom (juce::ValueTree source)
 {
     SampleProperties srcSampleProperties { source, SampleProperties::WrapperType::client, SampleProperties::EnableCallbacks::no };
     // set properties
+    setFileName (srcSampleProperties.getFileName (), false);
     setGainDb (srcSampleProperties.getGainDb (), false);
     setPitch (srcSampleProperties.getPitch (), false);
     setPanPos (srcSampleProperties.getPanPos (), false);
