@@ -353,6 +353,9 @@ juce::ValueTree parse (juce::XmlElement* bitBoxPresetDocumentElement)
                 assetProperties.setRootNote (paramsElement->getIntAttribute ("rootnote"), false);
                 assetProperties.setKeyRangeBottom (paramsElement->getIntAttribute ("keyrangebottom"), false);
                 assetProperties.setKeyRangeTop (paramsElement->getIntAttribute ("keyrangetop"), false);
+                assetProperties.setVelRoot (paramsElement->getIntAttribute ("velroot"), false);
+                assetProperties.setVelRangeBottom(paramsElement->getIntAttribute ("velrangebottom"), false);
+                assetProperties.setVelRangeTop (paramsElement->getIntAttribute ("velrangetop"), false);
                 assetProperties.setAssSrcRow (paramsElement->getIntAttribute ("asssrcrow"), false);
                 assetProperties.setAssSrcCol (paramsElement->getIntAttribute ("asssrccol"), false);
 
